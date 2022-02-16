@@ -12,11 +12,8 @@
  */
 SymTab *createSymTab(int size)
 {
-	printf("Allocated symbol table with hashes bound to %d\n", size);
-
 	// Allocate the data structure
 	SymTab *result = (SymTab *)malloc(sizeof(SymTab));
-	printf("Unique symtab handle %lx\n", (unsigned long)result);
 	// Initialize internal values and buffers
 	result->size = size;
 	result->contents = (SymEntry **)malloc(sizeof(SymTab *) * size);
@@ -32,7 +29,6 @@ SymTab *createSymTab(int size)
  */
 void destroySymTab(SymTab *table)
 {
-	printf("Freeing symbol table handle %lx\n", (unsigned long)table);
 	unsigned int c = 0;
 
 	// Iterate and destroy all chains
@@ -52,8 +48,6 @@ void destroySymTab(SymTab *table)
 			c++;
 		}
 	}
-
-	printf("Table had %u dynamically allocated nodes to delete\n", c);
 
 	// Free main buffers
 	free(table->contents);
@@ -134,10 +128,7 @@ int findName(SymTab *table, char *name)
 
 		// Fail search at end of chain
 		if (chain->next == NULL)
-		{
 			return 0;
-		}
-
 		chain = chain->next;
 	}
 }
@@ -176,10 +167,6 @@ char *getCurrentName(SymTab *table)
 {
 	return table->current->name;
 }
-
-// Thread-local global storage for a singleton iteration
-// synchronously per-thread.
-//__thread int _itRow;
 
 /**
  * Returns current node to the table's "first" node.

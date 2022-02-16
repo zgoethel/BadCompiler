@@ -6,25 +6,32 @@
 
 int main(int arg_c, char **arg_v)
 {
-	printf("Open source file 'IOMngr.c'\n");
 	openFiles("IOMngr.c", NULL);
-	printf("Printing first 50 characters\n");
 
 	int i = 0;
-	for (; i < 50; i++)
-	{
-		char c = getNextSourceChar();
-		printf("%c", c);
-	}
-
-	printf("\n");
-
-	printf("Reading file to completion\n");
-
-	for (; getNextSourceChar(); i++)
+	for (; getNextSourceChar() != EOF; i++)
 	{ }
-	printf("File contained %d characters total\n", i);
 
-	printf("Closing file handles\n");
+	writeIndicator(0);
+	writeMessage("This is column 0");
+	writeIndicator(1);
+	writeMessage("This is column 1");
+	writeIndicator(2);
+	writeMessage("This is column 2");
+	writeIndicator(3);
+	writeMessage("This is column 3");
+	
+	closeFiles();
+	openFiles("IOMngr.c", "IOMngr.txt");
+
+	writeIndicator(0);
+	writeMessage("This is column 0");
+	writeIndicator(1);
+	writeMessage("This is column 1");
+	writeIndicator(2);
+	writeMessage("This is column 2");
+	writeIndicator(3);
+	writeMessage("This is column 3");
+
 	closeFiles();
 }
