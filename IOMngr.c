@@ -59,7 +59,7 @@ void closeFiles()
  * for reading, more bytes are read from file. Echoes the read characters into
  * any listing file specified.
  *
- * @return Read character, or null-character at end of file.
+ * @return Read character, or `EOF` (-1) at end of file.
  */
 char getNextSourceChar()
 {
@@ -87,7 +87,7 @@ char getNextSourceChar()
         if (handleListing == NULL)
             printf(format, CYAN, _row, RESET, READ_BUFFER);
         else
-            fprintf(handleListing, "", format, "", _row, READ_BUFFER);
+            fprintf(handleListing, format, "", _row, "", READ_BUFFER);
     }
 
     // Grab the current character
@@ -112,18 +112,14 @@ char getNextSourceChar()
  */
 void writeIndicator(int column)
 {
-    char *space = malloc(column + 1);
-    memset(space, ' ', column);
-    space[column] = '\0';
-    const char *format = "    %s-^-\n";
-
+    const char *format = "   %0*s-^-\n";
     if (handleListing == NULL)
     {
         printf(YELLOW);
-        printf(format, space);
+        printf(format, column + 1, " ");
         printf(RESET);
     } else
-        fprintf(handleListing, format, space);
+        fprintf(handleListing, format, column + 1, " ");
 }
 
 /**
