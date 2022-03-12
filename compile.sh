@@ -9,3 +9,7 @@ gcc IOMngr.c lex.yy.c SymTab.c -o compiler
 yacc -d boolExpr.y
 lex boolLex.l
 gcc IOMngr.c y.tab.c lex.yy.c SymTab.c BoolSemantics.c BoolExample.c -o example_bool
+
+yacc -d h3Expr.y
+lex h3Lex.l
+gcc IOMngr.c y.tab.c lex.yy.c SymTab.c h3Bootstrap.c h3Impl.c -o homework3

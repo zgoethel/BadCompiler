@@ -4,7 +4,6 @@
 
     #include "IOMngr.h"
     #include "y.tab.h"
-    #include "BoolSemantics.h"
 
     #define YY_INPUT(buf, result, max_size) { \
         char c = getNextSourceChar(); \
@@ -16,16 +15,15 @@ letter [A-Za-z]
 digit [0-9]
 
 %%
-true                        { return _TRUE; }
-false                       { return _FALSE; }
 {letter}({letter}|{digit})* { return _IDENT; }
-\|\|                        { return _OR; }
-\&\&                        { return _AND; }
 \=                          { return _EQUALS; }
-\!                          { return _EXCLAIM; }
 \;                          { return _SEMI_C; }
 \(                          { return _OPEN_P; }
 \)                          { return _CLOSE_P; }
+\+                          { return _UNION; }
+\*                          { return _INTERS; }
+\{\}                        { return _EMPTY_SET; }
+\{{letter}(\,{letter})*\}   { return _SET_LIT; }
 [ ]                         { }
 \t                          { }
 \r                          { }
