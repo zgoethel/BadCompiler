@@ -1,6 +1,6 @@
 %{
     #include "IOMngr.h"
-    #include "h3Impl.h"
+    #include "h3Semantics.h"
 
     #include <string.h>
     #include <stdio.h>
