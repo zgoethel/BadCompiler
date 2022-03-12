@@ -30,6 +30,7 @@ bool getVal(char * name)
 {
     if (enterName(table, name))
     {
+        writeMessage(NULL);
         writeIndicator(getCurrentColumnNum());
         writeMessage("Initialize variable to false");
         setCurrentAttr(table, (void *)false);

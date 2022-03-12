@@ -127,6 +127,16 @@ void writeIndicator(int column)
  */
 void writeMessage(char *message)
 {
+    if (message == NULL)
+    {
+        if (handleListing == NULL)
+        {
+            printf("\n");
+        } else
+            fprintf(handleListing, "\n");
+        return;
+    }
+
     const char *format = "Msg: '%s'\n";
     if (handleListing == NULL)
     {

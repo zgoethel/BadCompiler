@@ -49,8 +49,10 @@ Id : _IDENT                     { $$ = strdup(yytext); };
 %%
 
 int yyerror(char *s) {
-    writeIndicator(getCurrentColumnNum());
-    writeMessage("Illegal character in parser");
+    writeMessage(NULL);
+    writeIndicator(getCurrentColumnNum() - 1);
+    writeMessage("Syntax error; unexpected token near here");
+    writeMessage(yytext);
 
     return 1;
 }

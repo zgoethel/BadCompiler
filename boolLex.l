@@ -1,12 +1,13 @@
 %{
     #include <stdbool.h>
+    #include <string.h>
 
     #include "IOMngr.h"
     #include "y.tab.h"
     #include "BoolSemantics.h"
 
     #define YY_INPUT(buf,result,max_size) { \
-        int c = getNextSourceChar(); \
+        char c = getNextSourceChar(); \
         result = (c == EOF) ? YY_NULL : (buf[0] = c, 1); \
     }
 %}
@@ -30,8 +31,10 @@ false                       { return _FALSE; }
 \r                          { }
 \n                          { }
 .                           {
-                                writeIndicator(getCurrentColumnNum());
-                                writeMessage("Illegal Character in input");
+                                writeMessage(NULL);
+                                writeIndicator(getCurrentColumnNum() - 1);
+                                writeMessage("Unexpected character in input");
+                                writeMessage(yytext);
                             }
 %%
 
