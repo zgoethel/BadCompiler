@@ -12,15 +12,15 @@
 %}
 
 %union {
-    int integer;
+    void *SymTab;
     char *string;
 }
 
 %type <string> Id
 %type <string> SetLit
-%type <integer> Expr
-%type <integer> Term
-%type <integer> Factor
+%type <SymTab> Expr
+%type <SymTab> Term
+%type <SymTab> Factor
 
 %token _IDENT
 %token _EQUALS

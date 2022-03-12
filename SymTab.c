@@ -119,15 +119,14 @@ int findName(SymTab *table, char *name)
 	for (;;)
 	{
 		// Check if each node matches
-		if (strcmp(chain->name, name) == 0)
+		if (chain != NULL && strcmp(chain->name, name) == 0)
 		{
 			table->current = chain;
-
 			return 1;
 		}
 
 		// Fail search at end of chain
-		if (chain->next == NULL)
+		if (chain == NULL || chain->next == NULL)
 			return 0;
 		chain = chain->next;
 	}

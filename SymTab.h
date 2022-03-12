@@ -1,3 +1,4 @@
+#pragma once
 /*
  API for a symbol table. The symbol table stores (name, attribute) pairs. The data
  type for the attribute is void * so programs that use the symbol table can

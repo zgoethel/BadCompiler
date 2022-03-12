@@ -2,6 +2,7 @@
 
 #include "SymTab.h"
 #include "IOMngr.h"
+#include "h3Semantics.h"
 
 extern int yyparse();
 
@@ -9,6 +10,7 @@ SymTab *table;
 
 int main(int argc, char *argv[])
 {
+    __ALLOC_H3();
     table = createSymTab(17);
 
     if (!openFiles(argv[1], "listing"))
@@ -18,4 +20,5 @@ int main(int argc, char *argv[])
     }
 
     yyparse();
+    __FREE_H3();
 }
