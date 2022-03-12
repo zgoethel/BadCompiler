@@ -16,7 +16,7 @@ SymTab *createSymTab(int size)
 	SymTab *result = (SymTab *)malloc(sizeof(SymTab));
 	// Initialize internal values and buffers
 	result->size = size;
-	result->contents = (SymEntry **)malloc(sizeof(SymTab *) * size);
+	result->contents = (SymEntry **)malloc(sizeof(SymEntry *) * size);
 	int i = 0;
 	for (; i < size; i++) result->contents[i] = NULL;
 	result->current = NULL;
@@ -29,8 +29,6 @@ SymTab *createSymTab(int size)
  */
 void destroySymTab(SymTab *table)
 {
-	unsigned int c = 0;
-
 	// Iterate and destroy all chains
 	unsigned int i = 0;
 	for (; i < table->size; i++)
@@ -44,8 +42,6 @@ void destroySymTab(SymTab *table)
 
 			free(maintainRef->name);
 			free(maintainRef);
-
-			c++;
 		}
 	}
 

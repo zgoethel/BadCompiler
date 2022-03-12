@@ -5,13 +5,11 @@
 #include "h3Semantics.h"
 
 extern int yyparse();
-
-SymTab *table;
+extern void yylex_destroy();
 
 int main(int argc, char *argv[])
 {
     __ALLOC_H3();
-    table = createSymTab(17);
 
     if (!openFiles(argv[1], "listing"))
     {
@@ -20,5 +18,9 @@ int main(int argc, char *argv[])
     }
 
     yyparse();
+    closeFiles();
     __FREE_H3();
+    yylex_destroy();
+
+    return 0;
 }

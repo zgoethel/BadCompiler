@@ -85,9 +85,9 @@ char getNextSourceChar()
         // Print to listing file or out
         const char *format = "%s%-4d%s %s";
         if (handleListing == NULL)
-            printf(format, CYAN, _row, RESET, READ_BUFFER);
+            printf(format, CYAN, _row + 1, RESET, READ_BUFFER);
         else
-            fprintf(handleListing, format, "", _row, "", READ_BUFFER);
+            fprintf(handleListing, format, "", _row + 1, "", READ_BUFFER);
     }
 
     // Grab the current character
