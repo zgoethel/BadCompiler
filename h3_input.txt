@@ -14,3 +14,4 @@ bigb = {e,f,g,h,i,j,k};
 e = biga * bigb;
 biga = {d,e,f,g};
 f = (biga + adda) * bigb;
+notf = biga + adda * bigb;

@@ -15,15 +15,15 @@ letter [A-Za-z]
 digit [0-9]
 
 %%
-{letter}({letter}|{digit})* { return _IDENT; }
-\=                          { return _EQUALS; }
-\;                          { return _SEMI_C; }
-\(                          { return _OPEN_P; }
-\)                          { return _CLOSE_P; }
-\+                          { return _UNION; }
-\*                          { return _INTERS; }
-\{\}                        { return _EMPTY_SET; }
-\{{letter}(\,{letter})*\}   { return _SET_LIT; }
+{letter}({letter}|{digit})* { return IDENT; }
+\=                          { return EQUALS; }
+\;                          { return SEMI_C; }
+\(                          { return OPEN_P; }
+\)                          { return CLOSE_P; }
+\+                          { return UNION; }
+\*                          { return INTERS; }
+\{\}                        { return EMPTY_SET; }
+\{{letter}(\,{letter})*\}   { return SET_LIT; }
 [ ]                         { }
 \t                          { }
 \r                          { }
