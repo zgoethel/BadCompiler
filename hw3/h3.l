@@ -1,0 +1,41 @@
+%{
+    #include <stdbool.h>
+    #include <string.h>
+
+    #include "IOMngr.h"
+    #include "y.tab.h"
+
+    #define YY_INPUT(buf, result, max_size) { \
+        char c = getNextSourceChar(); \
+        result = (c == EOF) ? YY_NULL : (buf[0] = c, 1); \
+    }
+%}
+
+letter [A-Za-z]
+digit [0-9]
+
+%%
+{letter}({letter}|{digit})* { return IDENT; }
+\=                          { return EQUALS; }
+\;                          { return SEMI_C; }
+\(                          { return OPEN_P; }
+\)                          { return CLOSE_P; }
+\+                          { return UNION; }
+\*                          { return INTERS; }
+\{\}                        { return EMPTY_SET; }
+\{{letter}(\,{letter})*\}   { return SET_LIT; }
+[ ]                         { }
+\t                          { }
+\r                          { }
+\n                          { }
+.                           {
+                                writeMessage(NULL);
+                                writeIndicator(getCurrentColumnNum() - 1);
+                                writeMessage("Unexpected character in input");
+                                writeMessage(yytext);
+                            }
+%%
+
+int yywrap () {
+    return 1;
+}

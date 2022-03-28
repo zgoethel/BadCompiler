@@ -1,4 +1,4 @@
-#include "h3Semantics.h"
+#include "semantics.h"
 #include "SymTab.h"
 
 #include <stdio.h>
