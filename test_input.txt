@@ -23,3 +23,8 @@ print(-num2 - 20);
 
 print(24 / 10);
 print(24 % 10);
+
+print(2 ^ 2);
+print(2 ^ 3 ^ 2);
+print(2 ^ 3 ^ 3);
+print(2 ^ 3 ^ 0);

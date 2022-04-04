@@ -109,6 +109,97 @@ L2:
         li              $v0, 4
         la              $a0, _nl
         syscall
+        li              $t0, 2
+        li              $t1, 2
+        li              $t3, 0
+        li              $t2, 1
+L4:
+        beq             $t3, $t1, L3
+        mul             $t2, $t2, $t0
+        addi            $t3, $t3, 1
+        jal             L4
+L3:
+        li              $v0, 1
+        move            $a0, $t2
+        syscall
+        li              $v0, 4
+        la              $a0, _nl
+        syscall
+        li              $t0, 2
+        li              $t1, 3
+        li              $t2, 2
+        li              $t4, 0
+        li              $t3, 1
+L6:
+        beq             $t4, $t2, L5
+        mul             $t3, $t3, $t1
+        addi            $t4, $t4, 1
+        jal             L6
+L5:
+        li              $t2, 0
+        li              $t1, 1
+L8:
+        beq             $t2, $t3, L7
+        mul             $t1, $t1, $t0
+        addi            $t2, $t2, 1
+        jal             L8
+L7:
+        li              $v0, 1
+        move            $a0, $t1
+        syscall
+        li              $v0, 4
+        la              $a0, _nl
+        syscall
+        li              $t0, 2
+        li              $t1, 3
+        li              $t2, 3
+        li              $t4, 0
+        li              $t3, 1
+L10:
+        beq             $t4, $t2, L9
+        mul             $t3, $t3, $t1
+        addi            $t4, $t4, 1
+        jal             L10
+L9:
+        li              $t2, 0
+        li              $t1, 1
+L12:
+        beq             $t2, $t3, L11
+        mul             $t1, $t1, $t0
+        addi            $t2, $t2, 1
+        jal             L12
+L11:
+        li              $v0, 1
+        move            $a0, $t1
+        syscall
+        li              $v0, 4
+        la              $a0, _nl
+        syscall
+        li              $t0, 2
+        li              $t1, 3
+        li              $t2, 0
+        li              $t4, 0
+        li              $t3, 1
+L14:
+        beq             $t4, $t2, L13
+        mul             $t3, $t3, $t1
+        addi            $t4, $t4, 1
+        jal             L14
+L13:
+        li              $t2, 0
+        li              $t1, 1
+L16:
+        beq             $t2, $t3, L15
+        mul             $t1, $t1, $t0
+        addi            $t2, $t2, 1
+        jal             L16
+L15:
+        li              $v0, 1
+        move            $a0, $t1
+        syscall
+        li              $v0, 4
+        la              $a0, _nl
+        syscall
         li              $v0, 10
         syscall
         .data

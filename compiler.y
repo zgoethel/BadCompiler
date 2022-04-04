@@ -27,6 +27,7 @@
 %type <ExprRes> ExprC
 %type <ExprRes> ExprD
 %type <ExprRes> ExprE
+%type <ExprRes> ExprF
 %type <InstrSeq> StmtSeq
 %type <InstrSeq> Stmt
 %type <string> Type
@@ -60,9 +61,11 @@ ExprC           : ExprC '*' ExprD                           { $$ = doMult($1, $3
                 | ExprC '/' ExprD                           { $$ = doDivide($1, $3); }
                 | ExprC '%' ExprD                           { $$ = doModulo($1, $3); }
                 | ExprD                                     { $$ = $1; }
-ExprD           : '-' ExprE                                 { $$ = doNegate($2); }
+ExprD           : ExprE '^' ExprD                           { $$ = doPower($1, $3); }
                 | ExprE                                     { $$ = $1; }
-ExprE           : INT_LIT                                   { $$ = doIntLit(yytext); }
+ExprE           : '-' ExprF                                 { $$ = doNegate($2); }
+                | ExprF                                     { $$ = $1; }
+ExprF           : INT_LIT                                   { $$ = doIntLit(yytext); }
                 | IDENT                                     { $$ = doRval(yytext); }
                 | '(' ExprA ')'                             { $$ = $2; }
 // Bottom of expression tree (highest precedence)

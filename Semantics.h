@@ -31,6 +31,7 @@ extern struct InstrSeq *doPrint(struct ExprRes *Expr);
 extern struct ExprRes *doBExpr(struct ExprRes *Res1,  struct ExprRes *es2);
 extern struct InstrSeq *doIf(struct ExprRes *bRes, struct InstrSeq *seq);
 extern struct ExprRes *doNegate(struct ExprRes *Res);
+extern struct ExprRes *doPower(struct ExprRes *Res1,  struct ExprRes *Res2);
 
 extern void Finish(struct InstrSeq *Code);
 

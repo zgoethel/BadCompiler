@@ -92,6 +92,37 @@ struct ExprRes *doDivide(struct ExprRes *Res1, struct ExprRes *Res2)
     return Res1;
 }
 
+struct ExprRes *doPower(struct ExprRes *Res1, struct ExprRes *Res2)
+{ 
+    int reg = AvailTmpReg();
+    int counter = AvailTmpReg();
+    char *l = GenLabel(), *s = GenLabel();
+
+    AppendSeq(Res1->Instrs, Res2->Instrs);
+    
+    AppendSeq(Res1->Instrs, GenInstr(NULL, "li", TmpRegName(counter), "0", NULL));
+    AppendSeq(Res1->Instrs, GenInstr(NULL, "li", TmpRegName(reg), "1", NULL));
+    AppendSeq(Res1->Instrs, GenInstr(s, NULL, NULL, NULL, NULL));
+    AppendSeq(Res1->Instrs, GenInstr(NULL, "beq", TmpRegName(counter), TmpRegName(Res2->Reg), l));
+
+    AppendSeq(Res1->Instrs, GenInstr(NULL, "mul",
+        TmpRegName(reg),
+        TmpRegName(reg),
+        TmpRegName(Res1->Reg)));
+
+    AppendSeq(Res1->Instrs, GenInstr(NULL, "addi", TmpRegName(counter), TmpRegName(counter), "1"));
+    AppendSeq(Res1->Instrs, GenInstr(NULL, "jal", s, NULL, NULL));
+    AppendSeq(Res1->Instrs, GenInstr(l, NULL, NULL, NULL, NULL));
+
+    ReleaseTmpReg(Res1->Reg);
+    ReleaseTmpReg(Res2->Reg);
+    ReleaseTmpReg(counter);
+    Res1->Reg = reg;
+    free(Res2);
+
+    return Res1;
+}
+
 struct ExprRes *doModulo(struct ExprRes *Res1, struct ExprRes *Res2)
 { 
     int reg;
