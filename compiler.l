@@ -15,8 +15,8 @@ letter [A-Za-z]
 digit [0-9]
 
 %%
+var                         { return VAR; }
 if                          { return IF; }
-int                         { return INT; }
 print                       { return PRINT; }
 {letter}({letter}|{digit})* { return IDENT; }
 {digit}{digit}*             { return INT_LIT; }
@@ -29,10 +29,14 @@ print                       { return PRINT; }
 \)                          { return ')'; }
 \{                          { return '{'; }
 \}                          { return '}'; }
-[ ]                         { }
-\t                          { }
-\r                          { }
-\n                          { }
+\[                          { return '['; }
+\]                          { return ']'; }
+\-                          { return '-'; }
+\:                          { return ':'; }
+[ ]                         {  }
+\t                          {  }
+\r                          {  }
+\n                          {  }
 .                           {
                                 writeMessage(NULL);
                                 writeIndicator(getCurrentColumnNum() - 1);

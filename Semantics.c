@@ -72,8 +72,8 @@ struct ExprRes *doMult(struct ExprRes *Res1, struct ExprRes *Res2)
 
 struct InstrSeq *doPrint(struct ExprRes *Expr)
 { 
-  struct InstrSeq *code;
-  code = Expr->Instrs;
+    struct InstrSeq *code;
+    code = Expr->Instrs;
   
     AppendSeq(code, GenInstr(NULL, "li", "$v0", "1", NULL));
     AppendSeq(code, GenInstr(NULL, "move", "$a0", TmpRegName(Expr->Reg), NULL));
@@ -91,23 +91,22 @@ struct InstrSeq *doPrint(struct ExprRes *Expr)
 
 struct InstrSeq *doAssign(char *name, struct ExprRes *Expr)
 { 
-
-  struct InstrSeq *code;
+    struct InstrSeq *code;
   
-   if (!findName(table, name))
-   {
-		writeIndicator(getCurrentColumnNum());
-		writeMessage("Undeclared variable");
-   }
+    if (!findName(table, name))
+    {
+        writeIndicator(getCurrentColumnNum());
+        writeMessage("Undeclared variable");
+    }
 
-  code = Expr->Instrs;
-  
-  AppendSeq(code, GenInstr(NULL, "sw", TmpRegName(Expr->Reg), name, NULL));
+    code = Expr->Instrs;
+    
+    AppendSeq(code, GenInstr(NULL, "sw", TmpRegName(Expr->Reg), name, NULL));
 
-  ReleaseTmpReg(Expr->Reg);
-  free(Expr);
-  
-  return code;
+    ReleaseTmpReg(Expr->Reg);
+    free(Expr);
+    
+    return code;
 }
 
 extern struct ExprRes *doBExpr(struct ExprRes* Res1,  struct ExprRes* Res2)
@@ -124,6 +123,19 @@ extern struct ExprRes *doBExpr(struct ExprRes* Res1,  struct ExprRes* Res2)
     free(Res2);
 
     return Res1;
+}
+
+extern struct ExprRes *doNegate(struct ExprRes* Res)
+{
+    int reg = AvailTmpReg();
+    AppendSeq(Res->Instrs, GenInstr(NULL, "sub",
+        TmpRegName(reg),
+        "$zero",
+        TmpRegName(Res->Reg)));
+    ReleaseTmpReg(Res->Reg);
+    Res->Reg = reg;
+
+    return Res;
 }
 
 extern struct InstrSeq *doIf(struct ExprRes *Res, struct InstrSeq *seq)
