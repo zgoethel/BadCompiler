@@ -18,5 +18,8 @@ if (num2 + 10 + 11 == 2 * num2)
 print(num1);
 print(num2);
 
-print(-num1 + -20);
-print(-num2 + -20);
+print(-num1 - 20);
+print(-num2 - 20);
+
+print(24 / 10);
+print(24 % 10);

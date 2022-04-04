@@ -72,10 +72,9 @@ L2:
         lw              $t0, num1
         sub             $t1, $zero, $t0
         li              $t0, 20
-        sub             $t2, $zero, $t0
-        add             $t0, $t1, $t2
+        sub             $t2, $t1, $t0
         li              $v0, 1
-        move            $a0, $t0
+        move            $a0, $t2
         syscall
         li              $v0, 4
         la              $a0, _nl
@@ -83,10 +82,29 @@ L2:
         lw              $t0, num2
         sub             $t1, $zero, $t0
         li              $t0, 20
-        sub             $t2, $zero, $t0
-        add             $t0, $t1, $t2
+        sub             $t2, $t1, $t0
         li              $v0, 1
-        move            $a0, $t0
+        move            $a0, $t2
+        syscall
+        li              $v0, 4
+        la              $a0, _nl
+        syscall
+        li              $t0, 24
+        li              $t1, 10
+        div             $t0, $t1
+        mflo            $t2
+        li              $v0, 1
+        move            $a0, $t2
+        syscall
+        li              $v0, 4
+        la              $a0, _nl
+        syscall
+        li              $t0, 24
+        li              $t1, 10
+        div             $t0, $t1
+        mfhi            $t2
+        li              $v0, 1
+        move            $a0, $t2
         syscall
         li              $v0, 4
         la              $a0, _nl

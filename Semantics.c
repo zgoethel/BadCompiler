@@ -52,6 +52,68 @@ struct ExprRes *doAdd(struct ExprRes *Res1, struct ExprRes *Res2)
     return Res1;
 }
 
+struct ExprRes *doSubtract(struct ExprRes *Res1, struct ExprRes *Res2)
+{ 
+    int reg;
+    
+    reg = AvailTmpReg();
+    AppendSeq(Res1->Instrs, Res2->Instrs);
+    AppendSeq(Res1->Instrs, GenInstr(NULL, "sub",
+        TmpRegName(reg),
+        TmpRegName(Res1->Reg),
+        TmpRegName(Res2->Reg)));
+    ReleaseTmpReg(Res1->Reg);
+    ReleaseTmpReg(Res2->Reg);
+    Res1->Reg = reg;
+    free(Res2);
+
+    return Res1;
+}
+
+struct ExprRes *doDivide(struct ExprRes *Res1, struct ExprRes *Res2)
+{ 
+    int reg;
+    
+    reg = AvailTmpReg();
+    AppendSeq(Res1->Instrs, Res2->Instrs);
+    AppendSeq(Res1->Instrs, GenInstr(NULL, "div",
+        TmpRegName(Res1->Reg),
+        TmpRegName(Res2->Reg),
+        NULL));
+    AppendSeq(Res1->Instrs, GenInstr(NULL, "mflo",
+        TmpRegName(reg),
+        NULL,
+        NULL));
+    ReleaseTmpReg(Res1->Reg);
+    ReleaseTmpReg(Res2->Reg);
+    Res1->Reg = reg;
+    free(Res2);
+
+    return Res1;
+}
+
+struct ExprRes *doModulo(struct ExprRes *Res1, struct ExprRes *Res2)
+{ 
+    int reg;
+    
+    reg = AvailTmpReg();
+    AppendSeq(Res1->Instrs, Res2->Instrs);
+    AppendSeq(Res1->Instrs, GenInstr(NULL, "div",
+        TmpRegName(Res1->Reg),
+        TmpRegName(Res2->Reg),
+        NULL));
+    AppendSeq(Res1->Instrs, GenInstr(NULL, "mfhi",
+        TmpRegName(reg),
+        NULL,
+        NULL));
+    ReleaseTmpReg(Res1->Reg);
+    ReleaseTmpReg(Res2->Reg);
+    Res1->Reg = reg;
+    free(Res2);
+
+    return Res1;
+}
+
 struct ExprRes *doMult(struct ExprRes *Res1, struct ExprRes *Res2)
 { 
     int reg;
