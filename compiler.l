@@ -43,6 +43,7 @@ print                       { return PRINT; }
 \/                          { return '/'; }
 \%                          { return '%'; }
 \^                          { return '^'; }
+\!                          { return '!'; }
 [ ]                         {  }
 \t                          {  }
 \r                          {  }

@@ -231,6 +231,19 @@ extern struct ExprRes *doNegate(struct ExprRes* Res)
     return Res;
 }
 
+extern struct ExprRes *doLogNegate(struct ExprRes* Res)
+{
+    int reg = AvailTmpReg();
+    AppendSeq(Res->Instrs, GenInstr(NULL, "seq",
+        TmpRegName(reg),
+        "$zero",
+        TmpRegName(Res->Reg)));
+    ReleaseTmpReg(Res->Reg);
+    Res->Reg = reg;
+
+    return Res;
+}
+
 extern struct InstrSeq *doIf(struct ExprRes *Res, struct InstrSeq *seq)
 {
     struct ExprRes *bRes;

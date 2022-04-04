@@ -80,6 +80,7 @@ ExprC           : ExprC '*' ExprD                           { $$ = doMult($1, $3
 ExprD           : ExprE '^' ExprD                           { $$ = doPower($1, $3); }
                 | ExprE                                     { $$ = $1; }
 ExprE           : '-' ExprF                                 { $$ = doNegate($2); }
+                | '!' ExprF                                 { $$ = doLogNegate($2); }
                 | ExprF                                     { $$ = $1; }
 ExprF           : INT_LIT                                   { $$ = doIntLit(yytext); }
                 | IDENT                                     { $$ = doRval(yytext); }

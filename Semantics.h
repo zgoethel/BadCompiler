@@ -39,6 +39,7 @@ extern struct ExprRes *doGreaterEquals(struct ExprRes *Res1,  struct ExprRes *Re
 extern struct ExprRes *doAnd(struct ExprRes *Res1,  struct ExprRes *Res2);
 extern struct ExprRes *doOr(struct ExprRes *Res1,  struct ExprRes *Res2);
 extern struct ExprRes *doNotEquals(struct ExprRes *Res1,  struct ExprRes *Res2);
+extern struct ExprRes *doLogNegate(struct ExprRes *Res);
 
 extern void Finish(struct InstrSeq *Code);
 
