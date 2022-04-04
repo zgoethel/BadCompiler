@@ -27,6 +27,12 @@ if (num2 + 10 + 11 != 2 * num2)
     print(2025);
 }
 
+if (0 || num2 + 10 + 11 != 2 * num2)
+{
+    print(-20 + -20);
+    print(0 && num2 + 10 + 11 != 2 * num2);
+}
+
 print(num1);
 print(num2);
 
