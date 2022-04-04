@@ -60,7 +60,7 @@ void
 WriteSeq(struct InstrSeq *ASeq)
 { struct InstrSeq *instr;
 
-  printf("WriteSeq\n");
+  //printf("WriteSeq\n");
   instr = ASeq;
   while (instr) {
     if (instr->Label) fprintf(aFile,"%s:",instr->Label);

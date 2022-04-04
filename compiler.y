@@ -50,15 +50,14 @@
 %token OR
 
 %%
-Prog            : Declarations StmtSeq                      { Finish($2); } 
-Declarations    : Dec Declarations                          {  }
-                |                                           {  }
-Dec             : VAR Id ':' Type ';'                       { enterName(table, $2); }
+Prog            : StmtSeq                                   { Finish($1); }
 StmtSeq         : Stmt StmtSeq                              { $$ = AppendSeq($1, $2); }
                 |                                           { $$ = NULL; }
 Stmt            : PRINT '(' Expr ')' ';'                    { $$ = doPrint($3); }
                 | Id '=' Expr ';'                           { $$ = doAssign($1, $3); }
                 | IF '(' Expr ')' '{' StmtSeq '}'           { $$ = doIf($3, $6); }
+                | VAR Id ':' Type '=' Expr ';'              { enterName(table, $2); $$ = doAssign($2, $6); }
+                | VAR Id ':' Type ';'                       { enterName(table, $2); }
 // Top of expression tree (lowest precedence)
 Expr            : ExprA AND ExprA                           { $$ = doAnd($1, $3); }
                 | ExprA OR ExprA                            { $$ = doOr($1, $3); }

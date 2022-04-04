@@ -1,7 +1,6 @@
-var num1: Int;
-var num2: Int;
-num1 = 10;
-num2 = 20;
+var testEmpty: Int;
+var num1: Int = 10;
+var num2: Int = 20;
 
 if (num2 + 10 + 10 == 2 * num2)
 {
@@ -53,3 +52,8 @@ print(!0);
 print(0 < 1);
 print(!1 < 1);
 print(!(1 > !1));
+
+var empty: Int;
+print(empty);
+empty = empty - 20;
+print(empty);

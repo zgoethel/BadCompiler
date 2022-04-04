@@ -361,10 +361,30 @@ L22:
 	li		$v0, 4
 	la		$a0, _nl
 	syscall	
+	lw		$t0, empty
+	li		$v0, 1
+	move		$a0, $t0
+	syscall	
+	li		$v0, 4
+	la		$a0, _nl
+	syscall	
+	lw		$t0, empty
+	li		$t1, 20
+	sub		$t2, $t0, $t1
+	sw		$t2, empty
+	lw		$t0, empty
+	li		$v0, 1
+	move		$a0, $t0
+	syscall	
+	li		$v0, 4
+	la		$a0, _nl
+	syscall	
 	li		$v0, 10
 	syscall	
 	.data	
 	.align		4
 _nl:	.asciiz		"\n"
+testEmpty:	.word		0
+empty:	.word		0
 num1:	.word		0
 num2:	.word		0
