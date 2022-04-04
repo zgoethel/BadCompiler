@@ -99,7 +99,7 @@ struct ExprRes *doPower(struct ExprRes *Res1, struct ExprRes *Res2)
     char *l = GenLabel(), *s = GenLabel();
 
     AppendSeq(Res1->Instrs, Res2->Instrs);
-    
+
     AppendSeq(Res1->Instrs, GenInstr(NULL, "li", TmpRegName(counter), "0", NULL));
     AppendSeq(Res1->Instrs, GenInstr(NULL, "li", TmpRegName(reg), "1", NULL));
     AppendSeq(Res1->Instrs, GenInstr(s, NULL, NULL, NULL, NULL));
@@ -247,6 +247,118 @@ extern struct InstrSeq *doIf(struct ExprRes *Res, struct InstrSeq *seq)
 	free(bRes);
 
 	return seq2;
+}
+
+extern struct ExprRes *doLessThan(struct ExprRes *Res1,  struct ExprRes *Res2)
+{
+    int reg = AvailTmpReg();
+    AppendSeq(Res1->Instrs, Res2->Instrs);
+    AppendSeq(Res1->Instrs, GenInstr(NULL, "slt",
+        TmpRegName(reg),
+        TmpRegName(Res1->Reg),
+        TmpRegName(Res2->Reg)));
+    ReleaseTmpReg(Res1->Reg);
+    ReleaseTmpReg(Res2->Reg);
+    Res1->Reg = reg;
+    free(Res2);
+
+    return Res1;
+}
+
+extern struct ExprRes *doLessEquals(struct ExprRes *Res1,  struct ExprRes *Res2)
+{
+    int reg = AvailTmpReg();
+    AppendSeq(Res1->Instrs, Res2->Instrs);
+    AppendSeq(Res1->Instrs, GenInstr(NULL, "sle",
+        TmpRegName(reg),
+        TmpRegName(Res1->Reg),
+        TmpRegName(Res2->Reg)));
+    ReleaseTmpReg(Res1->Reg);
+    ReleaseTmpReg(Res2->Reg);
+    Res1->Reg = reg;
+    free(Res2);
+
+    return Res1;
+}
+
+extern struct ExprRes *doGreaterThan(struct ExprRes *Res1,  struct ExprRes *Res2)
+{
+    int reg = AvailTmpReg();
+    AppendSeq(Res1->Instrs, Res2->Instrs);
+    AppendSeq(Res1->Instrs, GenInstr(NULL, "sgt",
+        TmpRegName(reg),
+        TmpRegName(Res1->Reg),
+        TmpRegName(Res2->Reg)));
+    ReleaseTmpReg(Res1->Reg);
+    ReleaseTmpReg(Res2->Reg);
+    Res1->Reg = reg;
+    free(Res2);
+
+    return Res1;
+}
+
+extern struct ExprRes *doGreaterEquals(struct ExprRes *Res1,  struct ExprRes *Res2)
+{
+    int reg = AvailTmpReg();
+    AppendSeq(Res1->Instrs, Res2->Instrs);
+    AppendSeq(Res1->Instrs, GenInstr(NULL, "sge",
+        TmpRegName(reg),
+        TmpRegName(Res1->Reg),
+        TmpRegName(Res2->Reg)));
+    ReleaseTmpReg(Res1->Reg);
+    ReleaseTmpReg(Res2->Reg);
+    Res1->Reg = reg;
+    free(Res2);
+
+    return Res1;
+}
+
+extern struct ExprRes *doAnd(struct ExprRes *Res1,  struct ExprRes *Res2)
+{
+    int reg = AvailTmpReg();
+    AppendSeq(Res1->Instrs, Res2->Instrs);
+    AppendSeq(Res1->Instrs, GenInstr(NULL, "and",
+        TmpRegName(reg),
+        TmpRegName(Res1->Reg),
+        TmpRegName(Res2->Reg)));
+    ReleaseTmpReg(Res1->Reg);
+    ReleaseTmpReg(Res2->Reg);
+    Res1->Reg = reg;
+    free(Res2);
+
+    return Res1;
+}
+
+extern struct ExprRes *doOr(struct ExprRes *Res1,  struct ExprRes *Res2)
+{
+    int reg = AvailTmpReg();
+    AppendSeq(Res1->Instrs, Res2->Instrs);
+    AppendSeq(Res1->Instrs, GenInstr(NULL, "or",
+        TmpRegName(reg),
+        TmpRegName(Res1->Reg),
+        TmpRegName(Res2->Reg)));
+    ReleaseTmpReg(Res1->Reg);
+    ReleaseTmpReg(Res2->Reg);
+    Res1->Reg = reg;
+    free(Res2);
+
+    return Res1;
+}
+
+extern struct ExprRes *doNotEquals(struct ExprRes *Res1,  struct ExprRes *Res2)
+{
+    int reg = AvailTmpReg();
+    AppendSeq(Res1->Instrs, Res2->Instrs);
+    AppendSeq(Res1->Instrs, GenInstr(NULL, "sne",
+        TmpRegName(reg),
+        TmpRegName(Res1->Reg),
+        TmpRegName(Res2->Reg)));
+    ReleaseTmpReg(Res1->Reg);
+    ReleaseTmpReg(Res2->Reg);
+    Res1->Reg = reg;
+    free(Res2);
+
+    return Res1;
 }
 
 void Finish(struct InstrSeq *Code)

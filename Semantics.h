@@ -32,6 +32,13 @@ extern struct ExprRes *doBExpr(struct ExprRes *Res1,  struct ExprRes *es2);
 extern struct InstrSeq *doIf(struct ExprRes *bRes, struct InstrSeq *seq);
 extern struct ExprRes *doNegate(struct ExprRes *Res);
 extern struct ExprRes *doPower(struct ExprRes *Res1,  struct ExprRes *Res2);
+extern struct ExprRes *doLessThan(struct ExprRes *Res1,  struct ExprRes *Res2);
+extern struct ExprRes *doLessEquals(struct ExprRes *Res1,  struct ExprRes *Res2);
+extern struct ExprRes *doGreaterThan(struct ExprRes *Res1,  struct ExprRes *Res2);
+extern struct ExprRes *doGreaterEquals(struct ExprRes *Res1,  struct ExprRes *Res2);
+extern struct ExprRes *doAnd(struct ExprRes *Res1,  struct ExprRes *Res2);
+extern struct ExprRes *doOr(struct ExprRes *Res1,  struct ExprRes *Res2);
+extern struct ExprRes *doNotEquals(struct ExprRes *Res1,  struct ExprRes *Res2);
 
 extern void Finish(struct InstrSeq *Code);
 

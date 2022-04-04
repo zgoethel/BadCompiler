@@ -9,10 +9,22 @@ if (num2 + 10 + 10 == 2 * num2)
     print(num2);
 }
 
-if (num2 + 10 + 11 == 2 * num2)
+if (num2 + 10 + 11 > 2 * num2)
 {
-    print(num1);
-    print(num2);
+    print(2020);
+    print(2021);
+}
+
+if (num2 + 10 + 9 < 2 * num2)
+{
+    print(2022);
+    print(2023);
+}
+
+if (num2 + 10 + 11 != 2 * num2)
+{
+    print(2024);
+    print(2025);
 }
 
 print(num1);

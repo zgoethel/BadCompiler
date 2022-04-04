@@ -20,6 +20,13 @@ if                          { return IF; }
 print                       { return PRINT; }
 {letter}({letter}|{digit})* { return IDENT; }
 {digit}{digit}*             { return INT_LIT; }
+\<                          { return LT; }
+\<\=                        { return LTE; }
+\>                          { return GT; }
+\>\=                        { return GTE; }
+\!\=                        { return N_EQUALS; }
+\&\&                        { return AND; }
+\|\|                        { return OR; }
 \=\=                        { return EQUALS; }
 \=                          { return '='; }
 \+                          { return '+'; }

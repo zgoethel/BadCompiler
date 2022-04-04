@@ -40,6 +40,13 @@
 %token IF
 %token PRINT
 %token VAR
+%token LT
+%token LTE
+%token GT
+%token GTE
+%token N_EQUALS
+%token AND
+%token OR
 
 %%
 Prog            : Declarations StmtSeq                      { Finish($2); } 
@@ -53,6 +60,13 @@ Stmt            : PRINT '(' ExprA ')' ';'                   { $$ = doPrint($3); 
                 | IF '(' ExprA ')' '{' StmtSeq '}'          { $$ = doIf($3, $6); }
 // Top of expression tree (lowest precedence)
 ExprA           : ExprB EQUALS ExprB                        { $$ = doBExpr($1, $3); }
+                | ExprB LT ExprB                            { $$ = doLessThan($1, $3); }
+                | ExprB LTE ExprB                           { $$ = doLessEquals($1, $3); }
+                | ExprB GT ExprB                            { $$ = doGreaterThan($1, $3); }
+                | ExprB GTE ExprB                           { $$ = doGreaterEquals($1, $3); }
+                | ExprB N_EQUALS ExprB                      { $$ = doNotEquals($1, $3); }
+                | ExprB AND ExprB                           { $$ = doAnd($1, $3); }
+                | ExprB OR ExprB                            { $$ = doOr($1, $3); }
                 | ExprB                                     { $$ = $1; }
 ExprB           : ExprB '+' ExprC                           { $$ = doAdd($1, $3); }
                 | ExprB '-' ExprC                           { $$ = doSubtract($1, $3); }
