@@ -18,6 +18,9 @@ digit [0-9]
 var                         { return VAR; }
 if                          { return IF; }
 print                       { return PRINT; }
+read                        { return READ; }
+printLines                  { return PR_LINES; }
+printSpaces                 { return PR_SPACES; }
 {letter}({letter}|{digit})* { return IDENT; }
 {digit}{digit}*             { return INT_LIT; }
 \<                          { return LT; }
@@ -44,6 +47,7 @@ print                       { return PRINT; }
 \%                          { return '%'; }
 \^                          { return '^'; }
 \!                          { return '!'; }
+\,                          { return ','; }
 [ ]                         {  }
 \t                          {  }
 \r                          {  }

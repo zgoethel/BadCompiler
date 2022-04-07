@@ -41,6 +41,10 @@ extern struct ExprRes *doOr(struct ExprRes *Res1,  struct ExprRes *Res2);
 extern struct ExprRes *doNotEquals(struct ExprRes *Res1,  struct ExprRes *Res2);
 extern struct ExprRes *doLogNegate(struct ExprRes *Res);
 
+extern struct InstrSeq *doReadId(char *name);
+extern struct InstrSeq *doPrintLines(struct ExprRes *Res);
+extern struct InstrSeq *doPrintSpaces(struct ExprRes *Res);
+
 extern void Finish(struct InstrSeq *Code);
 
 extern SymTab *table;

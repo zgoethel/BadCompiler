@@ -173,7 +173,7 @@ struct InstrSeq *doPrint(struct ExprRes *Expr)
     AppendSeq(code, GenInstr(NULL, "syscall", NULL, NULL, NULL));
 
     AppendSeq(code, GenInstr(NULL, "li", "$v0", "4", NULL));
-    AppendSeq(code, GenInstr(NULL, "la", "$a0", "_nl", NULL));
+    AppendSeq(code, GenInstr(NULL, "la", "$a0", "_sp", NULL));
     AppendSeq(code, GenInstr(NULL, "syscall", NULL, NULL, NULL));
 
     ReleaseTmpReg(Expr->Reg);
@@ -374,6 +374,77 @@ extern struct ExprRes *doNotEquals(struct ExprRes *Res1,  struct ExprRes *Res2)
     return Res1;
 }
 
+extern struct InstrSeq *doReadId(char *name)
+{ 
+    struct InstrSeq *code;
+  
+    if (!findName(table, name))
+    {
+        writeIndicator(getCurrentColumnNum());
+        writeMessage("Undeclared variable");
+    }
+
+    // Load "read int" syscall
+    code = GenInstr(NULL, "li", "$v0", "5", NULL);
+    AppendSeq(code, GenInstr(NULL, "syscall", NULL, NULL, NULL));
+    // Store `$v0` to memory
+    AppendSeq(code, GenInstr(NULL, "sw", "$v0", name, NULL));
+    
+    return code;
+}
+
+struct InstrSeq *doPrintLines(struct ExprRes *Res)
+{ 
+    int counter = AvailTmpReg();
+    char *l = GenLabel(), *s = GenLabel();
+
+    AppendSeq(Res->Instrs, GenInstr(NULL, "li", TmpRegName(counter), "0", NULL));
+    AppendSeq(Res->Instrs, GenInstr(s, NULL, NULL, NULL, NULL));
+    AppendSeq(Res->Instrs, GenInstr(NULL, "beq", TmpRegName(counter), TmpRegName(Res->Reg), l));
+
+    AppendSeq(Res->Instrs, GenInstr(NULL, "li", "$v0", "4", NULL));
+    AppendSeq(Res->Instrs, GenInstr(NULL, "la", "$a0", "_nl", NULL));
+    AppendSeq(Res->Instrs, GenInstr(NULL, "syscall", NULL, NULL, NULL));
+
+    AppendSeq(Res->Instrs, GenInstr(NULL, "addi", TmpRegName(counter), TmpRegName(counter), "1"));
+    AppendSeq(Res->Instrs, GenInstr(NULL, "jal", s, NULL, NULL));
+    AppendSeq(Res->Instrs, GenInstr(l, NULL, NULL, NULL, NULL));
+
+    ReleaseTmpReg(Res->Reg);
+    ReleaseTmpReg(counter);
+
+    struct InstrSeq *result = Res->Instrs;
+    free(Res);
+
+    return result;
+}
+
+struct InstrSeq *doPrintSpaces(struct ExprRes *Res)
+{ 
+    int counter = AvailTmpReg();
+    char *l = GenLabel(), *s = GenLabel();
+
+    AppendSeq(Res->Instrs, GenInstr(NULL, "li", TmpRegName(counter), "0", NULL));
+    AppendSeq(Res->Instrs, GenInstr(s, NULL, NULL, NULL, NULL));
+    AppendSeq(Res->Instrs, GenInstr(NULL, "beq", TmpRegName(counter), TmpRegName(Res->Reg), l));
+
+    AppendSeq(Res->Instrs, GenInstr(NULL, "li", "$v0", "4", NULL));
+    AppendSeq(Res->Instrs, GenInstr(NULL, "la", "$a0", "_sp", NULL));
+    AppendSeq(Res->Instrs, GenInstr(NULL, "syscall", NULL, NULL, NULL));
+
+    AppendSeq(Res->Instrs, GenInstr(NULL, "addi", TmpRegName(counter), TmpRegName(counter), "1"));
+    AppendSeq(Res->Instrs, GenInstr(NULL, "jal", s, NULL, NULL));
+    AppendSeq(Res->Instrs, GenInstr(l, NULL, NULL, NULL, NULL));
+
+    ReleaseTmpReg(Res->Reg);
+    ReleaseTmpReg(counter);
+
+    struct InstrSeq *result = Res->Instrs;
+    free(Res);
+
+    return result;
+}
+
 void Finish(struct InstrSeq *Code)
 {
     struct InstrSeq *code;
@@ -389,6 +460,7 @@ void Finish(struct InstrSeq *Code)
     AppendSeq(code, GenInstr(NULL, ".data", NULL, NULL, NULL));
     AppendSeq(code, GenInstr(NULL, ".align", "4", NULL, NULL));
     AppendSeq(code, GenInstr("_nl", ".asciiz", "\"\\n\"", NULL, NULL));
+    AppendSeq(code, GenInstr("_sp", ".asciiz", "\" \"", NULL, NULL));
 
     hasMore = startIterator(table);
     while (hasMore)

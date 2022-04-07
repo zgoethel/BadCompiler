@@ -34,6 +34,8 @@
 %type <string> Type
 %type <count> Arr
 %type <count> ArrSeq
+%type <InstrSeq> PrintSeq
+%type <InstrSeq> ReadSeq
 
 %token IDENT
 %token INT_LIT
@@ -48,16 +50,26 @@
 %token N_EQUALS
 %token AND
 %token OR
+%token READ
+%token PR_LINES
+%token PR_SPACES
 
 %%
 Prog            : StmtSeq                                   { Finish($1); }
 StmtSeq         : Stmt StmtSeq                              { $$ = AppendSeq($1, $2); }
                 |                                           { $$ = NULL; }
-Stmt            : PRINT '(' Expr ')' ';'                    { $$ = doPrint($3); }
+Stmt            : PRINT '(' PrintSeq ')' ';'                { $$ = $3; }
+                | READ '(' ReadSeq ')' ';'                  { $$ = $3; }
+                | PR_LINES '(' Expr ')' ';'                 { $$ = doPrintLines($3); }
+                | PR_SPACES '(' Expr ')' ';'                { $$ = doPrintSpaces($3); }
                 | Id '=' Expr ';'                           { $$ = doAssign($1, $3); }
                 | IF '(' Expr ')' '{' StmtSeq '}'           { $$ = doIf($3, $6); }
                 | VAR Id ':' Type '=' Expr ';'              { enterName(table, $2); $$ = doAssign($2, $6); }
                 | VAR Id ':' Type ';'                       { enterName(table, $2); }
+ReadSeq         : ReadSeq ',' Id                            { $$ = AppendSeq($1, doReadId($3)); }
+                | Id                                        { $$ = doReadId($1); }
+PrintSeq        : PrintSeq ',' Expr                         { $$ = AppendSeq($1, doPrint($3)); }
+                | Expr                                      { $$ = doPrint($1); }
 // Top of expression tree (lowest precedence)
 Expr            : ExprA AND ExprA                           { $$ = doAnd($1, $3); }
                 | ExprA OR ExprA                            { $$ = doOr($1, $3); }
