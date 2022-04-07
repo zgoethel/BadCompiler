@@ -1,6 +1,10 @@
 	.text	
 	.globl		main
 main:
+	li		$t0, 0
+	sw		$t0, readA
+	li		$t0, 0
+	sw		$t0, readB
 	li		$v0, 4
 	la		$a0, _str_0
 	syscall	
@@ -219,6 +223,21 @@ L15:
 	li		$v0, 4
 	la		$a0, _str_5
 	syscall	
+	li		$v0, 4
+	la		$a0, _str_6
+	syscall	
+	li		$v0, 5
+	syscall	
+	sw		$v0, readA
+	li		$v0, 4
+	la		$a0, _str_7
+	syscall	
+	li		$v0, 5
+	syscall	
+	sw		$v0, readB
+	li		$v0, 4
+	la		$a0, _str_8
+	syscall	
 	li		$v0, 10
 	syscall	
 	.data	
@@ -231,5 +250,8 @@ _str_2:	.asciiz		"Enter two numbers:\n"
 _str_3:	.asciiz		"Hello, world!\n"
 _str_4:	.asciiz		"\n"
 _str_5:	.asciiz		"\n"
+_str_6:	.asciiz		"Enter first number: "
+_str_7:	.asciiz		"Enter second number: "
+_str_8:	.asciiz		"Thank you!\n"
 readA:	.word		0
 readB:	.word		0

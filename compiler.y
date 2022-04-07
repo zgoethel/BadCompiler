@@ -67,13 +67,15 @@ Stmt            : PRINT '(' PrintSeq ')' ';'                { $$ = $3; }
                 | Id '=' Expr ';'                           { $$ = doAssign($1, $3); }
                 | IF '(' Expr ')' '{' StmtSeq '}'           { $$ = doIf($3, $6); }
                 | VAR Id ':' Type '=' Expr ';'              { enterName(table, $2); $$ = doAssign($2, $6); }
-                | VAR Id ':' Type ';'                       { enterName(table, $2); }
+                | VAR Id ':' Type ';'                       { enterName(table, $2); $$ = NULL; }
 ReadSeq         : ReadSeq ',' Id                            { $$ = AppendSeq($1, doReadId($3)); }
                 | Id                                        { $$ = doReadId($1); }
 PrintSeq        : PrintSeq ',' Expr                         { $$ = AppendSeq($1, doPrint($3)); }
                 | Expr                                      { $$ = doPrint($1); }
                 | PrintSeq ',' StrLit                       { $$ = AppendSeq($1, doPrintStr($3)); }
                 | StrLit                                    { $$ = doPrintStr($1); }
+                | PrintSeq ',' LT Id GT                     { $$ = AppendSeq($1, doReadId($4)); }
+                | LT Id GT                                  { $$ = doReadId($2); }
 StrLit          : STR_LIT                                   { $$ = doStringLit(yytext); } 
 // Top of expression tree (lowest precedence)
 Expr            : ExprA AND ExprA                           { $$ = doAnd($1, $3); }
