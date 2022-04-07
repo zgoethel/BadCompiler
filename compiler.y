@@ -36,6 +36,7 @@
 %type <count> ArrSeq
 %type <InstrSeq> PrintSeq
 %type <InstrSeq> ReadSeq
+%type <string> StrLit
 
 %token IDENT
 %token INT_LIT
@@ -53,6 +54,7 @@
 %token READ
 %token PR_LINES
 %token PR_SPACES
+%token STR_LIT
 
 %%
 Prog            : StmtSeq                                   { Finish($1); }
@@ -70,6 +72,9 @@ ReadSeq         : ReadSeq ',' Id                            { $$ = AppendSeq($1,
                 | Id                                        { $$ = doReadId($1); }
 PrintSeq        : PrintSeq ',' Expr                         { $$ = AppendSeq($1, doPrint($3)); }
                 | Expr                                      { $$ = doPrint($1); }
+                | PrintSeq ',' StrLit                       { $$ = AppendSeq($1, doPrintStr($3)); }
+                | StrLit                                    { $$ = doPrintStr($1); }
+StrLit          : STR_LIT                                   { $$ = doStringLit(yytext); } 
 // Top of expression tree (lowest precedence)
 Expr            : ExprA AND ExprA                           { $$ = doAnd($1, $3); }
                 | ExprA OR ExprA                            { $$ = doOr($1, $3); }

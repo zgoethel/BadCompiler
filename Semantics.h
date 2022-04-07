@@ -44,7 +44,10 @@ extern struct ExprRes *doLogNegate(struct ExprRes *Res);
 extern struct InstrSeq *doReadId(char *name);
 extern struct InstrSeq *doPrintLines(struct ExprRes *Res);
 extern struct InstrSeq *doPrintSpaces(struct ExprRes *Res);
+extern char *doStringLit(char *value);
+extern struct InstrSeq *doPrintStr(char *stringLit);
 
 extern void Finish(struct InstrSeq *Code);
 
 extern SymTab *table;
+extern SymTab *stringLiterals;

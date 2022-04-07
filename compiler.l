@@ -23,6 +23,7 @@ printLines                  { return PR_LINES; }
 printSpaces                 { return PR_SPACES; }
 {letter}({letter}|{digit})* { return IDENT; }
 {digit}{digit}*             { return INT_LIT; }
+\"(\\.|[^"\\])*\"           { return STR_LIT; }
 \<                          { return LT; }
 \<\=                        { return LTE; }
 \>                          { return GT; }

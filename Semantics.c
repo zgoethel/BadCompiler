@@ -1,3 +1,4 @@
+#include <string.h>
 #include <strings.h>
 #include <stdlib.h>
 
@@ -178,6 +179,30 @@ struct InstrSeq *doPrint(struct ExprRes *Expr)
 
     ReleaseTmpReg(Expr->Reg);
     free(Expr);
+
+    return code;
+}
+
+unsigned int stringLiteralCounter = 0;
+
+char *doStringLit(char *value)
+{
+    char *_l = (char *)malloc(16);
+    sprintf(_l, "_str_%u", stringLiteralCounter++);
+
+    enterName(stringLiterals, _l);
+
+    findName(stringLiterals, _l);
+    setCurrentAttr(stringLiterals, strdup(value));
+
+    return _l;
+}
+
+struct InstrSeq *doPrintStr(char *stringLit)
+{ 
+    struct InstrSeq *code = GenInstr(NULL, "li", "$v0", "4", NULL);
+    AppendSeq(code, GenInstr(NULL, "la", "$a0", stringLit, NULL));
+    AppendSeq(code, GenInstr(NULL, "syscall", NULL, NULL, NULL));
 
     return code;
 }
@@ -462,6 +487,23 @@ void Finish(struct InstrSeq *Code)
     AppendSeq(code, GenInstr("_nl", ".asciiz", "\"\\n\"", NULL, NULL));
     AppendSeq(code, GenInstr("_sp", ".asciiz", "\" \"", NULL, NULL));
 
+    if (startIterator(stringLiterals)) do
+    {
+        /*
+        char *attr = getCurrentAttr(stringLiterals);
+        char *wrapped = (char *)malloc(strlen(attr) + 3);
+        sprintf(wrapped, "\"%s\"", wrapped);
+        */
+
+        AppendSeq(code, GenInstr(getCurrentName(stringLiterals),
+            ".asciiz",
+            getCurrentAttr(stringLiterals),
+            NULL,
+            NULL));
+        
+        //free(wrapped);
+    } while (nextEntry(stringLiterals));
+
     hasMore = startIterator(table);
     while (hasMore)
     {
@@ -473,7 +515,3 @@ void Finish(struct InstrSeq *Code)
     
     return;
 }
-
-
-
-
