@@ -26,9 +26,15 @@ struct type_descriptor_t
     int *arr_dim;
 };
 
+struct arr_expr_t
+{
+    int arr_dim_c;
+    struct ExprRes **arr_dim;
+};
+
 extern struct ExprRes *doIntLit(char *digits);
-extern struct ExprRes *doRval(char *name, struct type_descriptor_t *arr);
-extern struct InstrSeq *doAssign(char *name, struct type_descriptor_t *arr, struct ExprRes *Expr);
+extern struct ExprRes *doRval(char *name, struct arr_expr_t *arr);
+extern struct InstrSeq *doAssign(char *name, struct arr_expr_t *arr, struct ExprRes *Expr);
 extern struct ExprRes *doAdd(struct ExprRes *Res1,  struct ExprRes *Res2);
 extern struct ExprRes *doMult(struct ExprRes *Res1,  struct ExprRes *Res2);
 extern struct ExprRes *doSubtract(struct ExprRes *Res1,  struct ExprRes *Res2);
@@ -60,6 +66,7 @@ extern struct InstrSeq *doFor(struct InstrSeq *stmtA, struct ExprRes *expr, stru
 
 extern struct type_descriptor_t *doTypeDescriptor(char *name, int dimensionality, int *dimensions);
 extern struct type_descriptor_t *doArrSeq(struct type_descriptor_t *a, struct type_descriptor_t *b, int this_d);
+extern struct arr_expr_t *doArrSeqExpr(struct arr_expr_t *a, struct arr_expr_t *b, struct ExprRes *this_d);
 
 extern void Finish(struct InstrSeq *Code);
 

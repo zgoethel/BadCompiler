@@ -18,7 +18,7 @@ struct ExprRes *doIntLit(char * digits)
     return res;
 }
 
-struct ExprRes *doRval(char *name, struct type_descriptor_t *arr) 
+struct ExprRes *doRval(char *name, struct arr_expr_t *arr) 
 { 
     struct ExprRes *res;
     
@@ -33,23 +33,43 @@ struct ExprRes *doRval(char *name, struct type_descriptor_t *arr)
     res = (struct ExprRes *)malloc(sizeof(struct ExprRes));
     res->Reg = AvailTmpReg();
     res->Instrs = GenInstr(NULL, "la", TmpRegName(res->Reg), name, NULL);
-    char offset[100];
-    int offsetSum = 0;
+    
+    int offsetSum = AvailTmpReg();
+    AppendSeq(res->Instrs, GenInstr(NULL, "li", TmpRegName(offsetSum), "0", NULL));
     int multiplier = 1;
+    //int multiplier = AvailTmpReg();
+    //AppendSeq(res->Instrs, GenInstr(NULL, "li", TmpRegName(multiplier), "1", NULL));
+    int extra = AvailTmpReg();
+
     if (arr != NULL)
         for (int i = 0; i < arr->arr_dim_c; i++)
         {
-            offsetSum += multiplier * arr->arr_dim[i];
+            char mult[100];
+            sprintf(mult, "%d", multiplier);
+            AppendSeq(res->Instrs, arr->arr_dim[i]->Instrs);
+            AppendSeq(res->Instrs, GenInstr(NULL, "li", TmpRegName(extra), mult, NULL));
+            AppendSeq(res->Instrs, GenInstr(NULL, "mul", TmpRegName(extra), TmpRegName(extra), TmpRegName(arr->arr_dim[i]->Reg)));
+            ReleaseTmpReg(arr->arr_dim[i]->Reg);
+            AppendSeq(res->Instrs, GenInstr(NULL, "add", TmpRegName(offsetSum), TmpRegName(offsetSum), TmpRegName(extra)));
+            
             multiplier *= type->arr_dim[i];
         }
-    printf("Assign offset: %d\n", offsetSum);
-    sprintf(offset, "%d(%s)", offsetSum * 4, TmpRegName(res->Reg));
+        
+    AppendSeq(res->Instrs, GenInstr(NULL, "sll", TmpRegName(offsetSum), TmpRegName(offsetSum), "2"));
+    AppendSeq(res->Instrs, GenInstr(NULL, "add", TmpRegName(res->Reg), TmpRegName(res->Reg), TmpRegName(offsetSum)));
+
+    char offset[100];
+    sprintf(offset, "%d(%s)", 0, TmpRegName(res->Reg));
     AppendSeq(res->Instrs, GenInstr(NULL, "lw", TmpRegName(res->Reg), offset, NULL));
+
+    ReleaseTmpReg(offsetSum);
+    ReleaseTmpReg(extra);
+    ReleaseTmpReg(res->Reg);
 
     return res;
 }
 
-struct InstrSeq *doAssign(char *name, struct type_descriptor_t *arr, struct ExprRes *Expr)
+struct InstrSeq *doAssign(char *name, struct arr_expr_t *arr, struct ExprRes *Expr)
 { 
     struct InstrSeq *code;
   
@@ -65,21 +85,39 @@ struct InstrSeq *doAssign(char *name, struct type_descriptor_t *arr, struct Expr
 
     int r = AvailTmpReg();
     AppendSeq(code, GenInstr(NULL, "la", TmpRegName(r), name, NULL));
-    char offset[100];
-    int offsetSum = 0;
+    
+    int offsetSum = AvailTmpReg();
+    AppendSeq(code, GenInstr(NULL, "li", TmpRegName(offsetSum), "0", NULL));
+    //int multiplier = AvailTmpReg();
+    //AppendSeq(code, GenInstr(NULL, "li", TmpRegName(multiplier), "1", NULL));
     int multiplier = 1;
+    int extra = AvailTmpReg();
+
     if (arr != NULL)
         for (int i = 0; i < arr->arr_dim_c; i++)
         {
-            offsetSum += multiplier * arr->arr_dim[i];
+            printf("This should be %d, %s\n", arr->arr_dim[i]->Reg, TmpRegName(arr->arr_dim[i]->Reg));
+            char mult[100];
+            sprintf(mult, "%d", multiplier);
+            AppendSeq(code, arr->arr_dim[i]->Instrs);
+            AppendSeq(code, GenInstr(NULL, "li", TmpRegName(extra), mult, NULL));
+            AppendSeq(code, GenInstr(NULL, "mul", TmpRegName(extra), TmpRegName(extra), TmpRegName(arr->arr_dim[i]->Reg)));
+            ReleaseTmpReg(arr->arr_dim[i]->Reg);
+            AppendSeq(code, GenInstr(NULL, "add", TmpRegName(offsetSum), TmpRegName(offsetSum), TmpRegName(extra)));
+            
             multiplier *= type->arr_dim[i];
         }
-    printf("Assign offset: %d\n", offsetSum);
-    sprintf(offset, "%d(%s)", offsetSum * 4, TmpRegName(r));
+
+    AppendSeq(code, GenInstr(NULL, "sll", TmpRegName(offsetSum), TmpRegName(offsetSum), "2"));
+    AppendSeq(code, GenInstr(NULL, "add", TmpRegName(r), TmpRegName(r), TmpRegName(offsetSum)));
+    char offset[100];
+    sprintf(offset, "%d(%s)", 0, TmpRegName(r));
     AppendSeq(code, GenInstr(NULL, "sw", TmpRegName(Expr->Reg), offset, NULL));
 
     ReleaseTmpReg(Expr->Reg);
     ReleaseTmpReg(r);
+    ReleaseTmpReg(offsetSum);
+    ReleaseTmpReg(extra);
     free(Expr);
     
     return code;
@@ -591,6 +629,29 @@ extern struct type_descriptor_t *doArrSeq(struct type_descriptor_t *a, struct ty
     {
         struct type_descriptor_t *result = (struct type_descriptor_t *)malloc(sizeof(struct type_descriptor_t));
         result->arr_dim = (int *)malloc(sizeof(int));
+        result->arr_dim[0] = this_d;
+        result->arr_dim_c = 1;
+        
+        return result;
+    }
+}
+
+extern struct arr_expr_t *doArrSeqExpr(struct arr_expr_t *a, struct arr_expr_t *b, struct ExprRes *this_d)
+{
+    if (a != NULL && b != NULL)
+    {
+        a->arr_dim_c += b->arr_dim_c;
+        a->arr_dim = (struct ExprRes **)realloc(a->arr_dim, a->arr_dim_c * sizeof(struct ExprRes *));
+        memcpy(&a->arr_dim[a->arr_dim_c - b->arr_dim_c], b->arr_dim, b->arr_dim_c * sizeof(struct ExprRes *));
+        free(b);
+
+        return a;
+    } else if (a != NULL || b != NULL)
+        return a == NULL ? b : a;
+    else
+    {
+        struct arr_expr_t *result = (struct arr_expr_t *)malloc(sizeof(struct arr_expr_t));
+        result->arr_dim = (struct ExprRes **)malloc(sizeof(struct ExprRes *));
         result->arr_dim[0] = this_d;
         result->arr_dim_c = 1;
         

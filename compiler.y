@@ -20,6 +20,7 @@
     struct ExprRes *ExprRes;
     struct InstrSeq *InstrSeq;
     struct type_descriptor_t *TypeDesc;
+    struct arr_expr_t *ArrExpr;
 }
 
 %type <string> Id
@@ -41,6 +42,8 @@
 %type <string> IntLit
 %type <InstrSeq> Assignment
 %type <string> Ident
+%type <ArrExpr> ArrExpr
+%type <ArrExpr> ArrSeqExpr
 
 %token IDENT
 %token INT_LIT
@@ -82,7 +85,7 @@ Stmt            : PRINT '(' PrintSeq ')' ';'                { $$ = $3; }
                   '{' StmtSeq '}'                           { $$ = doFor($3, $5, $7, $10); }
 Assignment      : VAR Id ':' Type '=' Expr                  { enterName(table, $2); setCurrentAttr(table, $4); $$ = doAssign($2, NULL, $6); }
                 | VAR Id ':' Type                           { enterName(table, $2); setCurrentAttr(table, $4); $$ = NULL; }
-                | Id ArrSeq '=' Expr                        { $$ = doAssign($1, $2, $4); }
+                | Id ArrSeqExpr '=' Expr                    { $$ = doAssign($1, $2, $4); }
 ReadSeq         : ReadSeq ',' Id                            { $$ = AppendSeq($1, doReadId($3)); }
                 | Id                                        { $$ = doReadId($1); }
 PrintSeq        : PrintSeq ',' Expr                         { $$ = AppendSeq($1, doPrint($3)); }
@@ -116,7 +119,7 @@ ExprE           : '-' ExprF                                 { $$ = doNegate($2);
                 | '!' ExprF                                 { $$ = doLogNegate($2); }
                 | ExprF                                     { $$ = $1; }
 ExprF           : IntLit                                    { $$ = doIntLit($1); }
-                | Ident ArrSeq                              { $$ = doRval($1, $2); }
+                | Ident ArrSeqExpr                          { $$ = doRval($1, $2); }
                 | '(' ExprA ')'                             { $$ = $2; }                
 // Bottom of expression tree (highest precedence)
 Id              : IDENT                                     { $$ = strdup(yytext); }
@@ -124,6 +127,9 @@ Type            : Id ArrSeq                                 { if ($2 != NULL) { 
 ArrSeq          : ArrSeq Arr                                { $$ = doArrSeq($1, $2, 0); }
                 |                                           { $$ = NULL; }
 Arr             : '[' IntLit ']'                            { int i; sscanf($2, "%d", &i); $$ = doArrSeq(NULL, NULL, i); }
+ArrSeqExpr      : ArrSeqExpr ArrExpr                        { $$ = doArrSeqExpr($1, $2, NULL); }
+                |                                           { $$ = NULL; }
+ArrExpr         : '[' Expr ']'                              { $$ = doArrSeqExpr(NULL, NULL, $2); }
 IntLit          : INT_LIT                                   { $$ = strdup(yytext); }
 Ident           : IDENT                                     { $$ = strdup(yytext); }
 
