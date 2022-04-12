@@ -30,4 +30,9 @@ for (var l: Int = 0; l < 10; l = l + 1)
     print("Number should increment from 0 to 9: ", l, "\n");
 }
 
-var arr1: Int[1][2][3][4];
+var arr: Int[16][32];
+arr[10][18] = 10;
+arr[12][20] = 20;
+print("Should be 10: ", arr[10][18], "\n",
+    "Should be 20: ", arr[12][20], "\n",
+    "Value is not set: ", arr[14][22], "\n");

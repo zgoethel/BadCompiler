@@ -27,8 +27,8 @@ struct type_descriptor_t
 };
 
 extern struct ExprRes *doIntLit(char *digits);
-extern struct ExprRes *doRval(char *name);
-extern struct InstrSeq *doAssign(char *name,  struct ExprRes *Res1);
+extern struct ExprRes *doRval(char *name, struct type_descriptor_t *arr);
+extern struct InstrSeq *doAssign(char *name, struct type_descriptor_t *arr, struct ExprRes *Expr);
 extern struct ExprRes *doAdd(struct ExprRes *Res1,  struct ExprRes *Res2);
 extern struct ExprRes *doMult(struct ExprRes *Res1,  struct ExprRes *Res2);
 extern struct ExprRes *doSubtract(struct ExprRes *Res1,  struct ExprRes *Res2);

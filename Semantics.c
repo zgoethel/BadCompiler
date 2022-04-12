@@ -18,7 +18,7 @@ struct ExprRes *doIntLit(char * digits)
     return res;
 }
 
-struct ExprRes *doRval(char *name) 
+struct ExprRes *doRval(char *name, struct type_descriptor_t *arr) 
 { 
     struct ExprRes *res;
     
@@ -28,11 +28,61 @@ struct ExprRes *doRval(char *name)
         writeMessage("Undeclared variable");
     }
 
+    struct type_descriptor_t *type = (struct type_descriptor_t *)getCurrentAttr(table);
+
     res = (struct ExprRes *)malloc(sizeof(struct ExprRes));
     res->Reg = AvailTmpReg();
-    res->Instrs = GenInstr(NULL, "lw", TmpRegName(res->Reg), name, NULL);
+    res->Instrs = GenInstr(NULL, "la", TmpRegName(res->Reg), name, NULL);
+    char offset[100];
+    int offsetSum = 0;
+    int multiplier = 1;
+    if (arr != NULL)
+        for (int i = 0; i < arr->arr_dim_c; i++)
+        {
+            offsetSum += multiplier * arr->arr_dim[i];
+            multiplier *= type->arr_dim[i];
+        }
+    printf("Assign offset: %d\n", offsetSum);
+    sprintf(offset, "%d(%s)", offsetSum * 4, TmpRegName(res->Reg));
+    AppendSeq(res->Instrs, GenInstr(NULL, "lw", TmpRegName(res->Reg), offset, NULL));
 
     return res;
+}
+
+struct InstrSeq *doAssign(char *name, struct type_descriptor_t *arr, struct ExprRes *Expr)
+{ 
+    struct InstrSeq *code;
+  
+    if (!findName(table, name))
+    {
+        writeIndicator(getCurrentColumnNum());
+        writeMessage("Undeclared variable");
+    }
+
+    struct type_descriptor_t *type = (struct type_descriptor_t *)getCurrentAttr(table);
+
+    code = Expr->Instrs;
+
+    int r = AvailTmpReg();
+    AppendSeq(code, GenInstr(NULL, "la", TmpRegName(r), name, NULL));
+    char offset[100];
+    int offsetSum = 0;
+    int multiplier = 1;
+    if (arr != NULL)
+        for (int i = 0; i < arr->arr_dim_c; i++)
+        {
+            offsetSum += multiplier * arr->arr_dim[i];
+            multiplier *= type->arr_dim[i];
+        }
+    printf("Assign offset: %d\n", offsetSum);
+    sprintf(offset, "%d(%s)", offsetSum * 4, TmpRegName(r));
+    AppendSeq(code, GenInstr(NULL, "sw", TmpRegName(Expr->Reg), offset, NULL));
+
+    ReleaseTmpReg(Expr->Reg);
+    ReleaseTmpReg(r);
+    free(Expr);
+    
+    return code;
 }
 
 struct ExprRes *doAdd(struct ExprRes *Res1, struct ExprRes *Res2)
@@ -204,26 +254,6 @@ struct InstrSeq *doPrintStr(char *stringLit)
     AppendSeq(code, GenInstr(NULL, "la", "$a0", stringLit, NULL));
     AppendSeq(code, GenInstr(NULL, "syscall", NULL, NULL, NULL));
 
-    return code;
-}
-
-struct InstrSeq *doAssign(char *name, struct ExprRes *Expr)
-{ 
-    struct InstrSeq *code;
-  
-    if (!findName(table, name))
-    {
-        writeIndicator(getCurrentColumnNum());
-        writeMessage("Undeclared variable");
-    }
-
-    code = Expr->Instrs;
-    
-    AppendSeq(code, GenInstr(NULL, "sw", TmpRegName(Expr->Reg), name, NULL));
-
-    ReleaseTmpReg(Expr->Reg);
-    free(Expr);
-    
     return code;
 }
 
