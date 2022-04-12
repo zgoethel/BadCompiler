@@ -29,3 +29,5 @@ for (var l: Int = 0; l < 10; l = l + 1)
 {
     print("Number should increment from 0 to 9: ", l, "\n");
 }
+
+var arr1: Int[1][2][3][4];

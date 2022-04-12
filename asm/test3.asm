@@ -90,14 +90,23 @@ L8:
 _nl:	.asciiz		"\n"
 _sp:	.asciiz		" "
 _str_0:	.asciiz		"First condition met\n"
+	.align		4
 _str_1:	.asciiz		"First condition not met\n"
+	.align		4
 _str_2:	.asciiz		"Second condition met\n"
+	.align		4
 _str_3:	.asciiz		"Second condition not met\n"
+	.align		4
 _str_4:	.asciiz		"Number should increment from 0 to 9: "
+	.align		4
 _str_5:	.asciiz		"\n"
+	.align		4
 _str_6:	.asciiz		"Number should increment from 0 to 9: "
+	.align		4
 _str_7:	.asciiz		"\n"
-i:	.word		0
-j:	.word		0
-k:	.word		0
-l:	.word		0
+	.align		4
+arr1:	.space		96
+i:	.space		4
+j:	.space		4
+k:	.space		4
+l:	.space		4

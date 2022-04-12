@@ -534,6 +534,40 @@ struct InstrSeq *doPrintSpaces(struct ExprRes *Res)
     return result;
 }
 
+
+extern struct type_descriptor_t *doTypeDescriptor(char *name, int dimensionality, int *dimensions)
+{
+    struct type_descriptor_t *result = (struct type_descriptor_t *)malloc(sizeof(struct type_descriptor_t));
+    result->name = name;
+    result->arr_dim_c = dimensionality;
+    result->arr_dim = dimensions;
+
+    return result;
+}
+
+extern struct type_descriptor_t *doArrSeq(struct type_descriptor_t *a, struct type_descriptor_t *b, int this_d)
+{
+    if (a != NULL && b != NULL)
+    {
+        a->arr_dim_c += b->arr_dim_c;
+        a->arr_dim = (int *)realloc(a->arr_dim, a->arr_dim_c * sizeof(int));
+        memcpy(&a->arr_dim[a->arr_dim_c - b->arr_dim_c], b->arr_dim, b->arr_dim_c * sizeof(int));
+        free(b);
+
+        return a;
+    } else if (a != NULL || b != NULL)
+        return a == NULL ? b : a;
+    else
+    {
+        struct type_descriptor_t *result = (struct type_descriptor_t *)malloc(sizeof(struct type_descriptor_t));
+        result->arr_dim = (int *)malloc(sizeof(int));
+        result->arr_dim[0] = this_d;
+        result->arr_dim_c = 1;
+        
+        return result;
+    }
+}
+
 void Finish(struct InstrSeq *Code)
 {
     struct InstrSeq *code;
@@ -564,6 +598,11 @@ void Finish(struct InstrSeq *Code)
             getCurrentAttr(stringLiterals),
             NULL,
             NULL));
+        AppendSeq(code, GenInstr(NULL,
+            ".align",
+            "4",
+            NULL,
+            NULL));
         
         //free(wrapped);
     } while (nextEntry(stringLiterals));
@@ -571,7 +610,22 @@ void Finish(struct InstrSeq *Code)
     hasMore = startIterator(table);
     while (hasMore)
     {
-        AppendSeq(code, GenInstr((char *)getCurrentName(table), ".word", "0", NULL, NULL));
+        struct type_descriptor_t *t = getCurrentAttr(table);
+        int space = 1;
+        for (int i = 0; i < t->arr_dim_c; i++)
+            space *= t->arr_dim[i];
+        space *= 4;
+        char space_str[100];
+        memset(space_str, 0, 100);
+        sprintf(space_str, "%d", space);
+
+        /*
+        if (t->arr_dim_c == 0)
+            AppendSeq(code, GenInstr((char *)getCurrentName(table), ".word", "0", NULL, NULL));
+        else
+        */
+            AppendSeq(code, GenInstr((char *)getCurrentName(table), ".space", space_str, NULL, NULL));
+
         hasMore = nextEntry(table);
     }
     

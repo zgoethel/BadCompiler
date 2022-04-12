@@ -19,6 +19,7 @@
     char *string;
     struct ExprRes *ExprRes;
     struct InstrSeq *InstrSeq;
+    struct type_descriptor_t *TypeDesc;
 }
 
 %type <string> Id
@@ -31,12 +32,13 @@
 %type <ExprRes> ExprF
 %type <InstrSeq> StmtSeq
 %type <InstrSeq> Stmt
-%type <string> Type
-%type <count> Arr
-%type <count> ArrSeq
+%type <TypeDesc> Type
+%type <TypeDesc> Arr
+%type <TypeDesc> ArrSeq
 %type <InstrSeq> PrintSeq
 %type <InstrSeq> ReadSeq
 %type <string> StrLit
+%type <string> IntLit
 %type <InstrSeq> Assignment
 
 %token IDENT
@@ -77,8 +79,8 @@ Stmt            : PRINT '(' PrintSeq ')' ';'                { $$ = $3; }
                 | WHILE '(' Expr ')' '{' StmtSeq '}'        { $$ = doWhile($3, $6); }
                 | FOR '(' Assignment ';' Expr ';' Assignment ')'
                   '{' StmtSeq '}'                           { $$ = doFor($3, $5, $7, $10); }
-Assignment      : VAR Id ':' Type '=' Expr                  { enterName(table, $2); $$ = doAssign($2, $6); }
-                | VAR Id ':' Type                           { enterName(table, $2); $$ = NULL; }
+Assignment      : VAR Id ':' Type '=' Expr                  { enterName(table, $2); setCurrentAttr(table, $4); $$ = doAssign($2, $6); }
+                | VAR Id ':' Type                           { enterName(table, $2); setCurrentAttr(table, $4); $$ = NULL; }
                 | Id '=' Expr                               { $$ = doAssign($1, $3); }
 ReadSeq         : ReadSeq ',' Id                            { $$ = AppendSeq($1, doReadId($3)); }
                 | Id                                        { $$ = doReadId($1); }
@@ -112,15 +114,16 @@ ExprD           : ExprE '^' ExprD                           { $$ = doPower($1, $
 ExprE           : '-' ExprF                                 { $$ = doNegate($2); }
                 | '!' ExprF                                 { $$ = doLogNegate($2); }
                 | ExprF                                     { $$ = $1; }
-ExprF           : INT_LIT                                   { $$ = doIntLit(yytext); }
+ExprF           : IntLit                                    { $$ = doIntLit($1); }
                 | IDENT                                     { $$ = doRval(yytext); }
                 | '(' ExprA ')'                             { $$ = $2; }
 // Bottom of expression tree (highest precedence)
 Id              : IDENT                                     { $$ = strdup(yytext); }
-Type            : Id ArrSeq                                 { $$ = $1; }
-ArrSeq          : ArrSeq Arr                                { $$ = $1 + $2; }
-                |                                           { $$ = 0; }
-Arr             : '[' ']'                                   { $$ = 1; }
+Type            : Id ArrSeq                                 { if ($2 != NULL) { $2->name = $1; $$ = $2; } else $$ = doTypeDescriptor($1, 0, NULL); }
+ArrSeq          : ArrSeq Arr                                { $$ = doArrSeq($1, $2, 0); }
+                |                                           { $$ = NULL; }
+Arr             : '[' IntLit ']'                            { int i; sscanf($2, "%d", &i); $$ = doArrSeq(NULL, NULL, i); }
+IntLit          : INT_LIT                                   { $$ = strdup(yytext); }
 
 %%
 

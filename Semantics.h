@@ -19,6 +19,13 @@ struct ExprResList
     struct ExprResList *Next;
 };
 
+struct type_descriptor_t
+{
+    char *name;
+    int arr_dim_c;
+    int *arr_dim;
+};
+
 extern struct ExprRes *doIntLit(char *digits);
 extern struct ExprRes *doRval(char *name);
 extern struct InstrSeq *doAssign(char *name,  struct ExprRes *Res1);
@@ -50,6 +57,9 @@ extern struct InstrSeq *doIf(struct ExprRes *bRes, struct InstrSeq *seq);
 extern struct InstrSeq *doIfElse(struct ExprRes *bRes, struct InstrSeq *seq, struct InstrSeq *seqElse);
 extern struct InstrSeq *doWhile(struct ExprRes *Res, struct InstrSeq *seq);
 extern struct InstrSeq *doFor(struct InstrSeq *stmtA, struct ExprRes *expr, struct InstrSeq *stmtB, struct InstrSeq *body);
+
+extern struct type_descriptor_t *doTypeDescriptor(char *name, int dimensionality, int *dimensions);
+extern struct type_descriptor_t *doArrSeq(struct type_descriptor_t *a, struct type_descriptor_t *b, int this_d);
 
 extern void Finish(struct InstrSeq *Code);
 
