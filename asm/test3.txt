@@ -43,14 +43,19 @@ print("Should be 30: ", arr[10][18][60], "\n",
     "Should be 40: ", arr[12][20][61], "\n",
     "Value is not set: ", arr[14][24][61], "\n");
 
-var printMap: Int[10][20];
-printMap[2 + 2][10 + 5] = 1;
+var printMap: Int[20][10];
+printMap[2 + 2][5] = 1;
+print("Should both be 1: ", printMap[2 + 2][5], ", ", printMap[4][5], "\n");
+print("Should be unset: ", printMap[2 + 3][5], ", ", printMap[5][5], "\n");
+printMap[5][5] = 2;
 
-for (var y: Int = 0; y < 20; y = y + 1)
+for (var y: Int = 0; y < 10; y = y + 1)
 {
-    for (var x: Int = 0; x < 10; x = x + 1)
+    print(" | ");
+    for (var x: Int = 0; x < 20; x = x + 1)
     {
-        print(printMap[x][y]);
+        print("(", x, ", ", y, ") = ",
+            printMap[x][y], " | ");
     }
     print("\n");
 }

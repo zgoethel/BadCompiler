@@ -32,8 +32,21 @@ struct ExprRes *doRval(char *name, struct arr_expr_t *arr)
 
     res = (struct ExprRes *)malloc(sizeof(struct ExprRes));
     res->Reg = AvailTmpReg();
-    res->Instrs = GenInstr(NULL, "la", TmpRegName(res->Reg), name, NULL);
-    
+    res->Instrs = NULL;
+
+    if (arr != NULL)
+        for (int i = 0; i < arr->arr_dim_c; i++)
+        {
+            printf("%s\n", TmpRegName(arr->arr_dim[i]->Reg));
+            if (res->Instrs == NULL)
+                res->Instrs = arr->arr_dim[i]->Instrs;
+            else
+                AppendSeq(res->Instrs, arr->arr_dim[i]->Instrs);
+        }
+    if (res->Instrs == NULL)
+        res->Instrs = GenInstr(NULL, "la", TmpRegName(res->Reg), name, NULL);
+    else
+        AppendSeq(res->Instrs, GenInstr(NULL, "la", TmpRegName(res->Reg), name, NULL));
     int offsetSum = AvailTmpReg();
     AppendSeq(res->Instrs, GenInstr(NULL, "li", TmpRegName(offsetSum), "0", NULL));
     int multiplier = 1;
@@ -46,7 +59,6 @@ struct ExprRes *doRval(char *name, struct arr_expr_t *arr)
         {
             char mult[100];
             sprintf(mult, "%d", multiplier);
-            res->Instrs = AppendSeq(arr->arr_dim[i]->Instrs, res->Instrs);
             AppendSeq(res->Instrs, GenInstr(NULL, "li", TmpRegName(extra), mult, NULL));
             AppendSeq(res->Instrs, GenInstr(NULL, "mul", TmpRegName(extra), TmpRegName(extra), TmpRegName(arr->arr_dim[i]->Reg)));
             ReleaseTmpReg(arr->arr_dim[i]->Reg);
@@ -64,14 +76,14 @@ struct ExprRes *doRval(char *name, struct arr_expr_t *arr)
 
     ReleaseTmpReg(offsetSum);
     ReleaseTmpReg(extra);
-    ReleaseTmpReg(res->Reg);
+    //ReleaseTmpReg(res->Reg);
 
     return res;
 }
 
 struct InstrSeq *doAssign(char *name, struct arr_expr_t *arr, struct ExprRes *Expr)
 { 
-    struct InstrSeq *code;
+    struct InstrSeq *code = NULL;
   
     if (!findName(table, name))
     {
@@ -81,7 +93,19 @@ struct InstrSeq *doAssign(char *name, struct arr_expr_t *arr, struct ExprRes *Ex
 
     struct type_descriptor_t *type = (struct type_descriptor_t *)getCurrentAttr(table);
 
-    code = Expr->Instrs;
+    
+    if (arr != NULL)
+        for (int i = 0; i < arr->arr_dim_c; i++)
+        {
+            if (code == NULL)
+                code = arr->arr_dim[i]->Instrs;
+            else
+                AppendSeq(code, arr->arr_dim[i]->Instrs);
+        }
+    if (code == NULL)
+        code = Expr->Instrs;
+    else
+        AppendSeq(code, Expr->Instrs);
 
     int r = AvailTmpReg();
     AppendSeq(code, GenInstr(NULL, "la", TmpRegName(r), name, NULL));
@@ -96,10 +120,8 @@ struct InstrSeq *doAssign(char *name, struct arr_expr_t *arr, struct ExprRes *Ex
     if (arr != NULL)
         for (int i = 0; i < arr->arr_dim_c; i++)
         {
-            printf("This should be %d, %s\n", arr->arr_dim[i]->Reg, TmpRegName(arr->arr_dim[i]->Reg));
             char mult[100];
             sprintf(mult, "%d", multiplier);
-            code = AppendSeq(arr->arr_dim[i]->Instrs, code);
             AppendSeq(code, GenInstr(NULL, "li", TmpRegName(extra), mult, NULL));
             AppendSeq(code, GenInstr(NULL, "mul", TmpRegName(extra), TmpRegName(extra), TmpRegName(arr->arr_dim[i]->Reg)));
             ReleaseTmpReg(arr->arr_dim[i]->Reg);
