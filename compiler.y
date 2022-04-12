@@ -37,6 +37,7 @@
 %type <InstrSeq> PrintSeq
 %type <InstrSeq> ReadSeq
 %type <string> StrLit
+%type <InstrSeq> Assignment
 
 %token IDENT
 %token INT_LIT
@@ -55,6 +56,11 @@
 %token PR_LINES
 %token PR_SPACES
 %token STR_LIT
+%token ELSE
+%token WHILE
+%token FOR
+%token RETURN
+%token VOID
 
 %%
 Prog            : StmtSeq                                   { Finish($1); }
@@ -64,10 +70,16 @@ Stmt            : PRINT '(' PrintSeq ')' ';'                { $$ = $3; }
                 | READ '(' ReadSeq ')' ';'                  { $$ = $3; }
                 | PR_LINES '(' Expr ')' ';'                 { $$ = doPrintLines($3); }
                 | PR_SPACES '(' Expr ')' ';'                { $$ = doPrintSpaces($3); }
-                | Id '=' Expr ';'                           { $$ = doAssign($1, $3); }
+                | Assignment ';'                            { $$ = $1; }
                 | IF '(' Expr ')' '{' StmtSeq '}'           { $$ = doIf($3, $6); }
-                | VAR Id ':' Type '=' Expr ';'              { enterName(table, $2); $$ = doAssign($2, $6); }
-                | VAR Id ':' Type ';'                       { enterName(table, $2); $$ = NULL; }
+                | IF '(' Expr ')' '{' StmtSeq '}'
+                  ELSE '{' StmtSeq '}'                      { $$ = doIfElse($3, $6, $10); }
+                | WHILE '(' Expr ')' '{' StmtSeq '}'        { $$ = doWhile($3, $6); }
+                | FOR '(' Assignment ';' Expr ';' Assignment ')'
+                  '{' StmtSeq '}'                           { $$ = doFor($3, $5, $7, $10); }
+Assignment      : VAR Id ':' Type '=' Expr                  { enterName(table, $2); $$ = doAssign($2, $6); }
+                | VAR Id ':' Type                           { enterName(table, $2); $$ = NULL; }
+                | Id '=' Expr                               { $$ = doAssign($1, $3); }
 ReadSeq         : ReadSeq ',' Id                            { $$ = AppendSeq($1, doReadId($3)); }
                 | Id                                        { $$ = doReadId($1); }
 PrintSeq        : PrintSeq ',' Expr                         { $$ = AppendSeq($1, doPrint($3)); }

@@ -1,0 +1,31 @@
+var i: Int = 0;
+var j: Int = 1;
+
+if (i == j)
+{
+    print("First condition met\n");
+} else
+{
+    print("First condition not met\n");
+}
+
+if (i != j)
+{
+    print("Second condition met\n");
+} else
+{
+    print("Second condition not met\n");
+}
+
+var k: Int = 10;
+
+while (i < k)
+{
+    print("Number should increment from 0 to 9: ", i, "\n");
+    i = i + 1;
+}
+
+for (var l: Int = 0; l < 10; l = l + 1)
+{
+    print("Number should increment from 0 to 9: ", l, "\n");
+}

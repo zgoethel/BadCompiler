@@ -21,6 +21,11 @@ print                       { return PRINT; }
 read                        { return READ; }
 printLines                  { return PR_LINES; }
 printSpaces                 { return PR_SPACES; }
+else                        { return ELSE; }
+while                       { return WHILE; }
+for                         { return FOR; }
+return                      { return RETURN; }
+void                        { return VOID; }
 {letter}({letter}|{digit})* { return IDENT; }
 {digit}{digit}*             { return INT_LIT; }
 \"(\\.|[^"\\])*\"           { return STR_LIT; }
@@ -49,6 +54,7 @@ printSpaces                 { return PR_SPACES; }
 \^                          { return '^'; }
 \!                          { return '!'; }
 \,                          { return ','; }
+\&                          { return '&'; }
 [ ]                         {  }
 \t                          {  }
 \r                          {  }

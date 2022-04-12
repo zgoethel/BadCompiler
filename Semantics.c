@@ -282,9 +282,73 @@ extern struct InstrSeq *doIf(struct ExprRes *Res, struct InstrSeq *seq)
 	struct InstrSeq * seq2;
 	seq2 = AppendSeq(bRes->Instrs, seq);
 	AppendSeq(seq2, GenInstr(bRes->Label, NULL, NULL, NULL, NULL));
+    free(bRes->Label);
 	free(bRes);
 
 	return seq2;
+}
+
+extern struct InstrSeq *doIfElse(struct ExprRes *Res, struct InstrSeq *seq, struct InstrSeq *seqElse)
+{
+    struct InstrSeq *result = Res->Instrs;
+    char *exitLabel = GenLabel();
+    char *elseLabel = GenLabel();
+
+    AppendSeq(result, GenInstr(NULL, "beq", TmpRegName(Res->Reg), "$zero", elseLabel));
+	AppendSeq(result, seq);
+    AppendSeq(result, GenInstr(NULL, "jal", exitLabel, NULL, NULL));
+	AppendSeq(result, GenInstr(elseLabel, NULL, NULL, NULL, NULL));
+    AppendSeq(result, seqElse);
+	AppendSeq(result, GenInstr(exitLabel, NULL, NULL, NULL, NULL));
+
+    ReleaseTmpReg(Res->Reg);
+    free(Res);
+    free(elseLabel);
+    free(exitLabel);
+
+	return result;
+}
+
+extern struct InstrSeq *doWhile(struct ExprRes *Res, struct InstrSeq *seq)
+{
+    struct InstrSeq *result = Res->Instrs;
+    char *startLabel = GenLabel();
+    char *exitLabel = GenLabel();
+
+	result = AppendSeq(GenInstr(startLabel, NULL, NULL, NULL, NULL), result);
+    AppendSeq(result, GenInstr(NULL, "beq", TmpRegName(Res->Reg), "$zero", exitLabel));
+	AppendSeq(result, seq);
+	AppendSeq(result, GenInstr(NULL, "jal", startLabel, NULL, NULL));
+	AppendSeq(result, GenInstr(exitLabel, NULL, NULL, NULL, NULL));
+
+    ReleaseTmpReg(Res->Reg);
+    free(Res);
+    free(startLabel);
+    free(exitLabel);
+
+	return result;
+}
+
+extern struct InstrSeq *doFor(struct InstrSeq *stmtA, struct ExprRes *expr, struct InstrSeq *stmtB, struct InstrSeq *body)
+{
+    struct InstrSeq *result = stmtA;
+    char *startLabel = GenLabel();
+    char *exitLabel = GenLabel();
+
+	AppendSeq(result, GenInstr(startLabel, NULL, NULL, NULL, NULL));
+    AppendSeq(result, expr->Instrs);
+    AppendSeq(result, GenInstr(NULL, "beq", TmpRegName(expr->Reg), "$zero", exitLabel));
+	AppendSeq(result, body);
+    AppendSeq(result, stmtB);
+	AppendSeq(result, GenInstr(NULL, "jal", startLabel, NULL, NULL));
+	AppendSeq(result, GenInstr(exitLabel, NULL, NULL, NULL, NULL));
+
+    ReleaseTmpReg(expr->Reg);
+    free(expr);
+    free(startLabel);
+    free(exitLabel);
+
+	return result;
 }
 
 extern struct ExprRes *doLessThan(struct ExprRes *Res1,  struct ExprRes *Res2)
