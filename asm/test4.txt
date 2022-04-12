@@ -1,5 +1,7 @@
 var array: Int[10][20];
 
 array[4 + 4][9 + 9] = 20;
+print("Should be valid: ", array[8][18], "\n");
 
-print(array[8][18]);
+array[4 + 4] = 50;
+print("Should be syntax error: ", array[8], "\n");

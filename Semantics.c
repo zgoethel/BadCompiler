@@ -28,11 +28,18 @@ struct ExprRes *doRval(char *name, struct arr_expr_t *arr)
         writeMessage("Undeclared variable");
     }
 
-    struct type_descriptor_t *type = (struct type_descriptor_t *)getCurrentAttr(table);
-
     res = (struct ExprRes *)malloc(sizeof(struct ExprRes));
     res->Reg = AvailTmpReg();
     res->Instrs = NULL;
+
+    struct type_descriptor_t *type = (struct type_descriptor_t *)getCurrentAttr(table);
+    if (arr != NULL && type->arr_dim_c != arr->arr_dim_c)
+    {
+        writeMessage(NULL);
+        writeIndicator(getCurrentColumnNum());
+        writeMessage("Array dimensionality does not match that of the accessor");
+        return res;
+    }
 
     if (arr != NULL)
         for (int i = 0; i < arr->arr_dim_c; i++)
@@ -92,7 +99,13 @@ struct InstrSeq *doAssign(char *name, struct arr_expr_t *arr, struct ExprRes *Ex
     }
 
     struct type_descriptor_t *type = (struct type_descriptor_t *)getCurrentAttr(table);
-
+    if (arr != NULL && type->arr_dim_c != arr->arr_dim_c)
+    {
+        writeMessage(NULL);
+        writeIndicator(getCurrentColumnNum());
+        writeMessage("Array dimensionality does not match that of the assignment");
+        return Expr->Instrs;
+    }
     
     if (arr != NULL)
         for (int i = 0; i < arr->arr_dim_c; i++)
@@ -283,9 +296,11 @@ struct InstrSeq *doPrint(struct ExprRes *Expr)
     AppendSeq(code, GenInstr(NULL, "move", "$a0", TmpRegName(Expr->Reg), NULL));
     AppendSeq(code, GenInstr(NULL, "syscall", NULL, NULL, NULL));
 
+    /*
     AppendSeq(code, GenInstr(NULL, "li", "$v0", "4", NULL));
     AppendSeq(code, GenInstr(NULL, "la", "$a0", "_sp", NULL));
     AppendSeq(code, GenInstr(NULL, "syscall", NULL, NULL, NULL));
+    */
 
     ReleaseTmpReg(Expr->Reg);
     free(Expr);

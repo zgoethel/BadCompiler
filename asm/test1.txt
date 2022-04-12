@@ -5,55 +5,83 @@ var num2: Int = 20;
 if (num2 + 10 + 10 == 2 * num2)
 {
     print(num1);
+    printSpaces(1);
     print(num2);
+    printSpaces(1);
 }
 
 if (num2 + 10 + 11 > 2 * num2)
 {
     print(2020);
+    printSpaces(1);
     print(2021);
+    printSpaces(1);
 }
 
 if (num2 + 10 + 9 < 2 * num2)
 {
     print(2022);
+    printSpaces(1);
     print(2023);
+    printSpaces(1);
 }
 
 if (num2 + 10 + 11 != 2 * num2)
 {
     print(2024);
+    printSpaces(1);
     print(2025);
+    printSpaces(1);
 }
 
 if (0 || num2 + 10 + 11 != 2 * num2)
 {
     print(-20 + -20);
+    printSpaces(1);
     print(0 && num2 + 10 + 11 != 2 * num2);
+    printSpaces(1);
 }
 
 print(num1);
+printSpaces(1);
 print(num2);
+printSpaces(1);
 
 print(-num1 - 20);
+printSpaces(1);
 print(-num2 - 20);
+printSpaces(1);
 
 print(24 / 10);
+printSpaces(1);
 print(24 % 10);
+printSpaces(1);
 
 print(2 ^ 2);
+printSpaces(1);
 print(2 ^ 3 ^ 2);
+printSpaces(1);
 print(2 ^ 3 ^ 3);
+printSpaces(1);
 print(2 ^ 3 ^ 0);
+printSpaces(1);
 print((2 ^ 3) ^ 0);
+printSpaces(1);
 
 print(0);
+printSpaces(1);
 print(!0);
+printSpaces(1);
 print(0 < 1);
+printSpaces(1);
 print(!1 < 1);
+printSpaces(1);
 print(!(1 > !1));
+printSpaces(1);
 
 var empty: Int;
 print(empty);
+printSpaces(1);
 empty = empty - 20;
 print(empty);
+printSpaces(1);

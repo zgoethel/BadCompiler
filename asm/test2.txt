@@ -4,17 +4,17 @@ var readB: Int = 0;
 print("Enter two numbers:\n");
 read(readA, readB);
 
-print(readA, readB, 3);
+print(readA, " ", readB, " ", 3);
 printLines(1);
 
 print("Enter two numbers:\n");
 read(readA, readB);
 
-print(readA + readB, readA - readB);
+print(readA + readB, " ", readA - readB);
 printLines(1);
-print(readA * readB, readA / readB);
+print(readA * readB, " ", readA / readB);
 printLines(1);
-print(readA % readB, readA ^ readB);
+print(readA % readB, " ", readA ^ readB);
 printLines(1);
 
 print("Enter two numbers:\n");
@@ -22,7 +22,7 @@ read(readA, readB);
 
 printLines(readA);
 printSpaces(readB);
-print(readA, readB);
+print(readA, " ", readB);
 printLines(1);
 
 print("Hello, world!\n",

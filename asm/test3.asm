@@ -86,9 +86,6 @@ L5:
 	move		$a0, $t0
 	syscall	
 	li		$v0, 4
-	la		$a0, _sp
-	syscall	
-	li		$v0, 4
 	la		$a0, _str_5
 	syscall	
 	la		$t0, i
@@ -130,9 +127,6 @@ L7:
 	lw		$t0, 0($t0)
 	li		$v0, 1
 	move		$a0, $t0
-	syscall	
-	li		$v0, 4
-	la		$a0, _sp
 	syscall	
 	li		$v0, 4
 	la		$a0, _str_7
@@ -211,9 +205,6 @@ L8:
 	move		$a0, $t3
 	syscall	
 	li		$v0, 4
-	la		$a0, _sp
-	syscall	
-	li		$v0, 4
 	la		$a0, _str_9
 	syscall	
 	li		$v0, 4
@@ -240,9 +231,6 @@ L8:
 	move		$a0, $t3
 	syscall	
 	li		$v0, 4
-	la		$a0, _sp
-	syscall	
-	li		$v0, 4
 	la		$a0, _str_11
 	syscall	
 	li		$v0, 4
@@ -267,9 +255,6 @@ L8:
 	lw		$t3, 0($t3)
 	li		$v0, 1
 	move		$a0, $t3
-	syscall	
-	li		$v0, 4
-	la		$a0, _sp
 	syscall	
 	li		$v0, 4
 	la		$a0, _str_13
@@ -334,9 +319,6 @@ L8:
 	move		$a0, $t3
 	syscall	
 	li		$v0, 4
-	la		$a0, _sp
-	syscall	
-	li		$v0, 4
 	la		$a0, _str_15
 	syscall	
 	li		$v0, 4
@@ -363,9 +345,6 @@ L8:
 	move		$a0, $t3
 	syscall	
 	li		$v0, 4
-	la		$a0, _sp
-	syscall	
-	li		$v0, 4
 	la		$a0, _str_17
 	syscall	
 	li		$v0, 4
@@ -390,9 +369,6 @@ L8:
 	lw		$t3, 0($t3)
 	li		$v0, 1
 	move		$a0, $t3
-	syscall	
-	li		$v0, 4
-	la		$a0, _sp
 	syscall	
 	li		$v0, 4
 	la		$a0, _str_19
@@ -435,9 +411,6 @@ L8:
 	move		$a0, $t1
 	syscall	
 	li		$v0, 4
-	la		$a0, _sp
-	syscall	
-	li		$v0, 4
 	la		$a0, _str_21
 	syscall	
 	li		$t0, 4
@@ -455,9 +428,6 @@ L8:
 	lw		$t2, 0($t2)
 	li		$v0, 1
 	move		$a0, $t2
-	syscall	
-	li		$v0, 4
-	la		$a0, _sp
 	syscall	
 	li		$v0, 4
 	la		$a0, _str_22
@@ -484,9 +454,6 @@ L8:
 	move		$a0, $t1
 	syscall	
 	li		$v0, 4
-	la		$a0, _sp
-	syscall	
-	li		$v0, 4
 	la		$a0, _str_24
 	syscall	
 	li		$t0, 5
@@ -504,9 +471,6 @@ L8:
 	lw		$t2, 0($t2)
 	li		$v0, 1
 	move		$a0, $t2
-	syscall	
-	li		$v0, 4
-	la		$a0, _sp
 	syscall	
 	li		$v0, 4
 	la		$a0, _str_25
@@ -558,37 +522,6 @@ L9:
 	li		$t1, 20
 	slt		$t3, $t0, $t1
 	beq		$t3, $zero, L10
-	li		$v0, 4
-	la		$a0, _str_27
-	syscall	
-	la		$t0, x
-	li		$t1, 0
-	sll		$t1, $t1, 2
-	add		$t0, $t0, $t1
-	lw		$t0, 0($t0)
-	li		$v0, 1
-	move		$a0, $t0
-	syscall	
-	li		$v0, 4
-	la		$a0, _sp
-	syscall	
-	li		$v0, 4
-	la		$a0, _str_28
-	syscall	
-	la		$t0, y
-	li		$t1, 0
-	sll		$t1, $t1, 2
-	add		$t0, $t0, $t1
-	lw		$t0, 0($t0)
-	li		$v0, 1
-	move		$a0, $t0
-	syscall	
-	li		$v0, 4
-	la		$a0, _sp
-	syscall	
-	li		$v0, 4
-	la		$a0, _str_29
-	syscall	
 	la		$t0, x
 	li		$t1, 0
 	sll		$t1, $t1, 2
@@ -614,10 +547,7 @@ L9:
 	move		$a0, $t4
 	syscall	
 	li		$v0, 4
-	la		$a0, _sp
-	syscall	
-	li		$v0, 4
-	la		$a0, _str_30
+	la		$a0, _str_27
 	syscall	
 	la		$t0, x
 	li		$t1, 0
@@ -634,7 +564,7 @@ L9:
 	jal		L9
 L10:
 	li		$v0, 4
-	la		$a0, _str_31
+	la		$a0, _str_28
 	syscall	
 	la		$t0, y
 	li		$t1, 0
@@ -660,11 +590,7 @@ _str_19:	.asciiz		"\n"
 	.align		4
 _str_0:	.asciiz		"First condition met\n"
 	.align		4
-_str_30:	.asciiz		" | "
-	.align		4
 _str_1:	.asciiz		"First condition not met\n"
-	.align		4
-_str_31:	.asciiz		"\n"
 	.align		4
 _str_20:	.asciiz		"Should both be 1: "
 	.align		4
@@ -706,17 +632,15 @@ _str_15:	.asciiz		"\n"
 	.align		4
 _str_8:	.asciiz		"Should be 10: "
 	.align		4
-_str_27:	.asciiz		"("
+_str_27:	.asciiz		" | "
 	.align		4
 _str_16:	.asciiz		"Should be 40: "
 	.align		4
 _str_9:	.asciiz		"\n"
 	.align		4
-_str_28:	.asciiz		", "
+_str_28:	.asciiz		"\n"
 	.align		4
 _str_17:	.asciiz		"\n"
-	.align		4
-_str_29:	.asciiz		") = "
 	.align		4
 _str_18:	.asciiz		"Value is not set: "
 	.align		4
