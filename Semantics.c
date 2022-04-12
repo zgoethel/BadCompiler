@@ -46,7 +46,7 @@ struct ExprRes *doRval(char *name, struct arr_expr_t *arr)
         {
             char mult[100];
             sprintf(mult, "%d", multiplier);
-            AppendSeq(res->Instrs, arr->arr_dim[i]->Instrs);
+            res->Instrs = AppendSeq(arr->arr_dim[i]->Instrs, res->Instrs);
             AppendSeq(res->Instrs, GenInstr(NULL, "li", TmpRegName(extra), mult, NULL));
             AppendSeq(res->Instrs, GenInstr(NULL, "mul", TmpRegName(extra), TmpRegName(extra), TmpRegName(arr->arr_dim[i]->Reg)));
             ReleaseTmpReg(arr->arr_dim[i]->Reg);
@@ -99,7 +99,7 @@ struct InstrSeq *doAssign(char *name, struct arr_expr_t *arr, struct ExprRes *Ex
             printf("This should be %d, %s\n", arr->arr_dim[i]->Reg, TmpRegName(arr->arr_dim[i]->Reg));
             char mult[100];
             sprintf(mult, "%d", multiplier);
-            AppendSeq(code, arr->arr_dim[i]->Instrs);
+            code = AppendSeq(arr->arr_dim[i]->Instrs, code);
             AppendSeq(code, GenInstr(NULL, "li", TmpRegName(extra), mult, NULL));
             AppendSeq(code, GenInstr(NULL, "mul", TmpRegName(extra), TmpRegName(extra), TmpRegName(arr->arr_dim[i]->Reg)));
             ReleaseTmpReg(arr->arr_dim[i]->Reg);

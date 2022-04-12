@@ -36,3 +36,21 @@ arr[12][20][61] = 20;
 print("Should be 10: ", arr[10][18][60], "\n",
     "Should be 20: ", arr[12][20][61], "\n",
     "Value is not set: ", arr[14][22][61], "\n");
+
+arr[10][18][60] = 30;
+arr[12][20][61] = 40;
+print("Should be 30: ", arr[10][18][60], "\n",
+    "Should be 40: ", arr[12][20][61], "\n",
+    "Value is not set: ", arr[14][24][61], "\n");
+
+var printMap: Int[10][20];
+printMap[2 + 2][10 + 5] = 1;
+
+for (var y: Int = 0; y < 20; y = y + 1)
+{
+    for (var x: Int = 0; x < 10; x = x + 1)
+    {
+        print(printMap[x][y]);
+    }
+    print("\n");
+}
