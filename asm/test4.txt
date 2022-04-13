@@ -1,7 +1,29 @@
-var array: Int[10][20];
+var unordered: Int[8];
+unordered[0] = 9;
+unordered[1] = 8;
+unordered[2] = 7;
+unordered[3] = 6;
+unordered[4] = 5;
+unordered[5] = 4;
+unordered[6] = 3;
+unordered[7] = 2;
+unordered[8] = 1;
+unordered[9] = 0;
 
-array[4 + 4][9 + 9] = 20;
-print("Should be valid: ", array[8][18], "\n");
+for (var i: Int = 0; i < 10; i = i + 1)
+{
+    for (var j: Int = 0; j < 10 - i - 1; j = j + 1)
+    {
+        if (unordered[j] > unordered[j + 1])
+        {
+            var temp: Int = unordered[j];
+            unordered[j] = unordered[j + 1];
+            unordered[j + 1] = temp;
+        }
+    }
+}
 
-array[4 + 4] = 50;
-print("Should be syntax error: ", array[8], "\n");
+for (i = 0; i < 10; i = i + 1)
+{
+    print("Value at index ", i, " is ", unordered[i], "\n");
+}

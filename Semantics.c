@@ -44,7 +44,6 @@ struct ExprRes *doRval(char *name, struct arr_expr_t *arr)
     if (arr != NULL)
         for (int i = 0; i < arr->arr_dim_c; i++)
         {
-            printf("%s\n", TmpRegName(arr->arr_dim[i]->Reg));
             if (res->Instrs == NULL)
                 res->Instrs = arr->arr_dim[i]->Instrs;
             else
@@ -135,6 +134,7 @@ struct InstrSeq *doAssign(char *name, struct arr_expr_t *arr, struct ExprRes *Ex
         {
             char mult[100];
             sprintf(mult, "%d", multiplier);
+            
             AppendSeq(code, GenInstr(NULL, "li", TmpRegName(extra), mult, NULL));
             AppendSeq(code, GenInstr(NULL, "mul", TmpRegName(extra), TmpRegName(extra), TmpRegName(arr->arr_dim[i]->Reg)));
             ReleaseTmpReg(arr->arr_dim[i]->Reg);
