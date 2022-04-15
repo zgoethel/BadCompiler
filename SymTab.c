@@ -10,7 +10,7 @@
  *
  * @param size Estimated size of the resulting table.
  */
-SymTab *createSymTab(int size)
+SymTab *create_tab(int size)
 {
 	// Allocate the data structure
 	SymTab *result = (SymTab *)malloc(sizeof(SymTab));
@@ -27,7 +27,7 @@ SymTab *createSymTab(int size)
 /**
  * Performs a deep deletion of the provided table.
  */
-void destroySymTab(SymTab *table)
+void free_tab(SymTab *table)
 {
 	// Iterate and destroy all chains
 	unsigned int i = 0;
@@ -72,7 +72,7 @@ unsigned long quickStringHash(char *data)
  * @param name Name of the node to find or create.
  * @return 1 if a node was created, 0 if it was found.
  */
-int enterName(SymTab *table, char *name)
+int enter_name(SymTab *table, char *name)
 {
 	// Get the correct chain for the name
 	int hash = quickStringHash(name) % table->size;
@@ -106,7 +106,7 @@ int enterName(SymTab *table, char *name)
  * @param name Name of the node to find in the table.
  * @return 1 if found, 0 if not found.
  */
-int findName(SymTab *table, char *name)
+int find_name(SymTab *table, char *name)
 {
 	// Get the correct chain for the name
 	int hash = quickStringHash(name) % table->size;
@@ -142,7 +142,7 @@ int hasCurrent(SymTab *table)
  * @param attr Any pointer to associate with the current
  *     node. Memory allocation is managed externally.
  */
-void setCurrentAttr(SymTab *table, void *attr)
+void set_attr(SymTab *table, void *attr)
 {
 	table->current->attribute = attr;
 }
@@ -150,7 +150,7 @@ void setCurrentAttr(SymTab *table, void *attr)
 /**
  * @return Pointer value of the table's current node.
  */
-void *getCurrentAttr(SymTab *table)
+void *get_attr(SymTab *table)
 {
 	return table->current->attribute;
 }
@@ -158,7 +158,7 @@ void *getCurrentAttr(SymTab *table)
 /**
  * @return Name associated with the table's current node.
  */
-char *getCurrentName(SymTab *table)
+char *get_name(SymTab *table)
 {
 	return table->current->name;
 }
@@ -168,7 +168,7 @@ char *getCurrentName(SymTab *table)
  *
  * @return 1 if nodes remain, 0 if the table is empty.
  */
-int startIterator(SymTab *table)
+int start_it(SymTab *table)
 {
 	// Reset the chain row counter to 0 (first chain)
 	//_itRow = 0;
@@ -191,7 +191,7 @@ int startIterator(SymTab *table)
  *
  * @return 1 if nodes remain, 0 if the table is empty.
  */
-int nextEntry(SymTab *table)
+int it_next(SymTab *table)
 {
 	// Advance to next pointer if applicable
 	if (table->current->next != NULL)

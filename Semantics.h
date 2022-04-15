@@ -1,74 +1,120 @@
+#pragma once
+
 #include "SymTab.h"
+#include "CodeGen.h"
 
-struct IdList
+/**
+ * @brief Contains sequence of commands for and the index of the register
+ *      holding results of an operation.
+ */
+struct expr_res_t
 {
-    struct SymEntry *TheEntry;
-    struct IdList *Next;
-};
-
-struct ExprRes
-{
-    int Reg;
-    struct InstrSeq *Instrs;
+    /**
+     * @brief Register holding expression result's value after excecution.
+     */
+    int reg;
+    /**
+     * @brief First node of the linked sequence of assembly instructions used to
+     *      perform the expression calculation.
+     */
+    struct instr_t *body;
+    /**
+     * @brief Optional label field; I do not use this value for any purpose.
+     */
     char *Label;
 };
+typedef struct expr_res_t expr_res_t;
 
-struct ExprResList
+/**
+ * @brief Defines a type name and its array dimensionality and size.
+ */
+struct type_desc_t
 {
-    struct ExprRes *Expr;
-    struct ExprResList *Next;
-};
-
-struct type_descriptor_t
-{
+    /**
+     * @brief Type name of the described variable "datatype."
+     */
     char *name;
+    /**
+     * @brief Count of dimensions of the array (e.g., 1D or 3D).
+     * 
+     */
     int arr_dim_c;
+    /**
+     * @brief Array of integers containing the array size in every dimension.
+     */
     int *arr_dim;
 };
+typedef struct type_desc_t type_desc_t;
 
+/**
+ * @brief Collection of expression results for indexing into a multi-dimensional
+ *      array datatype during runtime.
+ */
 struct arr_expr_t
 {
+    /**
+     * @brief Count of dimensions of the array (e.g., 1D or 3D).
+     */
     int arr_dim_c;
-    struct ExprRes **arr_dim;
+    /**
+     * @brief Array of expression result structs for the array indices.
+     */
+    struct expr_res_t **arr_dim;
 };
+typedef struct arr_expr_t arr_expr_t;
 
-extern struct ExprRes *doIntLit(char *digits);
-extern struct ExprRes *doRval(char *name, struct arr_expr_t *arr);
-extern struct InstrSeq *doAssign(char *name, struct arr_expr_t *arr, struct ExprRes *Expr);
-extern struct ExprRes *doAdd(struct ExprRes *Res1,  struct ExprRes *Res2);
-extern struct ExprRes *doMult(struct ExprRes *Res1,  struct ExprRes *Res2);
-extern struct ExprRes *doSubtract(struct ExprRes *Res1,  struct ExprRes *Res2);
-extern struct ExprRes *doDivide(struct ExprRes *Res1,  struct ExprRes *Res2);
-extern struct ExprRes *doModulo(struct ExprRes *Res1,  struct ExprRes *Res2);
-extern struct InstrSeq *doPrint(struct ExprRes *Expr);
-extern struct ExprRes *doBExpr(struct ExprRes *Res1,  struct ExprRes *es2);
-extern struct ExprRes *doNegate(struct ExprRes *Res);
-extern struct ExprRes *doPower(struct ExprRes *Res1,  struct ExprRes *Res2);
-extern struct ExprRes *doLessThan(struct ExprRes *Res1,  struct ExprRes *Res2);
-extern struct ExprRes *doLessEquals(struct ExprRes *Res1,  struct ExprRes *Res2);
-extern struct ExprRes *doGreaterThan(struct ExprRes *Res1,  struct ExprRes *Res2);
-extern struct ExprRes *doGreaterEquals(struct ExprRes *Res1,  struct ExprRes *Res2);
-extern struct ExprRes *doAnd(struct ExprRes *Res1,  struct ExprRes *Res2);
-extern struct ExprRes *doOr(struct ExprRes *Res1,  struct ExprRes *Res2);
-extern struct ExprRes *doNotEquals(struct ExprRes *Res1,  struct ExprRes *Res2);
-extern struct ExprRes *doLogNegate(struct ExprRes *Res);
+// Mappings for generating integer expression sequences
+expr_res_t *do_int_lit(char *digits);
+expr_res_t *do_add(expr_res_t *l,  expr_res_t *r);
+expr_res_t *do_mult(expr_res_t *l,  expr_res_t *r);
+expr_res_t *do_sub(expr_res_t *l,  expr_res_t *r);
+expr_res_t *do_div(expr_res_t *l,  expr_res_t *r);
+expr_res_t *do_modulo(expr_res_t *l,  expr_res_t *r);
+expr_res_t *do_negate(expr_res_t *expr);
+expr_res_t *do_pow(expr_res_t *l,  expr_res_t *r);
 
-extern struct InstrSeq *doReadId(char *name);
-extern struct InstrSeq *doPrintLines(struct ExprRes *Res);
-extern struct InstrSeq *doPrintSpaces(struct ExprRes *Res);
-extern char *doStringLit(char *value);
-extern struct InstrSeq *doPrintStr(char *stringLit);
+// Mappings for performing comparisons and logic
+expr_res_t *do_compare(expr_res_t *l,  expr_res_t *r);
+expr_res_t *do_less_than(expr_res_t *l,  expr_res_t *r);
+expr_res_t *do_less_than_e(expr_res_t *l,  expr_res_t *r);
+expr_res_t *do_greater_than(expr_res_t *l,  expr_res_t *r);
+expr_res_t *do_greater_than_e(expr_res_t *l,  expr_res_t *r);
+expr_res_t *do_and(expr_res_t *l,  expr_res_t *r);
+expr_res_t *do_or(expr_res_t *l,  expr_res_t *r);
+expr_res_t *do_not_eq(expr_res_t *l,  expr_res_t *r);
+expr_res_t *do_not(expr_res_t *expr);
 
-extern struct InstrSeq *doIf(struct ExprRes *bRes, struct InstrSeq *seq);
-extern struct InstrSeq *doIfElse(struct ExprRes *bRes, struct InstrSeq *seq, struct InstrSeq *seqElse);
-extern struct InstrSeq *doWhile(struct ExprRes *Res, struct InstrSeq *seq);
-extern struct InstrSeq *doFor(struct InstrSeq *stmtA, struct ExprRes *expr, struct InstrSeq *stmtB, struct InstrSeq *body);
+// Mappings for generating memory load/store operations
+expr_res_t *do_load(char *name, arr_expr_t *arr);
+instr_t *do_store(char *name, arr_expr_t *arr, expr_res_t *expr);
 
-extern struct type_descriptor_t *doTypeDescriptor(char *name, int dimensionality, int *dimensions);
-extern struct type_descriptor_t *doArrSeq(struct type_descriptor_t *a, struct type_descriptor_t *b, int this_d);
-extern struct arr_expr_t *doArrSeqExpr(struct arr_expr_t *a, struct arr_expr_t *b, struct ExprRes *this_d);
+// Mappings for generating I/O operations and syscalls
+instr_t *do_print(expr_res_t *expr);
+instr_t *do_read(char *name);
+instr_t *do_print_l(expr_res_t *expr);
+instr_t *do_print_s(expr_res_t *expr);
+char *do_str_lit(char *chars);
+instr_t *do_print_str(char *label);
 
-extern void Finish(struct InstrSeq *Code);
+// Mappings for generating control structures and loops
+instr_t *do_if(expr_res_t *expr, instr_t *body);
+instr_t *do_if_else(expr_res_t *expr, instr_t *body, instr_t *b_else);
+instr_t *do_while(expr_res_t *expr, instr_t *body);
+instr_t *do_for(instr_t *pre, expr_res_t *expr, instr_t *post, instr_t *body);
 
+// Mappings for types and multi-dimensional array index operators
+type_desc_t *do_type_desc(char *name, int dims, int *sizes);
+type_desc_t *do_arr_seq(type_desc_t *l, type_desc_t *r, int size);
+arr_expr_t *do_arr_expr(arr_expr_t *l, arr_expr_t *r, expr_res_t *size);
+
+// Final accept state action to print out the final sequence
+void accept_body(instr_t *Code);
+
+/**
+ * @brief Stores global variables and their type descriptors for reference.
+ */
 extern SymTab *table;
-extern SymTab *stringLiterals;
+/**
+ * @brief Contains string literals for the data section during acceptance.
+ */
+extern SymTab *str_lits;

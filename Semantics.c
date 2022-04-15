@@ -7,650 +7,587 @@
 #include "SymTab.h"
 #include "IOMngr.h"
 
-struct ExprRes *doIntLit(char * digits)
+expr_res_t *do_int_lit(char *digits)
 { 
-    struct ExprRes *res;
+    expr_res_t *res;
   
-    res = (struct ExprRes *)malloc(sizeof(struct ExprRes));
-    res->Reg = AvailTmpReg();
-    res->Instrs = GenInstr(NULL, "li", TmpRegName(res->Reg), digits, NULL);
+    res = (expr_res_t *)malloc(sizeof(expr_res_t));
+    res->reg = avail_reg();
+    res->body = gen_instr(NULL, "li", reg_name(res->reg), digits, NULL);
 
     return res;
 }
 
-struct ExprRes *doRval(char *name, struct arr_expr_t *arr) 
+expr_res_t *alloc_expr()
+{
+    expr_res_t *result;
+    result = (expr_res_t *)malloc(sizeof(expr_res_t));
+    result->reg = avail_reg();
+    result->body = NULL;
+
+    return result;
+}
+
+expr_res_t *do_load(char *name, arr_expr_t *arr) 
 { 
-    struct ExprRes *res;
-    
-    if (!findName(table, name))
+    expr_res_t *res = alloc_expr();
+    if (!find_name(table, name))
     {
-        writeIndicator(getCurrentColumnNum());
-        writeMessage("Undeclared variable");
+        put_marker(col_num());
+        put_warning("Undeclared variable");
     }
 
-    res = (struct ExprRes *)malloc(sizeof(struct ExprRes));
-    res->Reg = AvailTmpReg();
-    res->Instrs = NULL;
-
-    struct type_descriptor_t *type = (struct type_descriptor_t *)getCurrentAttr(table);
+    type_desc_t *type = (type_desc_t *)get_attr(table);
     if (arr != NULL && type->arr_dim_c != arr->arr_dim_c)
     {
-        writeMessage(NULL);
-        writeIndicator(getCurrentColumnNum());
-        writeMessage("Array dimensionality does not match that of the accessor");
+        put_warning(NULL);
+        put_marker(col_num());
+        put_warning("Array dimensionality does not match that of the accessor");
+
         return res;
     }
 
     if (arr != NULL)
+    {
         for (int i = 0; i < arr->arr_dim_c; i++)
-        {
-            if (res->Instrs == NULL)
-                res->Instrs = arr->arr_dim[i]->Instrs;
-            else
-                AppendSeq(res->Instrs, arr->arr_dim[i]->Instrs);
-        }
-    if (res->Instrs == NULL)
-        res->Instrs = GenInstr(NULL, "la", TmpRegName(res->Reg), name, NULL);
-    else
-        AppendSeq(res->Instrs, GenInstr(NULL, "la", TmpRegName(res->Reg), name, NULL));
-    int offsetSum = AvailTmpReg();
-    AppendSeq(res->Instrs, GenInstr(NULL, "li", TmpRegName(offsetSum), "0", NULL));
-    int multiplier = 1;
-    //int multiplier = AvailTmpReg();
-    //AppendSeq(res->Instrs, GenInstr(NULL, "li", TmpRegName(multiplier), "1", NULL));
-    int extra = AvailTmpReg();
+            res->body = append(res->body, arr->arr_dim[i]->body);
+    }
+    res->body = append(res->body, gen_instr(NULL, "la", reg_name(res->reg), name, NULL));
+        
+    int off_sum = avail_reg();
+    append(res->body, gen_instr(NULL, "li", reg_name(off_sum), "0", NULL));
+    int mult = 1;
+    int extra = avail_reg();
 
     if (arr != NULL)
         for (int i = 0; i < arr->arr_dim_c; i++)
         {
-            char mult[100];
-            sprintf(mult, "%d", multiplier);
-            AppendSeq(res->Instrs, GenInstr(NULL, "li", TmpRegName(extra), mult, NULL));
-            AppendSeq(res->Instrs, GenInstr(NULL, "mul", TmpRegName(extra), TmpRegName(extra), TmpRegName(arr->arr_dim[i]->Reg)));
-            ReleaseTmpReg(arr->arr_dim[i]->Reg);
-            AppendSeq(res->Instrs, GenInstr(NULL, "add", TmpRegName(offsetSum), TmpRegName(offsetSum), TmpRegName(extra)));
+            char mult_c[32];
+            sprintf(mult_c, "%d", mult);
             
-            multiplier *= type->arr_dim[i];
+            append(res->body, gen_instr(NULL, "li", reg_name(extra), mult_c, NULL));
+            append(res->body, gen_instr(NULL, "mul", reg_name(extra), reg_name(extra), reg_name(arr->arr_dim[i]->reg)));
+            append(res->body, gen_instr(NULL, "add", reg_name(off_sum), reg_name(off_sum), reg_name(extra)));
+            
+            mult *= type->arr_dim[i];
+            free_reg(arr->arr_dim[i]->reg);
         }
         
-    AppendSeq(res->Instrs, GenInstr(NULL, "sll", TmpRegName(offsetSum), TmpRegName(offsetSum), "2"));
-    AppendSeq(res->Instrs, GenInstr(NULL, "add", TmpRegName(res->Reg), TmpRegName(res->Reg), TmpRegName(offsetSum)));
+    append(res->body, gen_instr(NULL, "sll", reg_name(off_sum), reg_name(off_sum), "2"));
+    append(res->body, gen_instr(NULL, "add", reg_name(res->reg), reg_name(res->reg), reg_name(off_sum)));
 
-    char offset[100];
-    sprintf(offset, "%d(%s)", 0, TmpRegName(res->Reg));
-    AppendSeq(res->Instrs, GenInstr(NULL, "lw", TmpRegName(res->Reg), offset, NULL));
+    char offset[32];
+    sprintf(offset, "%d(%s)", 0, reg_name(res->reg));
+    append(res->body, gen_instr(NULL, "lw", reg_name(res->reg), offset, NULL));
 
-    ReleaseTmpReg(offsetSum);
-    ReleaseTmpReg(extra);
-    //ReleaseTmpReg(res->Reg);
+    free_reg(off_sum);
+    free_reg(extra);
 
     return res;
 }
 
-struct InstrSeq *doAssign(char *name, struct arr_expr_t *arr, struct ExprRes *Expr)
+instr_t *do_store(char *name, arr_expr_t *arr, expr_res_t *expr)
 { 
-    struct InstrSeq *code = NULL;
-  
-    if (!findName(table, name))
+    instr_t *code = NULL;
+    if (!find_name(table, name))
     {
-        writeIndicator(getCurrentColumnNum());
-        writeMessage("Undeclared variable");
+        put_marker(col_num());
+        put_warning("Undeclared variable");
     }
 
-    struct type_descriptor_t *type = (struct type_descriptor_t *)getCurrentAttr(table);
+    type_desc_t *type = (type_desc_t *)get_attr(table);
     if (arr != NULL && type->arr_dim_c != arr->arr_dim_c)
     {
-        writeMessage(NULL);
-        writeIndicator(getCurrentColumnNum());
-        writeMessage("Array dimensionality does not match that of the assignment");
-        return Expr->Instrs;
+        put_warning(NULL);
+        put_marker(col_num());
+        put_warning("Array dimensionality does not match that of the assignment");
+
+        return expr->body;
     }
     
     if (arr != NULL)
+    {
         for (int i = 0; i < arr->arr_dim_c; i++)
-        {
-            if (code == NULL)
-                code = arr->arr_dim[i]->Instrs;
-            else
-                AppendSeq(code, arr->arr_dim[i]->Instrs);
-        }
-    if (code == NULL)
-        code = Expr->Instrs;
-    else
-        AppendSeq(code, Expr->Instrs);
+            code = append(code, arr->arr_dim[i]->body);
+    }
+    code = append(code, expr->body);
 
-    int r = AvailTmpReg();
-    AppendSeq(code, GenInstr(NULL, "la", TmpRegName(r), name, NULL));
+    int r = avail_reg();
+    append(code, gen_instr(NULL, "la", reg_name(r), name, NULL));
     
-    int offsetSum = AvailTmpReg();
-    AppendSeq(code, GenInstr(NULL, "li", TmpRegName(offsetSum), "0", NULL));
-    //int multiplier = AvailTmpReg();
-    //AppendSeq(code, GenInstr(NULL, "li", TmpRegName(multiplier), "1", NULL));
-    int multiplier = 1;
-    int extra = AvailTmpReg();
+    int off_sum = avail_reg();
+    append(code, gen_instr(NULL, "li", reg_name(off_sum), "0", NULL));
+    int mult = 1;
+    int extra = avail_reg();
 
     if (arr != NULL)
         for (int i = 0; i < arr->arr_dim_c; i++)
         {
-            char mult[100];
-            sprintf(mult, "%d", multiplier);
+            char mult_c[32];
+            sprintf(mult_c, "%d", mult);
             
-            AppendSeq(code, GenInstr(NULL, "li", TmpRegName(extra), mult, NULL));
-            AppendSeq(code, GenInstr(NULL, "mul", TmpRegName(extra), TmpRegName(extra), TmpRegName(arr->arr_dim[i]->Reg)));
-            ReleaseTmpReg(arr->arr_dim[i]->Reg);
-            AppendSeq(code, GenInstr(NULL, "add", TmpRegName(offsetSum), TmpRegName(offsetSum), TmpRegName(extra)));
+            append(code, gen_instr(NULL, "li", reg_name(extra), mult_c, NULL));
+            append(code, gen_instr(NULL, "mul", reg_name(extra), reg_name(extra), reg_name(arr->arr_dim[i]->reg)));
+            free_reg(arr->arr_dim[i]->reg);
+            append(code, gen_instr(NULL, "add", reg_name(off_sum), reg_name(off_sum), reg_name(extra)));
             
-            multiplier *= type->arr_dim[i];
+            mult *= type->arr_dim[i];
         }
 
-    AppendSeq(code, GenInstr(NULL, "sll", TmpRegName(offsetSum), TmpRegName(offsetSum), "2"));
-    AppendSeq(code, GenInstr(NULL, "add", TmpRegName(r), TmpRegName(r), TmpRegName(offsetSum)));
-    char offset[100];
-    sprintf(offset, "%d(%s)", 0, TmpRegName(r));
-    AppendSeq(code, GenInstr(NULL, "sw", TmpRegName(Expr->Reg), offset, NULL));
+    append(code, gen_instr(NULL, "sll", reg_name(off_sum), reg_name(off_sum), "2"));
+    append(code, gen_instr(NULL, "add", reg_name(r), reg_name(r), reg_name(off_sum)));
+    char offset[32];
+    sprintf(offset, "%d(%s)", 0, reg_name(r));
+    append(code, gen_instr(NULL, "sw", reg_name(expr->reg), offset, NULL));
 
-    ReleaseTmpReg(Expr->Reg);
-    ReleaseTmpReg(r);
-    ReleaseTmpReg(offsetSum);
-    ReleaseTmpReg(extra);
-    free(Expr);
+    free_reg(expr->reg);
+    free_reg(r);
+    free_reg(off_sum);
+    free_reg(extra);
+    free(expr);
     
     return code;
 }
 
-struct ExprRes *doAdd(struct ExprRes *Res1, struct ExprRes *Res2)
+expr_res_t *do_add(expr_res_t *l, expr_res_t *r)
 { 
-    int reg;
-    
-    reg = AvailTmpReg();
-    AppendSeq(Res1->Instrs, Res2->Instrs);
-    AppendSeq(Res1->Instrs, GenInstr(NULL, "add",
-        TmpRegName(reg),
-        TmpRegName(Res1->Reg),
-        TmpRegName(Res2->Reg)));
-    ReleaseTmpReg(Res1->Reg);
-    ReleaseTmpReg(Res2->Reg);
-    Res1->Reg = reg;
-    free(Res2);
+    append(l->body, r->body);
+    append(l->body, gen_instr(NULL, "add",
+        reg_name(l->reg),
+        reg_name(l->reg),
+        reg_name(r->reg)));
 
-    return Res1;
+    free_reg(r->reg);
+    free(r);
+
+    return l;
 }
 
-struct ExprRes *doSubtract(struct ExprRes *Res1, struct ExprRes *Res2)
+expr_res_t *do_sub(expr_res_t *l, expr_res_t *r)
 { 
-    int reg;
-    
-    reg = AvailTmpReg();
-    AppendSeq(Res1->Instrs, Res2->Instrs);
-    AppendSeq(Res1->Instrs, GenInstr(NULL, "sub",
-        TmpRegName(reg),
-        TmpRegName(Res1->Reg),
-        TmpRegName(Res2->Reg)));
-    ReleaseTmpReg(Res1->Reg);
-    ReleaseTmpReg(Res2->Reg);
-    Res1->Reg = reg;
-    free(Res2);
+    append(l->body, r->body);
+    append(l->body, gen_instr(NULL, "sub",
+        reg_name(l->reg),
+        reg_name(l->reg),
+        reg_name(r->reg)));
 
-    return Res1;
+    free_reg(r->reg);
+    free(r);
+
+    return l;
 }
 
-struct ExprRes *doDivide(struct ExprRes *Res1, struct ExprRes *Res2)
+expr_res_t *do_div(expr_res_t *l, expr_res_t *r)
 { 
-    int reg;
-    
-    reg = AvailTmpReg();
-    AppendSeq(Res1->Instrs, Res2->Instrs);
-    AppendSeq(Res1->Instrs, GenInstr(NULL, "div",
-        TmpRegName(Res1->Reg),
-        TmpRegName(Res2->Reg),
+    append(l->body, r->body);
+    append(l->body, gen_instr(NULL, "div",
+        reg_name(l->reg),
+        reg_name(r->reg),
         NULL));
-    AppendSeq(Res1->Instrs, GenInstr(NULL, "mflo",
-        TmpRegName(reg),
+    append(l->body, gen_instr(NULL, "mflo",
+        reg_name(l->reg),
         NULL,
         NULL));
-    ReleaseTmpReg(Res1->Reg);
-    ReleaseTmpReg(Res2->Reg);
-    Res1->Reg = reg;
-    free(Res2);
 
-    return Res1;
+    free_reg(r->reg);
+    free(r);
+
+    return l;
 }
 
-struct ExprRes *doPower(struct ExprRes *Res1, struct ExprRes *Res2)
+expr_res_t *do_pow(expr_res_t *l, expr_res_t *r)
 { 
-    int reg = AvailTmpReg();
-    int counter = AvailTmpReg();
-    char *l = GenLabel(), *s = GenLabel();
+    int reg = avail_reg();
+    int counter = avail_reg();
+    char *_l = gen_label(), *_s = gen_label();
 
-    AppendSeq(Res1->Instrs, Res2->Instrs);
+    append(l->body, r->body);
 
-    AppendSeq(Res1->Instrs, GenInstr(NULL, "li", TmpRegName(counter), "0", NULL));
-    AppendSeq(Res1->Instrs, GenInstr(NULL, "li", TmpRegName(reg), "1", NULL));
-    AppendSeq(Res1->Instrs, GenInstr(s, NULL, NULL, NULL, NULL));
-    AppendSeq(Res1->Instrs, GenInstr(NULL, "beq", TmpRegName(counter), TmpRegName(Res2->Reg), l));
+    append(l->body, gen_instr(NULL, "li", reg_name(counter), "0", NULL));
+    append(l->body, gen_instr(NULL, "li", reg_name(reg), "1", NULL));
+    append(l->body, gen_instr(_s, NULL, NULL, NULL, NULL));
+    append(l->body, gen_instr(NULL, "beq", reg_name(counter), reg_name(r->reg), _l));
 
-    AppendSeq(Res1->Instrs, GenInstr(NULL, "mul",
-        TmpRegName(reg),
-        TmpRegName(reg),
-        TmpRegName(Res1->Reg)));
+    append(l->body, gen_instr(NULL, "mul",
+        reg_name(reg),
+        reg_name(reg),
+        reg_name(l->reg)));
 
-    AppendSeq(Res1->Instrs, GenInstr(NULL, "addi", TmpRegName(counter), TmpRegName(counter), "1"));
-    AppendSeq(Res1->Instrs, GenInstr(NULL, "jal", s, NULL, NULL));
-    AppendSeq(Res1->Instrs, GenInstr(l, NULL, NULL, NULL, NULL));
+    append(l->body, gen_instr(NULL, "addi", reg_name(counter), reg_name(counter), "1"));
+    append(l->body, gen_instr(NULL, "jal", _s, NULL, NULL));
+    append(l->body, gen_instr(_l, NULL, NULL, NULL, NULL));
 
-    ReleaseTmpReg(Res1->Reg);
-    ReleaseTmpReg(Res2->Reg);
-    ReleaseTmpReg(counter);
-    Res1->Reg = reg;
-    free(Res2);
+    free_reg(l->reg);
+    free_reg(r->reg);
+    free_reg(counter);
+    free(r);
+    l-> reg = reg;
+    free(_l);
+    free(_s);
 
-    return Res1;
+    return l;
 }
 
-struct ExprRes *doModulo(struct ExprRes *Res1, struct ExprRes *Res2)
+expr_res_t *do_modulo(expr_res_t *l, expr_res_t *r)
 { 
-    int reg;
-    
-    reg = AvailTmpReg();
-    AppendSeq(Res1->Instrs, Res2->Instrs);
-    AppendSeq(Res1->Instrs, GenInstr(NULL, "div",
-        TmpRegName(Res1->Reg),
-        TmpRegName(Res2->Reg),
+    append(l->body, r->body);
+    append(l->body, gen_instr(NULL, "div",
+        reg_name(l->reg),
+        reg_name(r->reg),
         NULL));
-    AppendSeq(Res1->Instrs, GenInstr(NULL, "mfhi",
-        TmpRegName(reg),
+    append(l->body, gen_instr(NULL, "mfhi",
+        reg_name(l->reg),
         NULL,
         NULL));
-    ReleaseTmpReg(Res1->Reg);
-    ReleaseTmpReg(Res2->Reg);
-    Res1->Reg = reg;
-    free(Res2);
 
-    return Res1;
+    free_reg(r->reg);
+    free(r);
+
+    return l;
 }
 
-struct ExprRes *doMult(struct ExprRes *Res1, struct ExprRes *Res2)
+expr_res_t *do_mult(expr_res_t *l, expr_res_t *r)
 { 
-    int reg;
-    
-    reg = AvailTmpReg();
-    AppendSeq(Res1->Instrs, Res2->Instrs);
-    AppendSeq(Res1->Instrs, GenInstr(NULL, "mul",
-        TmpRegName(reg),
-        TmpRegName(Res1->Reg),
-        TmpRegName(Res2->Reg)));
-    ReleaseTmpReg(Res1->Reg);
-    ReleaseTmpReg(Res2->Reg);
-    Res1->Reg = reg;
-    free(Res2);
+    append(l->body, r->body);
+    append(l->body, gen_instr(NULL, "mul",
+        reg_name(l->reg),
+        reg_name(l->reg),
+        reg_name(r->reg)));
+        
+    free_reg(r->reg);
+    free(r);
 
-    return Res1;
+    return l;
 }
 
-struct InstrSeq *doPrint(struct ExprRes *Expr)
+instr_t *do_print(expr_res_t *expr)
 { 
-    struct InstrSeq *code;
-    code = Expr->Instrs;
-  
-    AppendSeq(code, GenInstr(NULL, "li", "$v0", "1", NULL));
-    AppendSeq(code, GenInstr(NULL, "move", "$a0", TmpRegName(Expr->Reg), NULL));
-    AppendSeq(code, GenInstr(NULL, "syscall", NULL, NULL, NULL));
+    instr_t *code = expr->body;
+    append(code, gen_instr(NULL, "li", "$v0", "1", NULL));
+    append(code, gen_instr(NULL, "move", "$a0", reg_name(expr->reg), NULL));
+    append(code, gen_instr(NULL, "syscall", NULL, NULL, NULL));
 
-    /*
-    AppendSeq(code, GenInstr(NULL, "li", "$v0", "4", NULL));
-    AppendSeq(code, GenInstr(NULL, "la", "$a0", "_sp", NULL));
-    AppendSeq(code, GenInstr(NULL, "syscall", NULL, NULL, NULL));
-    */
-
-    ReleaseTmpReg(Expr->Reg);
-    free(Expr);
+    free_reg(expr->reg);
+    free(expr);
 
     return code;
 }
 
-unsigned int stringLiteralCounter = 0;
+unsigned int str_lit_c = 0;
 
-char *doStringLit(char *value)
+char *do_str_lit(char *chars)
 {
-    char *_l = (char *)malloc(16);
-    sprintf(_l, "_str_%u", stringLiteralCounter++);
+    char *_l = (char *)malloc(32);
+    sprintf(_l, "_str_%u", str_lit_c++);
 
-    enterName(stringLiterals, _l);
-
-    findName(stringLiterals, _l);
-    setCurrentAttr(stringLiterals, strdup(value));
+    enter_name(str_lits, _l);
+    set_attr(str_lits, strdup(chars));
 
     return _l;
 }
 
-struct InstrSeq *doPrintStr(char *stringLit)
+instr_t *do_print_str(char *label)
 { 
-    struct InstrSeq *code = GenInstr(NULL, "li", "$v0", "4", NULL);
-    AppendSeq(code, GenInstr(NULL, "la", "$a0", stringLit, NULL));
-    AppendSeq(code, GenInstr(NULL, "syscall", NULL, NULL, NULL));
+    instr_t *code = gen_instr(NULL, "li", "$v0", "4", NULL);
+    append(code, gen_instr(NULL, "la", "$a0", label, NULL));
+    append(code, gen_instr(NULL, "syscall", NULL, NULL, NULL));
 
     return code;
 }
 
-extern struct ExprRes *doBExpr(struct ExprRes* Res1,  struct ExprRes* Res2)
+extern expr_res_t *do_compare(expr_res_t* l,  expr_res_t* r)
 {
-    int reg = AvailTmpReg();
-    AppendSeq(Res1->Instrs, Res2->Instrs);
-    AppendSeq(Res1->Instrs, GenInstr(NULL, "seq",
-        TmpRegName(reg),
-        TmpRegName(Res1->Reg),
-        TmpRegName(Res2->Reg)));
-    ReleaseTmpReg(Res1->Reg);
-    ReleaseTmpReg(Res2->Reg);
-    Res1->Reg = reg;
-    free(Res2);
+    append(l->body, r->body);
+    append(l->body, gen_instr(NULL, "seq",
+        reg_name(l->reg),
+        reg_name(l->reg),
+        reg_name(r->reg)));
 
-    return Res1;
+    free_reg(r->reg);
+    free(r);
+
+    return l;
 }
 
-extern struct ExprRes *doNegate(struct ExprRes* Res)
+extern expr_res_t *do_negate(expr_res_t* expr)
 {
-    int reg = AvailTmpReg();
-    AppendSeq(Res->Instrs, GenInstr(NULL, "sub",
-        TmpRegName(reg),
+    append(expr->body, gen_instr(NULL, "sub",
+        reg_name(expr->reg),
         "$zero",
-        TmpRegName(Res->Reg)));
-    ReleaseTmpReg(Res->Reg);
-    Res->Reg = reg;
+        reg_name(expr->reg)));
 
-    return Res;
+    return expr;
 }
 
-extern struct ExprRes *doLogNegate(struct ExprRes* Res)
+extern expr_res_t *do_not(expr_res_t* expr)
 {
-    int reg = AvailTmpReg();
-    AppendSeq(Res->Instrs, GenInstr(NULL, "seq",
-        TmpRegName(reg),
+    append(expr->body, gen_instr(NULL, "seq",
+        reg_name(expr->reg),
         "$zero",
-        TmpRegName(Res->Reg)));
-    ReleaseTmpReg(Res->Reg);
-    Res->Reg = reg;
+        reg_name(expr->reg)));
 
-    return Res;
+    return expr;
 }
 
-extern struct InstrSeq *doIf(struct ExprRes *Res, struct InstrSeq *seq)
+extern instr_t *do_if(expr_res_t *Res, instr_t *seq)
 {
-    struct ExprRes *bRes;
-    bRes = (struct ExprRes *)malloc(sizeof(struct ExprRes));
-    bRes->Label = GenLabel();
-    AppendSeq(Res->Instrs, GenInstr(NULL, "beq", TmpRegName(Res->Reg), "$zero", bRes->Label));
-    bRes->Instrs = Res->Instrs;
-    ReleaseTmpReg(Res->Reg);
+    char *_e = gen_label();
+    instr_t *code = Res->body;
+
+    append(code, gen_instr(NULL, "beq", reg_name(Res->reg), "$zero", _e));
+	append(code, seq);
+	append(code, gen_instr(_e, NULL, NULL, NULL, NULL));
+    
+    free_reg(Res->reg);
     free(Res);
+    free(_e);
 
-	struct InstrSeq * seq2;
-	seq2 = AppendSeq(bRes->Instrs, seq);
-	AppendSeq(seq2, GenInstr(bRes->Label, NULL, NULL, NULL, NULL));
-    free(bRes->Label);
-	free(bRes);
-
-	return seq2;
+	return code;
 }
 
-extern struct InstrSeq *doIfElse(struct ExprRes *Res, struct InstrSeq *seq, struct InstrSeq *seqElse)
+extern instr_t *do_if_else(expr_res_t *expr, instr_t *body, instr_t *b_else)
 {
-    struct InstrSeq *result = Res->Instrs;
-    char *exitLabel = GenLabel();
-    char *elseLabel = GenLabel();
+    instr_t *code = expr->body;
+    char *_exit = gen_label();
+    char *_else = gen_label();
 
-    AppendSeq(result, GenInstr(NULL, "beq", TmpRegName(Res->Reg), "$zero", elseLabel));
-	AppendSeq(result, seq);
-    AppendSeq(result, GenInstr(NULL, "jal", exitLabel, NULL, NULL));
-	AppendSeq(result, GenInstr(elseLabel, NULL, NULL, NULL, NULL));
-    AppendSeq(result, seqElse);
-	AppendSeq(result, GenInstr(exitLabel, NULL, NULL, NULL, NULL));
+    append(code, gen_instr(NULL, "beq", reg_name(expr->reg), "$zero", _else));
+	append(code, body);
+    append(code, gen_instr(NULL, "jal", _exit, NULL, NULL));
+	append(code, gen_instr(_else, NULL, NULL, NULL, NULL));
+    append(code, b_else);
+	append(code, gen_instr(_exit, NULL, NULL, NULL, NULL));
 
-    ReleaseTmpReg(Res->Reg);
-    free(Res);
-    free(elseLabel);
-    free(exitLabel);
-
-	return result;
-}
-
-extern struct InstrSeq *doWhile(struct ExprRes *Res, struct InstrSeq *seq)
-{
-    struct InstrSeq *result = Res->Instrs;
-    char *startLabel = GenLabel();
-    char *exitLabel = GenLabel();
-
-	result = AppendSeq(GenInstr(startLabel, NULL, NULL, NULL, NULL), result);
-    AppendSeq(result, GenInstr(NULL, "beq", TmpRegName(Res->Reg), "$zero", exitLabel));
-	AppendSeq(result, seq);
-	AppendSeq(result, GenInstr(NULL, "jal", startLabel, NULL, NULL));
-	AppendSeq(result, GenInstr(exitLabel, NULL, NULL, NULL, NULL));
-
-    ReleaseTmpReg(Res->Reg);
-    free(Res);
-    free(startLabel);
-    free(exitLabel);
-
-	return result;
-}
-
-extern struct InstrSeq *doFor(struct InstrSeq *stmtA, struct ExprRes *expr, struct InstrSeq *stmtB, struct InstrSeq *body)
-{
-    struct InstrSeq *result = stmtA;
-    char *startLabel = GenLabel();
-    char *exitLabel = GenLabel();
-
-	AppendSeq(result, GenInstr(startLabel, NULL, NULL, NULL, NULL));
-    AppendSeq(result, expr->Instrs);
-    AppendSeq(result, GenInstr(NULL, "beq", TmpRegName(expr->Reg), "$zero", exitLabel));
-	AppendSeq(result, body);
-    AppendSeq(result, stmtB);
-	AppendSeq(result, GenInstr(NULL, "jal", startLabel, NULL, NULL));
-	AppendSeq(result, GenInstr(exitLabel, NULL, NULL, NULL, NULL));
-
-    ReleaseTmpReg(expr->Reg);
+    free_reg(expr->reg);
     free(expr);
-    free(startLabel);
-    free(exitLabel);
+    free(_else);
+    free(_exit);
+
+	return code;
+}
+
+extern instr_t *do_while(expr_res_t *expr, instr_t *body)
+{
+    instr_t *result = expr->body;
+    char *_start = gen_label();
+    char *_exit = gen_label();
+
+	result = append(gen_instr(_start, NULL, NULL, NULL, NULL), result);
+    append(result, gen_instr(NULL, "beq", reg_name(expr->reg), "$zero", _exit));
+	append(result, body);
+	append(result, gen_instr(NULL, "jal", _start, NULL, NULL));
+	append(result, gen_instr(_exit, NULL, NULL, NULL, NULL));
+
+    free_reg(expr->reg);
+    free(expr);
+    free(_start);
+    free(_exit);
 
 	return result;
 }
 
-extern struct ExprRes *doLessThan(struct ExprRes *Res1,  struct ExprRes *Res2)
+extern instr_t *do_for(instr_t *pre, expr_res_t *expr, instr_t *post, instr_t *body)
 {
-    int reg = AvailTmpReg();
-    AppendSeq(Res1->Instrs, Res2->Instrs);
-    AppendSeq(Res1->Instrs, GenInstr(NULL, "slt",
-        TmpRegName(reg),
-        TmpRegName(Res1->Reg),
-        TmpRegName(Res2->Reg)));
-    ReleaseTmpReg(Res1->Reg);
-    ReleaseTmpReg(Res2->Reg);
-    Res1->Reg = reg;
-    free(Res2);
+    instr_t *result = pre;
+    char *_start = gen_label();
+    char *_exit = gen_label();
 
-    return Res1;
+	append(result, gen_instr(_start, NULL, NULL, NULL, NULL));
+    append(result, expr->body);
+    append(result, gen_instr(NULL, "beq", reg_name(expr->reg), "$zero", _exit));
+	append(result, body);
+    append(result, post);
+	append(result, gen_instr(NULL, "jal", _start, NULL, NULL));
+	append(result, gen_instr(_exit, NULL, NULL, NULL, NULL));
+
+    free_reg(expr->reg);
+    free(expr);
+    free(_start);
+    free(_exit);
+
+	return result;
 }
 
-extern struct ExprRes *doLessEquals(struct ExprRes *Res1,  struct ExprRes *Res2)
+extern expr_res_t *do_less_than(expr_res_t *l,  expr_res_t *r)
 {
-    int reg = AvailTmpReg();
-    AppendSeq(Res1->Instrs, Res2->Instrs);
-    AppendSeq(Res1->Instrs, GenInstr(NULL, "sle",
-        TmpRegName(reg),
-        TmpRegName(Res1->Reg),
-        TmpRegName(Res2->Reg)));
-    ReleaseTmpReg(Res1->Reg);
-    ReleaseTmpReg(Res2->Reg);
-    Res1->Reg = reg;
-    free(Res2);
+    append(l->body, r->body);
+    append(l->body, gen_instr(NULL, "slt",
+        reg_name(l->reg),
+        reg_name(l->reg),
+        reg_name(r->reg)));
+        
+    free_reg(r->reg);
+    free(r);
 
-    return Res1;
+    return l;
 }
 
-extern struct ExprRes *doGreaterThan(struct ExprRes *Res1,  struct ExprRes *Res2)
+extern expr_res_t *do_less_than_e(expr_res_t *l,  expr_res_t *r)
 {
-    int reg = AvailTmpReg();
-    AppendSeq(Res1->Instrs, Res2->Instrs);
-    AppendSeq(Res1->Instrs, GenInstr(NULL, "sgt",
-        TmpRegName(reg),
-        TmpRegName(Res1->Reg),
-        TmpRegName(Res2->Reg)));
-    ReleaseTmpReg(Res1->Reg);
-    ReleaseTmpReg(Res2->Reg);
-    Res1->Reg = reg;
-    free(Res2);
+    append(l->body, r->body);
+    append(l->body, gen_instr(NULL, "sle",
+        reg_name(l->reg),
+        reg_name(l->reg),
+        reg_name(r->reg)));
+        
+    free_reg(r->reg);
+    free(r);
 
-    return Res1;
+    return l;
 }
 
-extern struct ExprRes *doGreaterEquals(struct ExprRes *Res1,  struct ExprRes *Res2)
+extern expr_res_t *do_greater_than(expr_res_t *l,  expr_res_t *r)
 {
-    int reg = AvailTmpReg();
-    AppendSeq(Res1->Instrs, Res2->Instrs);
-    AppendSeq(Res1->Instrs, GenInstr(NULL, "sge",
-        TmpRegName(reg),
-        TmpRegName(Res1->Reg),
-        TmpRegName(Res2->Reg)));
-    ReleaseTmpReg(Res1->Reg);
-    ReleaseTmpReg(Res2->Reg);
-    Res1->Reg = reg;
-    free(Res2);
+    int reg = avail_reg();
+    append(l->body, r->body);
+    append(l->body, gen_instr(NULL, "sgt",
+        reg_name(l->reg),
+        reg_name(l->reg),
+        reg_name(r->reg)));
+        
+    free_reg(r->reg);
+    free(r);
 
-    return Res1;
+    return l;
 }
 
-extern struct ExprRes *doAnd(struct ExprRes *Res1,  struct ExprRes *Res2)
+extern expr_res_t *do_greater_than_e(expr_res_t *l,  expr_res_t *r)
 {
-    int reg = AvailTmpReg();
-    AppendSeq(Res1->Instrs, Res2->Instrs);
-    AppendSeq(Res1->Instrs, GenInstr(NULL, "and",
-        TmpRegName(reg),
-        TmpRegName(Res1->Reg),
-        TmpRegName(Res2->Reg)));
-    ReleaseTmpReg(Res1->Reg);
-    ReleaseTmpReg(Res2->Reg);
-    Res1->Reg = reg;
-    free(Res2);
+    int reg = avail_reg();
+    append(l->body, r->body);
+    append(l->body, gen_instr(NULL, "sge",
+        reg_name(l->reg),
+        reg_name(l->reg),
+        reg_name(r->reg)));
+        
+    free_reg(r->reg);
+    free(r);
 
-    return Res1;
+    return l;
 }
 
-extern struct ExprRes *doOr(struct ExprRes *Res1,  struct ExprRes *Res2)
+extern expr_res_t *do_and(expr_res_t *l,  expr_res_t *r)
 {
-    int reg = AvailTmpReg();
-    AppendSeq(Res1->Instrs, Res2->Instrs);
-    AppendSeq(Res1->Instrs, GenInstr(NULL, "or",
-        TmpRegName(reg),
-        TmpRegName(Res1->Reg),
-        TmpRegName(Res2->Reg)));
-    ReleaseTmpReg(Res1->Reg);
-    ReleaseTmpReg(Res2->Reg);
-    Res1->Reg = reg;
-    free(Res2);
+    append(l->body, r->body);
+    append(l->body, gen_instr(NULL, "and",
+        reg_name(l->reg),
+        reg_name(l->reg),
+        reg_name(r->reg)));
+        
+    free_reg(r->reg);
+    free(r);
 
-    return Res1;
+    return l;
 }
 
-extern struct ExprRes *doNotEquals(struct ExprRes *Res1,  struct ExprRes *Res2)
+extern expr_res_t *do_or(expr_res_t *l,  expr_res_t *r)
 {
-    int reg = AvailTmpReg();
-    AppendSeq(Res1->Instrs, Res2->Instrs);
-    AppendSeq(Res1->Instrs, GenInstr(NULL, "sne",
-        TmpRegName(reg),
-        TmpRegName(Res1->Reg),
-        TmpRegName(Res2->Reg)));
-    ReleaseTmpReg(Res1->Reg);
-    ReleaseTmpReg(Res2->Reg);
-    Res1->Reg = reg;
-    free(Res2);
+    append(l->body, r->body);
+    append(l->body, gen_instr(NULL, "or",
+        reg_name(l->reg),
+        reg_name(l->reg),
+        reg_name(r->reg)));
+        
+    free_reg(r->reg);
+    free(r);
 
-    return Res1;
+    return l;
 }
 
-extern struct InstrSeq *doReadId(char *name)
+extern expr_res_t *do_not_eq(expr_res_t *l,  expr_res_t *r)
+{
+    append(l->body, r->body);
+    append(l->body, gen_instr(NULL, "sne",
+        reg_name(l->reg),
+        reg_name(l->reg),
+        reg_name(r->reg)));
+        
+    free_reg(r->reg);
+    free(r);
+
+    return l;
+}
+
+extern instr_t *do_read(char *name)
 { 
-    struct InstrSeq *code;
-  
-    if (!findName(table, name))
+    if (!find_name(table, name))
     {
-        writeIndicator(getCurrentColumnNum());
-        writeMessage("Undeclared variable");
+        put_marker(col_num());
+        put_warning("Undeclared variable");
     }
 
-    // Load "read int" syscall
-    code = GenInstr(NULL, "li", "$v0", "5", NULL);
-    AppendSeq(code, GenInstr(NULL, "syscall", NULL, NULL, NULL));
-    // Store `$v0` to memory
-    AppendSeq(code, GenInstr(NULL, "sw", "$v0", name, NULL));
+    instr_t *code = gen_instr(NULL, "li", "$v0", "5", NULL);
+    append(code, gen_instr(NULL, "syscall", NULL, NULL, NULL));
+    append(code, gen_instr(NULL, "sw", "$v0", name, NULL));
     
     return code;
 }
 
-struct InstrSeq *doPrintLines(struct ExprRes *Res)
+instr_t *do_print_l(expr_res_t *expr)
 { 
-    int counter = AvailTmpReg();
-    char *l = GenLabel(), *s = GenLabel();
+    int counter = avail_reg();
+    char *_l = gen_label(), *_s = gen_label();
+    instr_t *code = expr->body;
 
-    AppendSeq(Res->Instrs, GenInstr(NULL, "li", TmpRegName(counter), "0", NULL));
-    AppendSeq(Res->Instrs, GenInstr(s, NULL, NULL, NULL, NULL));
-    AppendSeq(Res->Instrs, GenInstr(NULL, "beq", TmpRegName(counter), TmpRegName(Res->Reg), l));
+    append(code, gen_instr(NULL, "li", reg_name(counter), "0", NULL));
+    append(code, gen_instr(_s, NULL, NULL, NULL, NULL));
+    append(code, gen_instr(NULL, "beq", reg_name(counter), reg_name(expr->reg), _l));
 
-    AppendSeq(Res->Instrs, GenInstr(NULL, "li", "$v0", "4", NULL));
-    AppendSeq(Res->Instrs, GenInstr(NULL, "la", "$a0", "_nl", NULL));
-    AppendSeq(Res->Instrs, GenInstr(NULL, "syscall", NULL, NULL, NULL));
+    append(code, gen_instr(NULL, "li", "$v0", "4", NULL));
+    append(code, gen_instr(NULL, "la", "$a0", "_nl", NULL));
+    append(code, gen_instr(NULL, "syscall", NULL, NULL, NULL));
 
-    AppendSeq(Res->Instrs, GenInstr(NULL, "addi", TmpRegName(counter), TmpRegName(counter), "1"));
-    AppendSeq(Res->Instrs, GenInstr(NULL, "jal", s, NULL, NULL));
-    AppendSeq(Res->Instrs, GenInstr(l, NULL, NULL, NULL, NULL));
+    append(code, gen_instr(NULL, "addi", reg_name(counter), reg_name(counter), "1"));
+    append(code, gen_instr(NULL, "jal", _s, NULL, NULL));
+    append(code, gen_instr(_l, NULL, NULL, NULL, NULL));
 
-    ReleaseTmpReg(Res->Reg);
-    ReleaseTmpReg(counter);
+    free_reg(expr->reg);
+    free_reg(counter);
 
-    struct InstrSeq *result = Res->Instrs;
-    free(Res);
+    free(_l);
+    free(_s);
+    free(expr);
 
-    return result;
+    return code;
 }
 
-struct InstrSeq *doPrintSpaces(struct ExprRes *Res)
+instr_t *do_print_s(expr_res_t *expr)
 { 
-    int counter = AvailTmpReg();
-    char *l = GenLabel(), *s = GenLabel();
+    int counter = avail_reg();
+    char *_l = gen_label(), *_s = gen_label();
+    instr_t *code = expr->body;
 
-    AppendSeq(Res->Instrs, GenInstr(NULL, "li", TmpRegName(counter), "0", NULL));
-    AppendSeq(Res->Instrs, GenInstr(s, NULL, NULL, NULL, NULL));
-    AppendSeq(Res->Instrs, GenInstr(NULL, "beq", TmpRegName(counter), TmpRegName(Res->Reg), l));
+    append(code, gen_instr(NULL, "li", reg_name(counter), "0", NULL));
+    append(code, gen_instr(_s, NULL, NULL, NULL, NULL));
+    append(code, gen_instr(NULL, "beq", reg_name(counter), reg_name(expr->reg), _l));
 
-    AppendSeq(Res->Instrs, GenInstr(NULL, "li", "$v0", "4", NULL));
-    AppendSeq(Res->Instrs, GenInstr(NULL, "la", "$a0", "_sp", NULL));
-    AppendSeq(Res->Instrs, GenInstr(NULL, "syscall", NULL, NULL, NULL));
+    append(code, gen_instr(NULL, "li", "$v0", "4", NULL));
+    append(code, gen_instr(NULL, "la", "$a0", "_sp", NULL));
+    append(code, gen_instr(NULL, "syscall", NULL, NULL, NULL));
 
-    AppendSeq(Res->Instrs, GenInstr(NULL, "addi", TmpRegName(counter), TmpRegName(counter), "1"));
-    AppendSeq(Res->Instrs, GenInstr(NULL, "jal", s, NULL, NULL));
-    AppendSeq(Res->Instrs, GenInstr(l, NULL, NULL, NULL, NULL));
+    append(code, gen_instr(NULL, "addi", reg_name(counter), reg_name(counter), "1"));
+    append(code, gen_instr(NULL, "jal", _s, NULL, NULL));
+    append(code, gen_instr(_l, NULL, NULL, NULL, NULL));
 
-    ReleaseTmpReg(Res->Reg);
-    ReleaseTmpReg(counter);
+    free_reg(expr->reg);
+    free_reg(counter);
+    free(expr);
 
-    struct InstrSeq *result = Res->Instrs;
-    free(Res);
-
-    return result;
+    return code;
 }
 
 
-extern struct type_descriptor_t *doTypeDescriptor(char *name, int dimensionality, int *dimensions)
+extern type_desc_t *do_type_desc(char *name, int dims, int *sizes)
 {
-    struct type_descriptor_t *result = (struct type_descriptor_t *)malloc(sizeof(struct type_descriptor_t));
+    type_desc_t *result = (type_desc_t *)malloc(sizeof(type_desc_t));
     result->name = name;
-    result->arr_dim_c = dimensionality;
-    result->arr_dim = dimensions;
+    result->arr_dim_c = dims;
+    result->arr_dim = sizes;
 
     return result;
 }
 
-extern struct type_descriptor_t *doArrSeq(struct type_descriptor_t *a, struct type_descriptor_t *b, int this_d)
+extern type_desc_t *do_arr_seq(type_desc_t *a, type_desc_t *b, int this_d)
 {
     if (a != NULL && b != NULL)
     {
@@ -664,7 +601,7 @@ extern struct type_descriptor_t *doArrSeq(struct type_descriptor_t *a, struct ty
         return a == NULL ? b : a;
     else
     {
-        struct type_descriptor_t *result = (struct type_descriptor_t *)malloc(sizeof(struct type_descriptor_t));
+        type_desc_t *result = (type_desc_t *)malloc(sizeof(type_desc_t));
         result->arr_dim = (int *)malloc(sizeof(int));
         result->arr_dim[0] = this_d;
         result->arr_dim_c = 1;
@@ -673,13 +610,13 @@ extern struct type_descriptor_t *doArrSeq(struct type_descriptor_t *a, struct ty
     }
 }
 
-extern struct arr_expr_t *doArrSeqExpr(struct arr_expr_t *a, struct arr_expr_t *b, struct ExprRes *this_d)
+extern arr_expr_t *do_arr_expr(arr_expr_t *a, arr_expr_t *b, expr_res_t *this_d)
 {
     if (a != NULL && b != NULL)
     {
         a->arr_dim_c += b->arr_dim_c;
-        a->arr_dim = (struct ExprRes **)realloc(a->arr_dim, a->arr_dim_c * sizeof(struct ExprRes *));
-        memcpy(&a->arr_dim[a->arr_dim_c - b->arr_dim_c], b->arr_dim, b->arr_dim_c * sizeof(struct ExprRes *));
+        a->arr_dim = (expr_res_t **)realloc(a->arr_dim, a->arr_dim_c * sizeof(expr_res_t *));
+        memcpy(&a->arr_dim[a->arr_dim_c - b->arr_dim_c], b->arr_dim, b->arr_dim_c * sizeof(expr_res_t *));
         free(b);
 
         return a;
@@ -687,8 +624,8 @@ extern struct arr_expr_t *doArrSeqExpr(struct arr_expr_t *a, struct arr_expr_t *
         return a == NULL ? b : a;
     else
     {
-        struct arr_expr_t *result = (struct arr_expr_t *)malloc(sizeof(struct arr_expr_t));
-        result->arr_dim = (struct ExprRes **)malloc(sizeof(struct ExprRes *));
+        arr_expr_t *result = (arr_expr_t *)malloc(sizeof(arr_expr_t));
+        result->arr_dim = (expr_res_t **)malloc(sizeof(expr_res_t *));
         result->arr_dim[0] = this_d;
         result->arr_dim_c = 1;
         
@@ -696,49 +633,39 @@ extern struct arr_expr_t *doArrSeqExpr(struct arr_expr_t *a, struct arr_expr_t *
     }
 }
 
-void Finish(struct InstrSeq *Code)
+void accept_body(instr_t *body)
 {
-    struct InstrSeq *code;
-    int hasMore;
-    struct Attr *attr;
+    instr_t *code;
+    struct attr_t *attr;
 
-    code = GenInstr(NULL, ".text", NULL, NULL, NULL);
-    AppendSeq(code, GenInstr(NULL,".globl","main",NULL,NULL));
-    AppendSeq(code, GenInstr("main", NULL, NULL, NULL, NULL));
-    AppendSeq(code, Code);
-    AppendSeq(code, GenInstr(NULL, "li", "$v0", "10", NULL)); 
-    AppendSeq(code, GenInstr(NULL, "syscall", NULL, NULL, NULL));
-    AppendSeq(code, GenInstr(NULL, ".data", NULL, NULL, NULL));
-    AppendSeq(code, GenInstr(NULL, ".align", "4", NULL, NULL));
-    AppendSeq(code, GenInstr("_nl", ".asciiz", "\"\\n\"", NULL, NULL));
-    AppendSeq(code, GenInstr("_sp", ".asciiz", "\" \"", NULL, NULL));
+    code = gen_instr(NULL, ".text", NULL, NULL, NULL);
+    append(code, gen_instr(NULL,".globl","main",NULL,NULL));
+    append(code, gen_instr("main", NULL, NULL, NULL, NULL));
+    append(code, body);
+    append(code, gen_instr(NULL, "li", "$v0", "10", NULL)); 
+    append(code, gen_instr(NULL, "syscall", NULL, NULL, NULL));
+    append(code, gen_instr(NULL, ".data", NULL, NULL, NULL));
+    append(code, gen_instr(NULL, ".align", "4", NULL, NULL));
+    append(code, gen_instr("_nl", ".asciiz", "\"\\n\"", NULL, NULL));
+    append(code, gen_instr("_sp", ".asciiz", "\" \"", NULL, NULL));
 
-    if (startIterator(stringLiterals)) do
+    if (start_it(str_lits)) do
     {
-        /*
-        char *attr = getCurrentAttr(stringLiterals);
-        char *wrapped = (char *)malloc(strlen(attr) + 3);
-        sprintf(wrapped, "\"%s\"", wrapped);
-        */
-
-        AppendSeq(code, GenInstr(getCurrentName(stringLiterals),
+        append(code, gen_instr(get_name(str_lits),
             ".asciiz",
-            getCurrentAttr(stringLiterals),
+            get_attr(str_lits),
             NULL,
             NULL));
-        AppendSeq(code, GenInstr(NULL,
+        append(code, gen_instr(NULL,
             ".align",
             "4",
             NULL,
             NULL));
-        
-        //free(wrapped);
-    } while (nextEntry(stringLiterals));
+    } while (it_next(str_lits));
 
-    hasMore = startIterator(table);
-    while (hasMore)
+    if (start_it(table)) do
     {
-        struct type_descriptor_t *t = getCurrentAttr(table);
+        type_desc_t *t = get_attr(table);
         int space = 1;
         for (int i = 0; i < t->arr_dim_c; i++)
             space *= t->arr_dim[i];
@@ -747,17 +674,10 @@ void Finish(struct InstrSeq *Code)
         memset(space_str, 0, 100);
         sprintf(space_str, "%d", space);
 
-        /*
-        if (t->arr_dim_c == 0)
-            AppendSeq(code, GenInstr((char *)getCurrentName(table), ".word", "0", NULL, NULL));
-        else
-        */
-            AppendSeq(code, GenInstr((char *)getCurrentName(table), ".space", space_str, NULL, NULL));
-
-        hasMore = nextEntry(table);
-    }
+        append(code, gen_instr((char *)get_name(table), ".space", space_str, NULL, NULL));
+    } while (it_next(table));
     
-    WriteSeq(code);
+    write_seq(code);
     
     return;
 }

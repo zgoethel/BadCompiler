@@ -24,7 +24,7 @@ FILE *handleListing = 0;
  * @param listingName Output listing file name; NULL for stdout.
  * @return 1 on file open success; 0 on file open failure.
  */
-int openFiles(char *sourceName, char *listingName)
+int init_io(char *sourceName, char *listingName)
 {
     // Open source file always
     handleSource = fopen(sourceName, "r");
@@ -42,7 +42,7 @@ int openFiles(char *sourceName, char *listingName)
 /**
  * Closes the file handles which are currently open for writing.
  */
-void closeFiles()
+void free_io()
 {
     // Close source file always
     fclose(handleSource);
@@ -61,7 +61,7 @@ void closeFiles()
  *
  * @return Read character, or `EOF` (-1) at end of file.
  */
-char getNextSourceChar()
+char next_char()
 {
     // Load a new line when necessary
     if (remainingBuffer == 0)
@@ -110,7 +110,7 @@ char getNextSourceChar()
  *
  * @param column Zero-indexed column to indicate.
  */
-void writeIndicator(int column)
+void put_marker(int column)
 {
     const char *format = "   %0*s-^-\n";
     if (handleListing == NULL)
@@ -125,7 +125,7 @@ void writeIndicator(int column)
 /**
  * @param message Message to print to listing file.
  */
-void writeMessage(char *message)
+void put_warning(char *message)
 {
     if (message == NULL)
     {
@@ -150,7 +150,7 @@ void writeMessage(char *message)
 /**
  * @return Zero-indexed row number being read.
  */
-int getCurrentLineNum()
+int line_num()
 {
     return _row;
 }
@@ -158,7 +158,7 @@ int getCurrentLineNum()
 /**
  * @return Zero-indexed column number being read.
  */
-int getCurrentColumnNum()
+int col_num()
 {
     return _column;
 }

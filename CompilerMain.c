@@ -7,29 +7,29 @@
 extern int yyparse();
 extern void yylex_destroy();
 
-FILE *aFile;
+FILE *codegen_file;
 SymTab *table;
-SymTab *stringLiterals;
+SymTab *str_lits;
 
 int main(int argc, char * argv[])
 {
-	openFiles(argv[1], argv[2]);
-    table = createSymTab(17);
-    stringLiterals = createSymTab(17);
+	init_io(argv[1], argv[2]);
+    table = create_tab(17);
+    str_lits = create_tab(17);
 
 	if (argc == 4) 
-		aFile = fopen(argv[3], "w");
+		codegen_file = fopen(argv[3], "w");
 	else
-		aFile = stdout;
+		codegen_file = stdout;
 
-	if (startIterator(stringLiterals)) do
+	if (start_it(str_lits)) do
 	{
-		free(getCurrentAttr(stringLiterals));
-	} while (nextEntry(stringLiterals));
+		free(get_attr(str_lits));
+	} while (it_next(str_lits));
 
 	yyparse();
-    destroySymTab(table);
-    destroySymTab(stringLiterals);
-    closeFiles();
+    free_tab(table);
+    free_tab(str_lits);
+    free_io();
     yylex_destroy();
 }

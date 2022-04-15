@@ -6,32 +6,32 @@
 
 int main(int arg_c, char **arg_v)
 {
-	openFiles("IOMngr.c", NULL);
+	init_io("IOMngr.c", NULL);
 
 	int i = 0;
-	for (; getNextSourceChar() != EOF; i++)
+	for (; next_char() != EOF; i++)
 	{ }
 
-	writeIndicator(0);
-	writeMessage("This is column 0");
-	writeIndicator(1);
-	writeMessage("This is column 1");
-	writeIndicator(2);
-	writeMessage("This is column 2");
-	writeIndicator(3);
-	writeMessage("This is column 3");
+	put_marker(0);
+	put_warning("This is column 0");
+	put_marker(1);
+	put_warning("This is column 1");
+	put_marker(2);
+	put_warning("This is column 2");
+	put_marker(3);
+	put_warning("This is column 3");
 	
-	closeFiles();
-	openFiles("IOMngr.c", "IOMngr.txt");
+	free_io();
+	init_io("IOMngr.c", "IOMngr.txt");
 
-	writeIndicator(0);
-	writeMessage("This is column 0");
-	writeIndicator(1);
-	writeMessage("This is column 1");
-	writeIndicator(2);
-	writeMessage("This is column 2");
-	writeIndicator(3);
-	writeMessage("This is column 3");
+	put_marker(0);
+	put_warning("This is column 0");
+	put_marker(1);
+	put_warning("This is column 1");
+	put_marker(2);
+	put_warning("This is column 2");
+	put_marker(3);
+	put_warning("This is column 3");
 
-	closeFiles();
+	free_io();
 }

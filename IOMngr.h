@@ -1,11 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
+
 #define MAXLINE 1024
 
-int openFiles(char * sourceName, char * listingName);
-void closeFiles();
-char getNextSourceChar();
-void writeIndicator(int column);
-void writeMessage(char * message);
-int getCurrentLineNum();
-int getCurrentColumnNum();
+int init_io(char *source_name, char *listing_name);
+void free_io();
+char next_char();
+void put_marker(int column);
+void put_warning(char *message);
+int line_num();
+int col_num();

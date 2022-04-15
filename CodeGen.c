@@ -5,8 +5,7 @@
 
 #include "CodeGen.h"
 
-
-extern FILE *aFile;
+extern FILE *codegen_file;
 
 int NextLabel = 1;
 
@@ -30,56 +29,56 @@ CopyStr(char * AStr)
   return (AStr) ? strdup(AStr) : NULL;
 }
 
-struct InstrSeq * 	  
-GenInstr(char *Label, char *OpCode, char *Oprnd1, char *Oprnd2, char *Oprnd3)
-{ struct InstrSeq *instr;
+struct instr_t * 	  
+gen_instr(char *Label, char *OpCode, char *Oprnd1, char *Oprnd2, char *Oprnd3)
+{ struct instr_t *instr;
   
-  instr = (struct InstrSeq *) malloc(sizeof(struct InstrSeq));
-  instr->Label = CopyStr(Label);
-  instr->OpCode = CopyStr(OpCode);
-  instr->Oprnd1 = CopyStr(Oprnd1);
-  instr->Oprnd2 = CopyStr(Oprnd2);
-  instr->Oprnd3 = CopyStr(Oprnd3);
-  instr-> Next = NULL;
+  instr = (struct instr_t *) malloc(sizeof(struct instr_t));
+  instr->label = CopyStr(Label);
+  instr->op = CopyStr(OpCode);
+  instr->rd = CopyStr(Oprnd1);
+  instr->rs = CopyStr(Oprnd2);
+  instr->rt = CopyStr(Oprnd3);
+  instr-> next = NULL;
 	
   return instr;
 }
 	
-extern struct InstrSeq * 
-AppendSeq(struct InstrSeq *Seq1, struct InstrSeq *Seq2)
-{ struct InstrSeq *instr;
+extern struct instr_t * 
+append(struct instr_t *Seq1, struct instr_t *Seq2)
+{ struct instr_t *instr;
 
   if (!Seq1) return Seq2;
   
   instr = Seq1;
-  while (instr->Next) instr = instr->Next;
-  instr->Next = Seq2;
+  while (instr->next) instr = instr->next;
+  instr->next = Seq2;
   
   return Seq1;
 }
 
 void	  
-WriteSeq(struct InstrSeq *ASeq)
-{ struct InstrSeq *instr;
+write_seq(struct instr_t *ASeq)
+{ struct instr_t *instr;
 
   //printf("WriteSeq\n");
   instr = ASeq;
   while (instr) {
-    if (instr->Label) fprintf(aFile,"%s:",instr->Label);
-    if (instr->OpCode) {
-			fprintf(aFile,"\t%s\t",instr->OpCode);
-    	if (instr->Oprnd1) fprintf(aFile,"\t%s",instr->Oprnd1);
-    	if (instr->Oprnd2) fprintf(aFile,", %s",instr->Oprnd2);
-    	if (instr->Oprnd3) fprintf(aFile,", %s",instr->Oprnd3);
+    if (instr->label) fprintf(codegen_file,"%s:",instr->label);
+    if (instr->op) {
+			fprintf(codegen_file,"\t%s\t",instr->op);
+    	if (instr->rd) fprintf(codegen_file,"\t%s",instr->rd);
+    	if (instr->rs) fprintf(codegen_file,", %s",instr->rs);
+    	if (instr->rt) fprintf(codegen_file,", %s",instr->rt);
     }
-    fprintf(aFile,"\n");
-    instr = instr->Next;
+    fprintf(codegen_file,"\n");
+    instr = instr->next;
   }
-  if (aFile != stdout) fclose(aFile);
+  if (codegen_file != stdout) fclose(codegen_file);
 }
 
 char *
-GenLabel()
+gen_label()
 { char *label;
 
   label = (char *) malloc(8);
@@ -89,7 +88,7 @@ GenLabel()
 }
 	 
 int
-AvailTmpReg()
+avail_reg()
 {	int i;
 
   for (i = 0; i < MAXREG; i++) {
@@ -104,7 +103,7 @@ AvailTmpReg()
 }
 
 char *
-TmpRegName(int RegNum)
+reg_name(int RegNum)
 {
   if ((RegNum >= 0) && ( RegNum < MAXREG)) {
     return Registers[RegNum].Name;
@@ -115,7 +114,7 @@ TmpRegName(int RegNum)
 }
 
 void
-ReleaseTmpReg(int ANum)
+free_reg(int ANum)
 {
   if ((ANum >= 0) && ( ANum < MAXREG)) {
     Registers[ANum].Free = 1;
@@ -124,7 +123,7 @@ ReleaseTmpReg(int ANum)
 }
 
 void
-ResetAllTmpReg()
+reset_regs()
 { int i;
 
   for (i = 0; i < MAXREG; i++) {
@@ -135,9 +134,9 @@ ResetAllTmpReg()
   return;
 }
 
-struct InstrSeq * 
-SaveSeq()
-{ struct InstrSeq * save, *code;
+struct instr_t * 
+save_seq()
+{ struct instr_t * save, *code;
   int i, scnt;
   char addr[8], offset[8];
   
@@ -148,21 +147,21 @@ SaveSeq()
     if (!Registers[i].Free) {
       scnt++;
       sprintf(addr,"%d($sp)",scnt*4);
-      save = AppendSeq(save,GenInstr(NULL,"sw",TmpRegName(i),addr,NULL));
+      save = append(save,gen_instr(NULL,"sw",reg_name(i),addr,NULL));
     }
   }
   if (scnt > 0) {
     sprintf(offset,"%d",scnt*4);
-    code = GenInstr(NULL,"subu","$sp","$sp",offset);
-    AppendSeq(code,save);
+    code = gen_instr(NULL,"subu","$sp","$sp",offset);
+    append(code,save);
   }
   
   return code;
 }
 
-struct InstrSeq * 
-RestoreSeq()
-{ struct InstrSeq * code, * save;
+struct instr_t * 
+restore_seq()
+{ struct instr_t * code, * save;
   int i, scnt;
 
   char addr[8], offset[8];
@@ -174,26 +173,26 @@ RestoreSeq()
     if (!Registers[i].Free) {
       scnt++;
       sprintf(addr,"%d($sp)",scnt*4);
-      save = AppendSeq(save,GenInstr(NULL,"lw",TmpRegName(i),addr,NULL));
+      save = append(save,gen_instr(NULL,"lw",reg_name(i),addr,NULL));
     }
   }
   if (scnt > 0) {
     sprintf(offset,"%d",scnt*4);
-    code = AppendSeq(save,GenInstr(NULL,"addu","$sp","$sp",offset));
+    code = append(save,gen_instr(NULL,"addu","$sp","$sp",offset));
   }
   
   return code;
 }
 
 char *						 
-Imm(int Val)
+imm(int Val)
 {
   sprintf(Buf,"%d",Val);
   return Buf;
 }
 
 char *						 
-RegOff(int Offset, char * Reg)
+reg_off(int Offset, char * Reg)
 {
   sprintf(Buf,"%d(%s)",Offset,Reg);
   return Buf;

@@ -1,37 +1,55 @@
-/* CodeGen.h
-   Routines to support the generation of assembly code.
-   
-*/
+#pragma once
 
 #include <stdio.h>
 
-extern FILE *AssmFile;
+extern FILE *asm_file;
 
-struct InstrSeq {
-  char *Label;
-  char *OpCode;
-  char *Oprnd1;
-  char *Oprnd2;
-  char *Oprnd3;
-  struct InstrSeq *Next;
+/**
+ * @brief Linked node containing variable stack layout data.
+ */
+struct variable_t
+{
+    /**
+     * @brief Variable name within the current scope.
+     */
+    char *name;
+    /**
+     * @brief Type data associated with the variable.
+     */
+    struct type_desc_t *type;
+    /**
+     * @brief Stored calculated size for offset partial sums.
+     */
+    size_t size;
+    /**
+     * @brief Next variable in order in the stack frame.
+     */
+    struct variable_t *next;
 };
+typedef struct variable_t variable_t;
 
-extern void							 InitCodeGen(char *AFilename);
+struct instr_t
+{
+    char *label;
+    char *op;
+    char *rd;
+    char *rs;
+    char *rt;
+    struct instr_t *next;
+    struct variable_t *vars;
+};
+typedef struct instr_t   instr_t;
 
-extern struct InstrSeq * GenInstr(char *Label, char *OpCode, 
-                                  char *Oprnd1, char *Oprnd2, char *Oprnd3);
-extern struct InstrSeq * AppendSeq(struct InstrSeq *Seq1, 
-                                   struct InstrSeq *Seq2);
-extern void 						 WriteSeq(struct InstrSeq *ASeq);
-
-extern char *						 GenLabel();
-
-extern int  						 AvailTmpReg();
-extern char *						 TmpRegName(int RegNum);
-extern void							 ReleaseTmpReg(int ANum);
-extern void 	           ResetAllTmpReg();
-extern struct InstrSeq * SaveSeq();
-extern struct InstrSeq * RestoreSeq();
-
-extern char *						 Imm(int Val);
-extern char *						 RegOff(int Offset, char * Reg);
+void init_codegen(char *name);
+instr_t *gen_instr(char *Label, char *op, char *rd, char *rs, char *rt);
+instr_t *append(instr_t *a, instr_t *b);
+void  write_seq(instr_t *body);
+char *gen_label();
+int avail_reg();
+char *reg_name(int index);
+void free_reg(int index);
+void reset_regs();
+instr_t *save_seq();
+instr_t *restore_seq();
+char *imm(int val);
+char *reg_off(int offset, char *reg);

@@ -77,9 +77,9 @@ L1:
 	sll		$t2, $t2, 2
 	add		$t1, $t1, $t2
 	lw		$t1, 0($t1)
-	add		$t2, $t0, $t1
+	add		$t0, $t0, $t1
 	li		$v0, 1
-	move		$a0, $t2
+	move		$a0, $t0
 	syscall	
 	li		$v0, 4
 	la		$a0, _str_4
@@ -94,9 +94,9 @@ L1:
 	sll		$t2, $t2, 2
 	add		$t1, $t1, $t2
 	lw		$t1, 0($t1)
-	sub		$t2, $t0, $t1
+	sub		$t0, $t0, $t1
 	li		$v0, 1
-	move		$a0, $t2
+	move		$a0, $t0
 	syscall	
 	li		$t0, 1
 	li		$t1, 0
@@ -118,9 +118,9 @@ L3:
 	sll		$t2, $t2, 2
 	add		$t1, $t1, $t2
 	lw		$t1, 0($t1)
-	mul		$t2, $t0, $t1
+	mul		$t0, $t0, $t1
 	li		$v0, 1
-	move		$a0, $t2
+	move		$a0, $t0
 	syscall	
 	li		$v0, 4
 	la		$a0, _str_5
@@ -136,9 +136,9 @@ L3:
 	add		$t1, $t1, $t2
 	lw		$t1, 0($t1)
 	div		$t0, $t1
-	mflo		$t2
+	mflo		$t0
 	li		$v0, 1
-	move		$a0, $t2
+	move		$a0, $t0
 	syscall	
 	li		$t0, 1
 	li		$t1, 0
@@ -161,9 +161,9 @@ L5:
 	add		$t1, $t1, $t2
 	lw		$t1, 0($t1)
 	div		$t0, $t1
-	mfhi		$t2
+	mfhi		$t0
 	li		$v0, 1
-	move		$a0, $t2
+	move		$a0, $t0
 	syscall	
 	li		$v0, 4
 	la		$a0, _str_6

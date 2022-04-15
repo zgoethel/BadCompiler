@@ -6,7 +6,7 @@
     #include "y.tab.h"
 
     #define YY_INPUT(buf, result, max_size) { \
-        char c = getNextSourceChar(); \
+        char c = next_char(); \
         result = (c == EOF) ? YY_NULL : (buf[0] = c, 1); \
     }
 %}
@@ -60,10 +60,10 @@ void                        { return VOID; }
 \r                          {  }
 \n                          {  }
 .                           {
-                                writeMessage(NULL);
-                                writeIndicator(getCurrentColumnNum() - 1);
-                                writeMessage("Unexpected character in input");
-                                writeMessage(yytext);
+                                put_warning(NULL);
+                                put_marker(col_num() - 1);
+                                put_warning("Unexpected character in input");
+                                put_warning(yytext);
                             }
 %%
 
