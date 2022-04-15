@@ -10,7 +10,6 @@ unordered[7] = 2;
 unordered[8] = 1;
 unordered[9] = 0;
 
-
 for (var i: Int = 0; i < 10; i = i + 1)
 {
     for (var j: Int = 0; j < 10 - i - 1; j = j + 1)
@@ -27,4 +26,22 @@ for (var i: Int = 0; i < 10; i = i + 1)
 for (var i: Int = 0; i < 10; i = i + 1)
 {
     print("Value at index ", i, " is ", unordered[i], "\n");
+}
+
+for (var i: Int = 9; i >= 0; i = i - 1)
+{
+    for (var j: Int = 9; j >= 1; j = j - 1)
+    {
+        if (unordered[j] > unordered[j - 1])
+        {
+            var temp: Int = unordered[j];
+            unordered[j] = unordered[j - 1];
+            unordered[j - 1] = temp;
+        }
+    }
+}
+
+for (var i: Int = 0; i < 10; i = i + 1)
+{
+    print("Value at index ", i, " is ", unordered[i], " (reversed)\n");
 }

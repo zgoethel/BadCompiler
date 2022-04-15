@@ -4,6 +4,7 @@
 #include <strings.h>
 
 #include "CodeGen.h"
+#include "IOMngr.h"
 
 extern FILE *codegen_file;
 
@@ -94,12 +95,21 @@ avail_reg()
   for (i = 0; i < MAXREG; i++) {
     if (Registers[i].Free) {
       Registers[i].Free = 0;
-      Registers[i].Used = 1;
+      Registers[i].Used = line_num() + 1;
       return i;
     }
   }
   
   return -1;
+}
+
+void print_reg_claims()
+{
+  for (int i = 0; i < MAXREG; i++) {
+    if (!Registers[i].Free) {
+      printf("Register %s was claimed on line number %d\n", Registers[i].Name, Registers[i].Used);
+    }
+  }
 }
 
 char *

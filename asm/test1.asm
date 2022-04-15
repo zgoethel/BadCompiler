@@ -71,13 +71,13 @@ L5:
 	move		$a0, $t1
 	syscall	
 	li		$t1, 1
-	li		$t3, 0
+	li		$t2, 0
 L7:
-	beq		$t3, $t1, L6
+	beq		$t2, $t1, L6
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
-	addi		$t3, $t3, 1
+	addi		$t2, $t2, 1
 	jal		L7
 L6:
 	li		$t1, 2021
@@ -85,13 +85,13 @@ L6:
 	move		$a0, $t1
 	syscall	
 	li		$t1, 1
-	li		$t3, 0
+	li		$t2, 0
 L9:
-	beq		$t3, $t1, L8
+	beq		$t2, $t1, L8
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
-	addi		$t3, $t3, 1
+	addi		$t2, $t2, 1
 	jal		L9
 L8:
 	addi		$sp, $sp, 0
@@ -103,9 +103,9 @@ L10:
 	li		$t1, 9
 	add		$t0, $t0, $t1
 	li		$t1, 2
-	addi		$t3, $sp, 4
-	lw		$t3, 0($t3)
-	mul		$t1, $t1, $t3
+	addi		$t2, $sp, 4
+	lw		$t2, 0($t2)
+	mul		$t1, $t1, $t2
 	slt		$t0, $t0, $t1
 	beq		$t0, $zero, L15
 	li		$t1, 2022
@@ -113,13 +113,13 @@ L10:
 	move		$a0, $t1
 	syscall	
 	li		$t1, 1
-	li		$t3, 0
+	li		$t2, 0
 L12:
-	beq		$t3, $t1, L11
+	beq		$t2, $t1, L11
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
-	addi		$t3, $t3, 1
+	addi		$t2, $t2, 1
 	jal		L12
 L11:
 	li		$t1, 2023
@@ -127,13 +127,13 @@ L11:
 	move		$a0, $t1
 	syscall	
 	li		$t1, 1
-	li		$t3, 0
+	li		$t2, 0
 L14:
-	beq		$t3, $t1, L13
+	beq		$t2, $t1, L13
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
-	addi		$t3, $t3, 1
+	addi		$t2, $t2, 1
 	jal		L14
 L13:
 	addi		$sp, $sp, 0
@@ -145,9 +145,9 @@ L15:
 	li		$t1, 11
 	add		$t0, $t0, $t1
 	li		$t1, 2
-	addi		$t3, $sp, 4
-	lw		$t3, 0($t3)
-	mul		$t1, $t1, $t3
+	addi		$t2, $sp, 4
+	lw		$t2, 0($t2)
+	mul		$t1, $t1, $t2
 	sne		$t0, $t0, $t1
 	beq		$t0, $zero, L20
 	li		$t1, 2024
@@ -155,13 +155,13 @@ L15:
 	move		$a0, $t1
 	syscall	
 	li		$t1, 1
-	li		$t3, 0
+	li		$t2, 0
 L17:
-	beq		$t3, $t1, L16
+	beq		$t2, $t1, L16
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
-	addi		$t3, $t3, 1
+	addi		$t2, $t2, 1
 	jal		L17
 L16:
 	li		$t1, 2025
@@ -169,13 +169,13 @@ L16:
 	move		$a0, $t1
 	syscall	
 	li		$t1, 1
-	li		$t3, 0
+	li		$t2, 0
 L19:
-	beq		$t3, $t1, L18
+	beq		$t2, $t1, L18
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
-	addi		$t3, $t3, 1
+	addi		$t2, $t2, 1
 	jal		L19
 L18:
 	addi		$sp, $sp, 0
@@ -183,59 +183,59 @@ L20:
 	li		$t0, 0
 	addi		$t1, $sp, 4
 	lw		$t1, 0($t1)
-	li		$t3, 10
-	add		$t1, $t1, $t3
-	li		$t3, 11
-	add		$t1, $t1, $t3
-	li		$t3, 2
-	addi		$t4, $sp, 4
-	lw		$t4, 0($t4)
-	mul		$t3, $t3, $t4
-	sne		$t1, $t1, $t3
+	li		$t2, 10
+	add		$t1, $t1, $t2
+	li		$t2, 11
+	add		$t1, $t1, $t2
+	li		$t2, 2
+	addi		$t3, $sp, 4
+	lw		$t3, 0($t3)
+	mul		$t2, $t2, $t3
+	sne		$t1, $t1, $t2
 	or		$t0, $t0, $t1
 	beq		$t0, $zero, L25
 	li		$t1, 20
 	sub		$t1, $zero, $t1
-	li		$t3, 20
-	sub		$t3, $zero, $t3
-	add		$t1, $t1, $t3
+	li		$t2, 20
+	sub		$t2, $zero, $t2
+	add		$t1, $t1, $t2
 	li		$v0, 1
 	move		$a0, $t1
 	syscall	
 	li		$t1, 1
-	li		$t3, 0
+	li		$t2, 0
 L22:
-	beq		$t3, $t1, L21
+	beq		$t2, $t1, L21
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
-	addi		$t3, $t3, 1
+	addi		$t2, $t2, 1
 	jal		L22
 L21:
 	li		$t1, 0
-	addi		$t3, $sp, 4
-	lw		$t3, 0($t3)
-	li		$t4, 10
-	add		$t3, $t3, $t4
-	li		$t4, 11
-	add		$t3, $t3, $t4
-	li		$t4, 2
-	addi		$t5, $sp, 4
-	lw		$t5, 0($t5)
-	mul		$t4, $t4, $t5
-	sne		$t3, $t3, $t4
-	and		$t1, $t1, $t3
+	addi		$t2, $sp, 4
+	lw		$t2, 0($t2)
+	li		$t3, 10
+	add		$t2, $t2, $t3
+	li		$t3, 11
+	add		$t2, $t2, $t3
+	li		$t3, 2
+	addi		$t4, $sp, 4
+	lw		$t4, 0($t4)
+	mul		$t3, $t3, $t4
+	sne		$t2, $t2, $t3
+	and		$t1, $t1, $t2
 	li		$v0, 1
 	move		$a0, $t1
 	syscall	
 	li		$t1, 1
-	li		$t3, 0
+	li		$t2, 0
 L24:
-	beq		$t3, $t1, L23
+	beq		$t2, $t1, L23
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
-	addi		$t3, $t3, 1
+	addi		$t2, $t2, 1
 	jal		L24
 L23:
 	addi		$sp, $sp, 0
@@ -342,16 +342,16 @@ L37:
 L36:
 	li		$t0, 2
 	li		$t1, 2
-	li		$t4, 0
-	li		$t3, 1
+	li		$t3, 0
+	li		$t2, 1
 L39:
-	beq		$t4, $t1, L38
-	mul		$t3, $t3, $t0
-	addi		$t4, $t4, 1
+	beq		$t3, $t1, L38
+	mul		$t2, $t2, $t0
+	addi		$t3, $t3, 1
 	jal		L39
 L38:
 	li		$v0, 1
-	move		$a0, $t3
+	move		$a0, $t2
 	syscall	
 	li		$t0, 1
 	li		$t1, 0
@@ -365,21 +365,21 @@ L41:
 L40:
 	li		$t0, 2
 	li		$t1, 3
-	li		$t3, 2
-	li		$t5, 0
-	li		$t4, 1
+	li		$t2, 2
+	li		$t4, 0
+	li		$t3, 1
 L43:
-	beq		$t5, $t3, L42
-	mul		$t4, $t4, $t1
-	addi		$t5, $t5, 1
+	beq		$t4, $t2, L42
+	mul		$t3, $t3, $t1
+	addi		$t4, $t4, 1
 	jal		L43
 L42:
-	li		$t3, 0
+	li		$t2, 0
 	li		$t1, 1
 L45:
-	beq		$t3, $t4, L44
+	beq		$t2, $t3, L44
 	mul		$t1, $t1, $t0
-	addi		$t3, $t3, 1
+	addi		$t2, $t2, 1
 	jal		L45
 L44:
 	li		$v0, 1
@@ -397,21 +397,21 @@ L47:
 L46:
 	li		$t0, 2
 	li		$t1, 3
-	li		$t3, 3
-	li		$t5, 0
-	li		$t4, 1
+	li		$t2, 3
+	li		$t4, 0
+	li		$t3, 1
 L49:
-	beq		$t5, $t3, L48
-	mul		$t4, $t4, $t1
-	addi		$t5, $t5, 1
+	beq		$t4, $t2, L48
+	mul		$t3, $t3, $t1
+	addi		$t4, $t4, 1
 	jal		L49
 L48:
-	li		$t3, 0
+	li		$t2, 0
 	li		$t1, 1
 L51:
-	beq		$t3, $t4, L50
+	beq		$t2, $t3, L50
 	mul		$t1, $t1, $t0
-	addi		$t3, $t3, 1
+	addi		$t2, $t2, 1
 	jal		L51
 L50:
 	li		$v0, 1
@@ -429,21 +429,21 @@ L53:
 L52:
 	li		$t0, 2
 	li		$t1, 3
-	li		$t3, 0
-	li		$t5, 0
-	li		$t4, 1
+	li		$t2, 0
+	li		$t4, 0
+	li		$t3, 1
 L55:
-	beq		$t5, $t3, L54
-	mul		$t4, $t4, $t1
-	addi		$t5, $t5, 1
+	beq		$t4, $t2, L54
+	mul		$t3, $t3, $t1
+	addi		$t4, $t4, 1
 	jal		L55
 L54:
-	li		$t3, 0
+	li		$t2, 0
 	li		$t1, 1
 L57:
-	beq		$t3, $t4, L56
+	beq		$t2, $t3, L56
 	mul		$t1, $t1, $t0
-	addi		$t3, $t3, 1
+	addi		$t2, $t2, 1
 	jal		L57
 L56:
 	li		$v0, 1
@@ -461,21 +461,21 @@ L59:
 L58:
 	li		$t0, 2
 	li		$t1, 3
-	li		$t4, 0
-	li		$t3, 1
+	li		$t3, 0
+	li		$t2, 1
 L61:
-	beq		$t4, $t1, L60
-	mul		$t3, $t3, $t0
-	addi		$t4, $t4, 1
+	beq		$t3, $t1, L60
+	mul		$t2, $t2, $t0
+	addi		$t3, $t3, 1
 	jal		L61
 L60:
 	li		$t0, 0
-	li		$t4, 0
+	li		$t3, 0
 	li		$t1, 1
 L63:
-	beq		$t4, $t0, L62
-	mul		$t1, $t1, $t3
-	addi		$t4, $t4, 1
+	beq		$t3, $t0, L62
+	mul		$t1, $t1, $t2
+	addi		$t3, $t3, 1
 	jal		L63
 L62:
 	li		$v0, 1

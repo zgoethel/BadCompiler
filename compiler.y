@@ -70,7 +70,7 @@
 %token VOID
 
 %%
-Prog            : { push(); } StmtSeq                       { accept_body($2); }
+Prog            : { push(); } StmtSeq                       { accept_body($2); print_reg_claims(); }
 StmtSeq         : Stmt StmtSeq                              { $$ = append($1, $2); }
                 |                                           { $$ = NULL; }
 Stmt            : PRINT '(' PrintSeq ')' ';'                { $$ = $3; }

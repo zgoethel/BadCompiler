@@ -54,3 +54,5 @@ instr_t *save_seq();
 instr_t *restore_seq();
 char *imm(int val);
 char *reg_off(int offset, char *reg);
+
+void print_reg_claims();

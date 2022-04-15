@@ -114,9 +114,9 @@ instr_t *do_store(char *name, arr_expr_t *arr, expr_res_t *expr)
             append(code, gen_instr(NULL, "mul", reg_name(extra), reg_name(extra), reg_name(arr->arr_dim[i]->reg)));
             append(code, gen_instr(NULL, "sll", reg_name(extra), reg_name(extra), "2"));
             append(code, gen_instr(NULL, "add", reg_name(var->reg), reg_name(var->reg), reg_name(extra)));
-            free_reg(arr->arr_dim[i]->reg);
-            
+
             mult *= var->type->arr_dim[i];
+            free_reg(arr->arr_dim[i]->reg);
         }
 
     char offset[32];
@@ -205,8 +205,8 @@ expr_res_t *do_pow(expr_res_t *l, expr_res_t *r)
     free_reg(counter);
     free(r);
     l-> reg = reg;
-    free(_l);
-    free(_s);
+    //free(_l);
+    //free(_s);
 
     return l;
 }
@@ -323,7 +323,7 @@ extern instr_t *do_if(expr_res_t *expr, instr_t *seq)
     
     free_reg(expr->reg);
     free(expr);
-    //free(_e);s
+    //free(_e);
 
 	return code;
 }
@@ -422,7 +422,6 @@ extern expr_res_t *do_less_than_e(expr_res_t *l,  expr_res_t *r)
 
 extern expr_res_t *do_greater_than(expr_res_t *l,  expr_res_t *r)
 {
-    int reg = avail_reg();
     append(l->body, r->body);
     append(l->body, gen_instr(NULL, "sgt",
         reg_name(l->reg),
@@ -437,7 +436,6 @@ extern expr_res_t *do_greater_than(expr_res_t *l,  expr_res_t *r)
 
 extern expr_res_t *do_greater_than_e(expr_res_t *l,  expr_res_t *r)
 {
-    int reg = avail_reg();
     append(l->body, r->body);
     append(l->body, gen_instr(NULL, "sge",
         reg_name(l->reg),
@@ -501,6 +499,9 @@ extern instr_t *do_read(char *name)
     char offset[32];
     sprintf(offset, "%d(%s)", 0, reg_name(var->reg));
     append(code, gen_instr(NULL, "sw", "$v0", strdup(offset), NULL));
+
+    free_reg(var->reg);
+    free(var);
     
     return code;
 }
