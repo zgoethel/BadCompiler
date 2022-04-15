@@ -30,18 +30,12 @@ for (var l: Int = 0; l < 10; l = l + 1)
     print("Number should increment from 0 to 9: ", l, "\n");
 }
 
-var arr: Int[16][32][64];
-arr[10][18][60] = 10;
-arr[12][20][61] = 20;
-print("Should be 10: ", arr[10][18][60], "\n",
-    "Should be 20: ", arr[12][20][61], "\n",
-    "Value is not set: ", arr[14][22][61], "\n");
-
-arr[10][18][60] = 30;
-arr[12][20][61] = 40;
-print("Should be 30: ", arr[10][18][60], "\n",
-    "Should be 40: ", arr[12][20][61], "\n",
-    "Value is not set: ", arr[14][24][61], "\n");
+var arr: Int[10][10][10];
+arr[5][6][7] = 10;
+arr[6][6][7] = 20;
+print("Should be 10: ", arr[5][6][7], "\n",
+    "Should be 20: ", arr[6][6][7], "\n",
+    "Value is not set: ", arr[7][6][7], "\n");
 
 var printMap: Int[20][10];
 printMap[2 + 2][5] = 1;
