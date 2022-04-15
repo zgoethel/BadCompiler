@@ -50,10 +50,7 @@ expr_res_t *do_load(char *name, arr_expr_t *arr)
     }
     res->body = append(res->body, var->body);
     res->reg = var->reg;
-    //res->body = append(res->body, gen_instr(NULL, "la", reg_name(res->reg), name, NULL));
         
-    int off_sum = avail_reg();
-    append(res->body, gen_instr(NULL, "li", reg_name(off_sum), "0", NULL));
     int mult = 1;
     int extra = avail_reg();
 
@@ -65,20 +62,17 @@ expr_res_t *do_load(char *name, arr_expr_t *arr)
             
             append(res->body, gen_instr(NULL, "li", reg_name(extra), strdup(mult_c), NULL));
             append(res->body, gen_instr(NULL, "mul", reg_name(extra), reg_name(extra), reg_name(arr->arr_dim[i]->reg)));
-            append(res->body, gen_instr(NULL, "add", reg_name(off_sum), reg_name(off_sum), reg_name(extra)));
+            append(res->body, gen_instr(NULL, "sll", reg_name(extra), reg_name(extra), "2"));
+            append(res->body, gen_instr(NULL, "add", reg_name(res->reg), reg_name(res->reg), reg_name(extra)));
             
             mult *= var->type->arr_dim[i];
             free_reg(arr->arr_dim[i]->reg);
         }
-        
-    append(res->body, gen_instr(NULL, "sll", reg_name(off_sum), reg_name(off_sum), "2"));
-    append(res->body, gen_instr(NULL, "add", reg_name(res->reg), reg_name(res->reg), reg_name(off_sum)));
 
     char offset[32];
     sprintf(offset, "%d(%s)", 0, reg_name(res->reg));
     append(res->body, gen_instr(NULL, "lw", reg_name(res->reg), strdup(offset), NULL));
 
-    free_reg(off_sum);
     free_reg(extra);
     free(var);
 
@@ -107,8 +101,6 @@ instr_t *do_store(char *name, arr_expr_t *arr, expr_res_t *expr)
     code = append(code, expr->body);
     append(code, var->body);
     
-    int off_sum = avail_reg();
-    append(code, gen_instr(NULL, "li", reg_name(off_sum), "0", NULL));
     int mult = 1;
     int extra = avail_reg();
 
@@ -120,20 +112,18 @@ instr_t *do_store(char *name, arr_expr_t *arr, expr_res_t *expr)
             
             append(code, gen_instr(NULL, "li", reg_name(extra), strdup(mult_c), NULL));
             append(code, gen_instr(NULL, "mul", reg_name(extra), reg_name(extra), reg_name(arr->arr_dim[i]->reg)));
+            append(code, gen_instr(NULL, "sll", reg_name(extra), reg_name(extra), "2"));
+            append(code, gen_instr(NULL, "add", reg_name(var->reg), reg_name(var->reg), reg_name(extra)));
             free_reg(arr->arr_dim[i]->reg);
-            append(code, gen_instr(NULL, "add", reg_name(off_sum), reg_name(off_sum), reg_name(extra)));
             
             mult *= var->type->arr_dim[i];
         }
 
-    append(code, gen_instr(NULL, "sll", reg_name(off_sum), reg_name(off_sum), "2"));
-    append(code, gen_instr(NULL, "add", reg_name(var->reg), reg_name(var->reg), reg_name(off_sum)));
     char offset[32];
     sprintf(offset, "%d(%s)", 0, reg_name(var->reg));
     append(code, gen_instr(NULL, "sw", reg_name(expr->reg), strdup(offset), NULL));
 
     free_reg(expr->reg);
-    free_reg(off_sum);
     free_reg(extra);
     free_reg(var->reg);
     free(expr);
