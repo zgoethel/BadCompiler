@@ -4,28 +4,6 @@
 #include "CodeGen.h"
 
 /**
- * @brief Contains sequence of commands for and the index of the register
- *      holding results of an operation.
- */
-struct expr_res_t
-{
-    /**
-     * @brief Register holding expression result's value after excecution.
-     */
-    int reg;
-    /**
-     * @brief First node of the linked sequence of assembly instructions used to
-     *      perform the expression calculation.
-     */
-    struct instr_t *body;
-    /**
-     * @brief Optional label field; I do not use this value for any purpose.
-     */
-    char *Label;
-};
-typedef struct expr_res_t expr_res_t;
-
-/**
  * @brief Defines a type name and its array dimensionality and size.
  */
 struct type_desc_t
@@ -45,6 +23,32 @@ struct type_desc_t
     int *arr_dim;
 };
 typedef struct type_desc_t type_desc_t;
+
+/**
+ * @brief Contains sequence of commands for and the index of the register
+ *      holding results of an operation.
+ */
+struct expr_res_t
+{
+    /**
+     * @brief Register holding expression result's value after excecution.
+     */
+    int reg;
+    /**
+     * @brief First node of the linked sequence of assembly instructions used to
+     *      perform the expression calculation.
+     */
+    struct instr_t *body;
+    /**
+     * @brief Optional label field; I do not use this value for any purpose.
+     */
+    char *label;
+    /**
+     * @brief Field for storing resolved variable type definitions.
+     */
+    type_desc_t *type;
+};
+typedef struct expr_res_t expr_res_t;
 
 /**
  * @brief Collection of expression results for indexing into a multi-dimensional
@@ -117,4 +121,20 @@ extern SymTab *table;
 /**
  * @brief Contains string literals for the data section during acceptance.
  */
-extern SymTab *str_lits;
+ SymTab *str_lits;
+
+/**
+ * @brief Stack for tracking variable scopes
+ */
+extern variable_t scope_stack[];
+/**
+ * @brief Index of the active stack frame in the scope stack.
+ */
+extern int scope_index;
+
+// Mappings for operating the scope stack for scoped bodies of code
+instr_t *declare(char *name, type_desc_t *type);
+void push();
+instr_t *peek();
+instr_t *pop();
+expr_res_t *resolve(char *name);

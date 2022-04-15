@@ -1,6 +1,7 @@
 #include <string.h>
 #include <strings.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #include "CodeGen.h"
 #include "Semantics.h"
@@ -30,20 +31,15 @@ expr_res_t *alloc_expr()
 
 expr_res_t *do_load(char *name, arr_expr_t *arr) 
 { 
-    expr_res_t *res = alloc_expr();
-    if (!find_name(table, name))
-    {
-        put_marker(col_num());
-        put_warning("Undeclared variable");
-    }
+    expr_res_t *var = resolve(name);
+    expr_res_t *res = (expr_res_t *)malloc(sizeof(expr_res_t));
+    memset(res, 0, sizeof(expr_res_t));
 
-    type_desc_t *type = (type_desc_t *)get_attr(table);
-    if (arr != NULL && type->arr_dim_c != arr->arr_dim_c)
+    if (arr != NULL && var->type->arr_dim_c != arr->arr_dim_c)
     {
         put_warning(NULL);
         put_marker(col_num());
         put_warning("Array dimensionality does not match that of the accessor");
-
         return res;
     }
 
@@ -52,7 +48,9 @@ expr_res_t *do_load(char *name, arr_expr_t *arr)
         for (int i = 0; i < arr->arr_dim_c; i++)
             res->body = append(res->body, arr->arr_dim[i]->body);
     }
-    res->body = append(res->body, gen_instr(NULL, "la", reg_name(res->reg), name, NULL));
+    res->body = append(res->body, var->body);
+    res->reg = var->reg;
+    //res->body = append(res->body, gen_instr(NULL, "la", reg_name(res->reg), name, NULL));
         
     int off_sum = avail_reg();
     append(res->body, gen_instr(NULL, "li", reg_name(off_sum), "0", NULL));
@@ -65,11 +63,11 @@ expr_res_t *do_load(char *name, arr_expr_t *arr)
             char mult_c[32];
             sprintf(mult_c, "%d", mult);
             
-            append(res->body, gen_instr(NULL, "li", reg_name(extra), mult_c, NULL));
+            append(res->body, gen_instr(NULL, "li", reg_name(extra), strdup(mult_c), NULL));
             append(res->body, gen_instr(NULL, "mul", reg_name(extra), reg_name(extra), reg_name(arr->arr_dim[i]->reg)));
             append(res->body, gen_instr(NULL, "add", reg_name(off_sum), reg_name(off_sum), reg_name(extra)));
             
-            mult *= type->arr_dim[i];
+            mult *= var->type->arr_dim[i];
             free_reg(arr->arr_dim[i]->reg);
         }
         
@@ -78,25 +76,21 @@ expr_res_t *do_load(char *name, arr_expr_t *arr)
 
     char offset[32];
     sprintf(offset, "%d(%s)", 0, reg_name(res->reg));
-    append(res->body, gen_instr(NULL, "lw", reg_name(res->reg), offset, NULL));
+    append(res->body, gen_instr(NULL, "lw", reg_name(res->reg), strdup(offset), NULL));
 
     free_reg(off_sum);
     free_reg(extra);
+    free(var);
 
     return res;
 }
 
 instr_t *do_store(char *name, arr_expr_t *arr, expr_res_t *expr)
 { 
-    instr_t *code = NULL;
-    if (!find_name(table, name))
-    {
-        put_marker(col_num());
-        put_warning("Undeclared variable");
-    }
+    expr_res_t *var = resolve(name);
+    instr_t *code = NULL;// = var->body;
 
-    type_desc_t *type = (type_desc_t *)get_attr(table);
-    if (arr != NULL && type->arr_dim_c != arr->arr_dim_c)
+    if (arr != NULL && var->type->arr_dim_c != arr->arr_dim_c)
     {
         put_warning(NULL);
         put_marker(col_num());
@@ -111,9 +105,7 @@ instr_t *do_store(char *name, arr_expr_t *arr, expr_res_t *expr)
             code = append(code, arr->arr_dim[i]->body);
     }
     code = append(code, expr->body);
-
-    int r = avail_reg();
-    append(code, gen_instr(NULL, "la", reg_name(r), name, NULL));
+    append(code, var->body);
     
     int off_sum = avail_reg();
     append(code, gen_instr(NULL, "li", reg_name(off_sum), "0", NULL));
@@ -126,25 +118,26 @@ instr_t *do_store(char *name, arr_expr_t *arr, expr_res_t *expr)
             char mult_c[32];
             sprintf(mult_c, "%d", mult);
             
-            append(code, gen_instr(NULL, "li", reg_name(extra), mult_c, NULL));
+            append(code, gen_instr(NULL, "li", reg_name(extra), strdup(mult_c), NULL));
             append(code, gen_instr(NULL, "mul", reg_name(extra), reg_name(extra), reg_name(arr->arr_dim[i]->reg)));
             free_reg(arr->arr_dim[i]->reg);
             append(code, gen_instr(NULL, "add", reg_name(off_sum), reg_name(off_sum), reg_name(extra)));
             
-            mult *= type->arr_dim[i];
+            mult *= var->type->arr_dim[i];
         }
 
     append(code, gen_instr(NULL, "sll", reg_name(off_sum), reg_name(off_sum), "2"));
-    append(code, gen_instr(NULL, "add", reg_name(r), reg_name(r), reg_name(off_sum)));
+    append(code, gen_instr(NULL, "add", reg_name(var->reg), reg_name(var->reg), reg_name(off_sum)));
     char offset[32];
-    sprintf(offset, "%d(%s)", 0, reg_name(r));
-    append(code, gen_instr(NULL, "sw", reg_name(expr->reg), offset, NULL));
+    sprintf(offset, "%d(%s)", 0, reg_name(var->reg));
+    append(code, gen_instr(NULL, "sw", reg_name(expr->reg), strdup(offset), NULL));
 
     free_reg(expr->reg);
-    free_reg(r);
     free_reg(off_sum);
     free_reg(extra);
+    free_reg(var->reg);
     free(expr);
+    free(var);
     
     return code;
 }
@@ -329,18 +322,18 @@ extern expr_res_t *do_not(expr_res_t* expr)
     return expr;
 }
 
-extern instr_t *do_if(expr_res_t *Res, instr_t *seq)
+extern instr_t *do_if(expr_res_t *expr, instr_t *seq)
 {
     char *_e = gen_label();
-    instr_t *code = Res->body;
+    instr_t *code = expr->body;
 
-    append(code, gen_instr(NULL, "beq", reg_name(Res->reg), "$zero", _e));
+    append(code, gen_instr(NULL, "beq", reg_name(expr->reg), "$zero", _e));
 	append(code, seq);
 	append(code, gen_instr(_e, NULL, NULL, NULL, NULL));
     
-    free_reg(Res->reg);
-    free(Res);
-    free(_e);
+    free_reg(expr->reg);
+    free(expr);
+    //free(_e);s
 
 	return code;
 }
@@ -360,8 +353,8 @@ extern instr_t *do_if_else(expr_res_t *expr, instr_t *body, instr_t *b_else)
 
     free_reg(expr->reg);
     free(expr);
-    free(_else);
-    free(_exit);
+    //free(_else);
+    //free(_exit);
 
 	return code;
 }
@@ -380,8 +373,8 @@ extern instr_t *do_while(expr_res_t *expr, instr_t *body)
 
     free_reg(expr->reg);
     free(expr);
-    free(_start);
-    free(_exit);
+    //free(_start);
+    //free(_exit);
 
 	return result;
 }
@@ -399,11 +392,12 @@ extern instr_t *do_for(instr_t *pre, expr_res_t *expr, instr_t *post, instr_t *b
     append(result, post);
 	append(result, gen_instr(NULL, "jal", _start, NULL, NULL));
 	append(result, gen_instr(_exit, NULL, NULL, NULL, NULL));
+    append(result, body->to_free);
 
     free_reg(expr->reg);
     free(expr);
-    free(_start);
-    free(_exit);
+    //free(_start);
+    //free(_exit);
 
 	return result;
 }
@@ -509,16 +503,14 @@ extern expr_res_t *do_not_eq(expr_res_t *l,  expr_res_t *r)
 }
 
 extern instr_t *do_read(char *name)
-{ 
-    if (!find_name(table, name))
-    {
-        put_marker(col_num());
-        put_warning("Undeclared variable");
-    }
-
-    instr_t *code = gen_instr(NULL, "li", "$v0", "5", NULL);
+{
+    expr_res_t *var = resolve(name);
+    instr_t *code = append(var->body, gen_instr(NULL, "li", "$v0", "5", NULL));
     append(code, gen_instr(NULL, "syscall", NULL, NULL, NULL));
-    append(code, gen_instr(NULL, "sw", "$v0", name, NULL));
+
+    char offset[32];
+    sprintf(offset, "%d(%s)", 0, reg_name(var->reg));
+    append(code, gen_instr(NULL, "sw", "$v0", strdup(offset), NULL));
     
     return code;
 }
@@ -544,8 +536,8 @@ instr_t *do_print_l(expr_res_t *expr)
     free_reg(expr->reg);
     free_reg(counter);
 
-    free(_l);
-    free(_s);
+    //free(_l);
+    //free(_s);
     free(expr);
 
     return code;
@@ -663,6 +655,7 @@ void accept_body(instr_t *body)
             NULL));
     } while (it_next(str_lits));
 
+    /*
     if (start_it(table)) do
     {
         type_desc_t *t = get_attr(table);
@@ -676,8 +669,103 @@ void accept_body(instr_t *body)
 
         append(code, gen_instr((char *)get_name(table), ".space", space_str, NULL, NULL));
     } while (it_next(table));
+    */
     
     write_seq(code);
     
     return;
+}
+
+#define STACK_SIZE 128
+variable_t scope_stack[STACK_SIZE];
+int scope_index = -1;
+
+instr_t *declare(char *name, type_desc_t *type)
+{
+    variable_t *copy = (variable_t *)malloc(sizeof(variable_t));
+    memcpy(copy, &scope_stack[scope_index], sizeof(variable_t));
+
+    memset(&scope_stack[scope_index], 0, sizeof(variable_t));
+    variable_t variable;
+    variable.name = name;
+    variable.next = copy;
+    variable.size = 1;
+    for (int i = 0; i < type->arr_dim_c; i++)
+        variable.size *= type->arr_dim[i];
+    variable.type = type;
+    scope_stack[scope_index] = variable;
+
+    char amount[32];
+    sprintf(amount, "-%ld", variable.size * 4);
+
+    return gen_instr(NULL, "addi", "$sp", "$sp", strdup(amount));
+}
+
+void push()
+{
+    // Push new frame and zero out memory
+    memset(&scope_stack[++scope_index], 0, sizeof(variable_t));
+}
+
+instr_t *peek()
+{
+    variable_t *temp = &scope_stack[scope_index];
+    unsigned int pop_amt = 0;
+    for (; temp != NULL && temp->name != NULL; temp = temp->next)
+        pop_amt += temp->size;
+
+    char offset[32];
+    sprintf(offset, "%u", pop_amt * 4);
+
+    return gen_instr(NULL, "addi", "$sp", "$sp", strdup(offset));
+}
+
+instr_t *pop()
+{   
+    instr_t *result = peek();
+    // Pop top frame and free its nodes
+    //TODO DELETE DYNAMIC NODES
+    memset(&scope_stack[scope_index--], 0, sizeof(variable_t));
+
+    return result;
+}
+
+expr_res_t *resolve(char *name)
+{
+    ssize_t partial_sum = 0;
+    bool found = false;
+    expr_res_t *result = alloc_expr();
+
+    // Start at "most recent" stack level and iterate downwards
+    for (int level = scope_index; level >= 0; level--)
+    {
+        // Start at "most recent" variable and step backwards
+        variable_t *temp = &scope_stack[level];
+        bool br = false;
+        for (; temp != NULL && temp->name != NULL; temp = temp->next)
+        {
+            // Take partial sum of previous variable sizes
+            partial_sum += temp->size;
+            if (strcmp(temp->name, name) == 0)
+            {
+                result->type = temp->type;
+                br = true;
+                found = true;
+                break;
+            }
+        }
+        if (br) break;
+    }
+
+    if (!found)
+    {
+        put_marker(col_num());
+        put_warning("Identifier not recognized or out of scope");
+    }
+
+    char offset[32];
+    sprintf(offset, "%ld", partial_sum * 4);
+    result->body = gen_instr(NULL, "addi", reg_name(result->reg), "$sp", strdup(offset));
+
+    return result;
 }

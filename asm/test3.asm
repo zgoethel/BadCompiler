@@ -1,24 +1,26 @@
 	.text	
 	.globl		main
 main:
+	addi		$sp, $sp, -4
 	li		$t0, 0
-	la		$t1, i
+	addi		$t1, $sp, 4
 	li		$t2, 0
 	sll		$t2, $t2, 2
 	add		$t1, $t1, $t2
 	sw		$t0, 0($t1)
+	addi		$sp, $sp, -4
 	li		$t0, 1
-	la		$t1, j
+	addi		$t1, $sp, 4
 	li		$t2, 0
 	sll		$t2, $t2, 2
 	add		$t1, $t1, $t2
 	sw		$t0, 0($t1)
-	la		$t0, i
+	addi		$t0, $sp, 8
 	li		$t1, 0
 	sll		$t1, $t1, 2
 	add		$t0, $t0, $t1
 	lw		$t0, 0($t0)
-	la		$t1, j
+	addi		$t1, $sp, 4
 	li		$t2, 0
 	sll		$t2, $t2, 2
 	add		$t1, $t1, $t2
@@ -28,18 +30,20 @@ main:
 	li		$v0, 4
 	la		$a0, _str_0
 	syscall	
+	addi		$sp, $sp, 0
 	jal		L1
 L2:
 	li		$v0, 4
 	la		$a0, _str_1
 	syscall	
+	addi		$sp, $sp, 0
 L1:
-	la		$t0, i
+	addi		$t0, $sp, 8
 	li		$t1, 0
 	sll		$t1, $t1, 2
 	add		$t0, $t0, $t1
 	lw		$t0, 0($t0)
-	la		$t1, j
+	addi		$t1, $sp, 4
 	li		$t2, 0
 	sll		$t2, $t2, 2
 	add		$t1, $t1, $t2
@@ -49,25 +53,28 @@ L1:
 	li		$v0, 4
 	la		$a0, _str_2
 	syscall	
+	addi		$sp, $sp, 0
 	jal		L3
 L4:
 	li		$v0, 4
 	la		$a0, _str_3
 	syscall	
+	addi		$sp, $sp, 0
 L3:
+	addi		$sp, $sp, -4
 	li		$t0, 10
-	la		$t1, k
+	addi		$t1, $sp, 4
 	li		$t2, 0
 	sll		$t2, $t2, 2
 	add		$t1, $t1, $t2
 	sw		$t0, 0($t1)
 L5:
-	la		$t0, i
+	addi		$t0, $sp, 12
 	li		$t1, 0
 	sll		$t1, $t1, 2
 	add		$t0, $t0, $t1
 	lw		$t0, 0($t0)
-	la		$t1, k
+	addi		$t1, $sp, 4
 	li		$t2, 0
 	sll		$t2, $t2, 2
 	add		$t1, $t1, $t2
@@ -77,7 +84,7 @@ L5:
 	li		$v0, 4
 	la		$a0, _str_4
 	syscall	
-	la		$t1, i
+	addi		$t1, $sp, 12
 	li		$t2, 0
 	sll		$t2, $t2, 2
 	add		$t1, $t1, $t2
@@ -88,28 +95,30 @@ L5:
 	li		$v0, 4
 	la		$a0, _str_5
 	syscall	
-	la		$t1, i
+	addi		$t1, $sp, 12
 	li		$t2, 0
 	sll		$t2, $t2, 2
 	add		$t1, $t1, $t2
 	lw		$t1, 0($t1)
 	li		$t2, 1
 	add		$t1, $t1, $t2
-	la		$t2, i
+	addi		$t2, $sp, 12
 	li		$t3, 0
 	sll		$t3, $t3, 2
 	add		$t2, $t2, $t3
 	sw		$t1, 0($t2)
+	addi		$sp, $sp, 0
 	jal		L5
 L6:
+	addi		$sp, $sp, -4
 	li		$t0, 0
-	la		$t1, l
+	addi		$t1, $sp, 4
 	li		$t2, 0
 	sll		$t2, $t2, 2
 	add		$t1, $t1, $t2
 	sw		$t0, 0($t1)
 L7:
-	la		$t0, l
+	addi		$t0, $sp, 4
 	li		$t1, 0
 	sll		$t1, $t1, 2
 	add		$t0, $t0, $t1
@@ -120,7 +129,7 @@ L7:
 	li		$v0, 4
 	la		$a0, _str_6
 	syscall	
-	la		$t1, l
+	addi		$t1, $sp, 4
 	li		$t2, 0
 	sll		$t2, $t2, 2
 	add		$t1, $t1, $t2
@@ -131,25 +140,28 @@ L7:
 	li		$v0, 4
 	la		$a0, _str_7
 	syscall	
-	la		$t1, l
+	addi		$sp, $sp, 0
+	addi		$t1, $sp, 4
 	li		$t2, 0
 	sll		$t2, $t2, 2
 	add		$t1, $t1, $t2
 	lw		$t1, 0($t1)
 	li		$t2, 1
 	add		$t1, $t1, $t2
-	la		$t2, l
+	addi		$t2, $sp, 4
 	li		$t3, 0
 	sll		$t3, $t3, 2
 	add		$t2, $t2, $t3
 	sw		$t1, 0($t2)
 	jal		L7
 L8:
+	addi		$sp, $sp, 4
+	addi		$sp, $sp, -131072
 	li		$t0, 10
 	li		$t1, 18
 	li		$t2, 60
 	li		$t3, 10
-	la		$t4, arr
+	addi		$t4, $sp, 131072
 	li		$t5, 0
 	li		$t6, 1
 	mul		$t6, $t6, $t0
@@ -167,7 +179,7 @@ L8:
 	li		$t1, 20
 	li		$t2, 61
 	li		$t3, 20
-	la		$t4, arr
+	addi		$t4, $sp, 131072
 	li		$t5, 0
 	li		$t6, 1
 	mul		$t6, $t6, $t0
@@ -187,7 +199,7 @@ L8:
 	li		$t0, 10
 	li		$t1, 18
 	li		$t2, 60
-	la		$t3, arr
+	addi		$t3, $sp, 131072
 	li		$t4, 0
 	li		$t5, 1
 	mul		$t5, $t5, $t0
@@ -213,7 +225,7 @@ L8:
 	li		$t0, 12
 	li		$t1, 20
 	li		$t2, 61
-	la		$t3, arr
+	addi		$t3, $sp, 131072
 	li		$t4, 0
 	li		$t5, 1
 	mul		$t5, $t5, $t0
@@ -239,7 +251,7 @@ L8:
 	li		$t0, 14
 	li		$t1, 22
 	li		$t2, 61
-	la		$t3, arr
+	addi		$t3, $sp, 131072
 	li		$t4, 0
 	li		$t5, 1
 	mul		$t5, $t5, $t0
@@ -263,7 +275,7 @@ L8:
 	li		$t1, 18
 	li		$t2, 60
 	li		$t3, 30
-	la		$t4, arr
+	addi		$t4, $sp, 131072
 	li		$t5, 0
 	li		$t6, 1
 	mul		$t6, $t6, $t0
@@ -281,7 +293,7 @@ L8:
 	li		$t1, 20
 	li		$t2, 61
 	li		$t3, 40
-	la		$t4, arr
+	addi		$t4, $sp, 131072
 	li		$t5, 0
 	li		$t6, 1
 	mul		$t6, $t6, $t0
@@ -301,7 +313,7 @@ L8:
 	li		$t0, 10
 	li		$t1, 18
 	li		$t2, 60
-	la		$t3, arr
+	addi		$t3, $sp, 131072
 	li		$t4, 0
 	li		$t5, 1
 	mul		$t5, $t5, $t0
@@ -327,7 +339,7 @@ L8:
 	li		$t0, 12
 	li		$t1, 20
 	li		$t2, 61
-	la		$t3, arr
+	addi		$t3, $sp, 131072
 	li		$t4, 0
 	li		$t5, 1
 	mul		$t5, $t5, $t0
@@ -353,7 +365,7 @@ L8:
 	li		$t0, 14
 	li		$t1, 24
 	li		$t2, 61
-	la		$t3, arr
+	addi		$t3, $sp, 131072
 	li		$t4, 0
 	li		$t5, 1
 	mul		$t5, $t5, $t0
@@ -373,12 +385,13 @@ L8:
 	li		$v0, 4
 	la		$a0, _str_19
 	syscall	
+	addi		$sp, $sp, -800
 	li		$t0, 2
 	li		$t1, 2
 	add		$t0, $t0, $t1
 	li		$t1, 5
 	li		$t2, 1
-	la		$t3, printMap
+	addi		$t3, $sp, 800
 	li		$t4, 0
 	li		$t5, 1
 	mul		$t5, $t5, $t0
@@ -396,7 +409,7 @@ L8:
 	li		$t1, 2
 	add		$t0, $t0, $t1
 	li		$t1, 5
-	la		$t2, printMap
+	addi		$t2, $sp, 800
 	li		$t3, 0
 	li		$t4, 1
 	mul		$t4, $t4, $t0
@@ -415,7 +428,7 @@ L8:
 	syscall	
 	li		$t0, 4
 	li		$t1, 5
-	la		$t2, printMap
+	addi		$t2, $sp, 800
 	li		$t3, 0
 	li		$t4, 1
 	mul		$t4, $t4, $t0
@@ -439,7 +452,7 @@ L8:
 	li		$t1, 3
 	add		$t0, $t0, $t1
 	li		$t1, 5
-	la		$t2, printMap
+	addi		$t2, $sp, 800
 	li		$t3, 0
 	li		$t4, 1
 	mul		$t4, $t4, $t0
@@ -458,7 +471,7 @@ L8:
 	syscall	
 	li		$t0, 5
 	li		$t1, 5
-	la		$t2, printMap
+	addi		$t2, $sp, 800
 	li		$t3, 0
 	li		$t4, 1
 	mul		$t4, $t4, $t0
@@ -478,7 +491,7 @@ L8:
 	li		$t0, 5
 	li		$t1, 5
 	li		$t2, 2
-	la		$t3, printMap
+	addi		$t3, $sp, 800
 	li		$t4, 0
 	li		$t5, 1
 	mul		$t5, $t5, $t0
@@ -489,14 +502,15 @@ L8:
 	sll		$t4, $t4, 2
 	add		$t3, $t3, $t4
 	sw		$t2, 0($t3)
+	addi		$sp, $sp, -4
 	li		$t0, 0
-	la		$t1, y
+	addi		$t1, $sp, 4
 	li		$t2, 0
 	sll		$t2, $t2, 2
 	add		$t1, $t1, $t2
 	sw		$t0, 0($t1)
 L11:
-	la		$t0, y
+	addi		$t0, $sp, 4
 	li		$t1, 0
 	sll		$t1, $t1, 2
 	add		$t0, $t0, $t1
@@ -507,14 +521,15 @@ L11:
 	li		$v0, 4
 	la		$a0, _str_26
 	syscall	
+	addi		$sp, $sp, -4
 	li		$t1, 0
-	la		$t2, x
+	addi		$t2, $sp, 4
 	li		$t3, 0
 	sll		$t3, $t3, 2
 	add		$t2, $t2, $t3
 	sw		$t1, 0($t2)
 L9:
-	la		$t1, x
+	addi		$t1, $sp, 4
 	li		$t2, 0
 	sll		$t2, $t2, 2
 	add		$t1, $t1, $t2
@@ -522,17 +537,17 @@ L9:
 	li		$t2, 20
 	slt		$t1, $t1, $t2
 	beq		$t1, $zero, L10
-	la		$t2, x
+	addi		$t2, $sp, 4
 	li		$t3, 0
 	sll		$t3, $t3, 2
 	add		$t2, $t2, $t3
 	lw		$t2, 0($t2)
-	la		$t3, y
+	addi		$t3, $sp, 8
 	li		$t4, 0
 	sll		$t4, $t4, 2
 	add		$t3, $t3, $t4
 	lw		$t3, 0($t3)
-	la		$t4, printMap
+	addi		$t4, $sp, 808
 	li		$t5, 0
 	li		$t6, 1
 	mul		$t6, $t6, $t2
@@ -549,37 +564,41 @@ L9:
 	li		$v0, 4
 	la		$a0, _str_27
 	syscall	
-	la		$t2, x
+	addi		$sp, $sp, 0
+	addi		$t2, $sp, 4
 	li		$t3, 0
 	sll		$t3, $t3, 2
 	add		$t2, $t2, $t3
 	lw		$t2, 0($t2)
 	li		$t3, 1
 	add		$t2, $t2, $t3
-	la		$t3, x
+	addi		$t3, $sp, 4
 	li		$t4, 0
 	sll		$t4, $t4, 2
 	add		$t3, $t3, $t4
 	sw		$t2, 0($t3)
 	jal		L9
 L10:
+	addi		$sp, $sp, 4
 	li		$v0, 4
 	la		$a0, _str_28
 	syscall	
-	la		$t1, y
+	addi		$sp, $sp, 0
+	addi		$t1, $sp, 4
 	li		$t2, 0
 	sll		$t2, $t2, 2
 	add		$t1, $t1, $t2
 	lw		$t1, 0($t1)
 	li		$t2, 1
 	add		$t1, $t1, $t2
-	la		$t2, y
+	addi		$t2, $sp, 4
 	li		$t3, 0
 	sll		$t3, $t3, 2
 	add		$t2, $t2, $t3
 	sw		$t1, 0($t2)
 	jal		L11
 L12:
+	addi		$sp, $sp, 4
 	li		$v0, 10
 	syscall	
 	.data	
@@ -644,11 +663,3 @@ _str_17:	.asciiz		"\n"
 	.align		4
 _str_18:	.asciiz		"Value is not set: "
 	.align		4
-printMap:	.space		800
-x:	.space		4
-y:	.space		4
-i:	.space		4
-j:	.space		4
-k:	.space		4
-l:	.space		4
-arr:	.space		131072

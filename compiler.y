@@ -40,10 +40,11 @@
 %type <InstrSeq> ReadSeq
 %type <string> StrLit
 %type <string> IntLit
-%type <InstrSeq> Assignment
+%type <InstrSeq> Assign
 %type <string> Ident
 %type <ArrExpr> ArrExpr
 %type <ArrExpr> ArrSeqExpr
+%type <InstrSeq> Body
 
 %token IDENT
 %token INT_LIT
@@ -69,22 +70,23 @@
 %token VOID
 
 %%
-Prog            : StmtSeq                                   { accept_body($1); }
+Prog            : { push(); } StmtSeq                       { accept_body($2); }
 StmtSeq         : Stmt StmtSeq                              { $$ = append($1, $2); }
                 |                                           { $$ = NULL; }
 Stmt            : PRINT '(' PrintSeq ')' ';'                { $$ = $3; }
                 | READ '(' ReadSeq ')' ';'                  { $$ = $3; }
                 | PR_LINES '(' Expr ')' ';'                 { $$ = do_print_l($3); }
                 | PR_SPACES '(' Expr ')' ';'                { $$ = do_print_s($3); }
-                | Assignment ';'                            { $$ = $1; }
-                | IF '(' Expr ')' '{' StmtSeq '}'           { $$ = do_if($3, $6); }
-                | IF '(' Expr ')' '{' StmtSeq '}'
-                  ELSE '{' StmtSeq '}'                      { $$ = do_if_else($3, $6, $10); }
-                | WHILE '(' Expr ')' '{' StmtSeq '}'        { $$ = do_while($3, $6); }
-                | FOR '(' Assignment ';' Expr ';' Assignment ')'
-                  '{' StmtSeq '}'                           { $$ = do_for($3, $5, $7, $10); }
-Assignment      : VAR Id ':' Type '=' Expr                  { enter_name(table, $2); set_attr(table, $4); $$ = do_store($2, NULL, $6); }
-                | VAR Id ':' Type                           { enter_name(table, $2); set_attr(table, $4); $$ = NULL; }
+                | Assign ';'                                { $$ = $1; }
+                | IF '(' Expr ')' Body                      { $$ = do_if($3, $5); }
+                | IF '(' Expr ')' Body ELSE Body            { $$ = do_if_else($3, $5, $7); }
+                | WHILE '(' Expr ')' Body                   { $$ = do_while($3, $5); }
+                | FOR { push(); } '(' Assign ';' Expr ';' Assign ')'
+                  Body                                      { $$ = append(do_for($4, $6, $8, $10), pop()); }
+Body            : '{' { push(); } StmtSeq '}'               { $$ = append($3, pop()); }
+Assign          : VAR Id ':' Type { $<InstrSeq>$ = declare($2, $4); } '=' Expr                  
+                                                            { $$ = append($<InstrSeq>5, do_store($2, NULL, $7)); }
+                | VAR Id ':' Type                           { $$ = declare($2, $4); }
                 | Id ArrSeqExpr '=' Expr                    { $$ = do_store($1, $2, $4); }
 ReadSeq         : ReadSeq ',' Id                            { $$ = append($1, do_read($3)); }
                 | Id                                        { $$ = do_read($1); }

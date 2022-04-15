@@ -1,19 +1,22 @@
 	.text	
 	.globl		main
 main:
+	addi		$sp, $sp, -4
+	addi		$sp, $sp, -4
 	li		$t0, 10
-	la		$t1, num1
+	addi		$t1, $sp, 4
 	li		$t2, 0
 	sll		$t2, $t2, 2
 	add		$t1, $t1, $t2
 	sw		$t0, 0($t1)
+	addi		$sp, $sp, -4
 	li		$t0, 20
-	la		$t1, num2
+	addi		$t1, $sp, 4
 	li		$t2, 0
 	sll		$t2, $t2, 2
 	add		$t1, $t1, $t2
 	sw		$t0, 0($t1)
-	la		$t0, num2
+	addi		$t0, $sp, 4
 	li		$t1, 0
 	sll		$t1, $t1, 2
 	add		$t0, $t0, $t1
@@ -23,7 +26,7 @@ main:
 	li		$t1, 10
 	add		$t0, $t0, $t1
 	li		$t1, 2
-	la		$t2, num2
+	addi		$t2, $sp, 4
 	li		$t3, 0
 	sll		$t3, $t3, 2
 	add		$t2, $t2, $t3
@@ -31,7 +34,7 @@ main:
 	mul		$t1, $t1, $t2
 	seq		$t0, $t0, $t1
 	beq		$t0, $zero, L5
-	la		$t1, num1
+	addi		$t1, $sp, 8
 	li		$t2, 0
 	sll		$t2, $t2, 2
 	add		$t1, $t1, $t2
@@ -49,7 +52,7 @@ L2:
 	addi		$t2, $t2, 1
 	jal		L2
 L1:
-	la		$t1, num2
+	addi		$t1, $sp, 4
 	li		$t2, 0
 	sll		$t2, $t2, 2
 	add		$t1, $t1, $t2
@@ -67,8 +70,9 @@ L4:
 	addi		$t2, $t2, 1
 	jal		L4
 L3:
+	addi		$sp, $sp, 0
 L5:
-	la		$t0, num2
+	addi		$t0, $sp, 4
 	li		$t1, 0
 	sll		$t1, $t1, 2
 	add		$t0, $t0, $t1
@@ -78,7 +82,7 @@ L5:
 	li		$t1, 11
 	add		$t0, $t0, $t1
 	li		$t1, 2
-	la		$t2, num2
+	addi		$t2, $sp, 4
 	li		$t3, 0
 	sll		$t3, $t3, 2
 	add		$t2, $t2, $t3
@@ -114,8 +118,9 @@ L9:
 	addi		$t3, $t3, 1
 	jal		L9
 L8:
+	addi		$sp, $sp, 0
 L10:
-	la		$t0, num2
+	addi		$t0, $sp, 4
 	li		$t1, 0
 	sll		$t1, $t1, 2
 	add		$t0, $t0, $t1
@@ -125,7 +130,7 @@ L10:
 	li		$t1, 9
 	add		$t0, $t0, $t1
 	li		$t1, 2
-	la		$t3, num2
+	addi		$t3, $sp, 4
 	li		$t4, 0
 	sll		$t4, $t4, 2
 	add		$t3, $t3, $t4
@@ -161,8 +166,9 @@ L14:
 	addi		$t3, $t3, 1
 	jal		L14
 L13:
+	addi		$sp, $sp, 0
 L15:
-	la		$t0, num2
+	addi		$t0, $sp, 4
 	li		$t1, 0
 	sll		$t1, $t1, 2
 	add		$t0, $t0, $t1
@@ -172,7 +178,7 @@ L15:
 	li		$t1, 11
 	add		$t0, $t0, $t1
 	li		$t1, 2
-	la		$t3, num2
+	addi		$t3, $sp, 4
 	li		$t4, 0
 	sll		$t4, $t4, 2
 	add		$t3, $t3, $t4
@@ -208,9 +214,10 @@ L19:
 	addi		$t3, $t3, 1
 	jal		L19
 L18:
+	addi		$sp, $sp, 0
 L20:
 	li		$t0, 0
-	la		$t1, num2
+	addi		$t1, $sp, 4
 	li		$t3, 0
 	sll		$t3, $t3, 2
 	add		$t1, $t1, $t3
@@ -220,7 +227,7 @@ L20:
 	li		$t3, 11
 	add		$t1, $t1, $t3
 	li		$t3, 2
-	la		$t4, num2
+	addi		$t4, $sp, 4
 	li		$t5, 0
 	sll		$t5, $t5, 2
 	add		$t4, $t4, $t5
@@ -248,7 +255,7 @@ L22:
 	jal		L22
 L21:
 	li		$t1, 0
-	la		$t3, num2
+	addi		$t3, $sp, 4
 	li		$t4, 0
 	sll		$t4, $t4, 2
 	add		$t3, $t3, $t4
@@ -258,7 +265,7 @@ L21:
 	li		$t4, 11
 	add		$t3, $t3, $t4
 	li		$t4, 2
-	la		$t5, num2
+	addi		$t5, $sp, 4
 	li		$t6, 0
 	sll		$t6, $t6, 2
 	add		$t5, $t5, $t6
@@ -279,8 +286,9 @@ L24:
 	addi		$t3, $t3, 1
 	jal		L24
 L23:
+	addi		$sp, $sp, 0
 L25:
-	la		$t0, num1
+	addi		$t0, $sp, 8
 	li		$t1, 0
 	sll		$t1, $t1, 2
 	add		$t0, $t0, $t1
@@ -298,7 +306,7 @@ L27:
 	addi		$t1, $t1, 1
 	jal		L27
 L26:
-	la		$t0, num2
+	addi		$t0, $sp, 4
 	li		$t1, 0
 	sll		$t1, $t1, 2
 	add		$t0, $t0, $t1
@@ -316,7 +324,7 @@ L29:
 	addi		$t1, $t1, 1
 	jal		L29
 L28:
-	la		$t0, num1
+	addi		$t0, $sp, 8
 	li		$t1, 0
 	sll		$t1, $t1, 2
 	add		$t0, $t0, $t1
@@ -337,7 +345,7 @@ L31:
 	addi		$t1, $t1, 1
 	jal		L31
 L30:
-	la		$t0, num2
+	addi		$t0, $sp, 4
 	li		$t1, 0
 	sll		$t1, $t1, 2
 	add		$t0, $t0, $t1
@@ -623,7 +631,8 @@ L75:
 	addi		$t1, $t1, 1
 	jal		L75
 L74:
-	la		$t0, empty
+	addi		$sp, $sp, -4
+	addi		$t0, $sp, 4
 	li		$t1, 0
 	sll		$t1, $t1, 2
 	add		$t0, $t0, $t1
@@ -641,19 +650,19 @@ L77:
 	addi		$t1, $t1, 1
 	jal		L77
 L76:
-	la		$t0, empty
+	addi		$t0, $sp, 4
 	li		$t1, 0
 	sll		$t1, $t1, 2
 	add		$t0, $t0, $t1
 	lw		$t0, 0($t0)
 	li		$t1, 20
 	sub		$t0, $t0, $t1
-	la		$t1, empty
+	addi		$t1, $sp, 4
 	li		$t4, 0
 	sll		$t4, $t4, 2
 	add		$t1, $t1, $t4
 	sw		$t0, 0($t1)
-	la		$t0, empty
+	addi		$t0, $sp, 4
 	li		$t1, 0
 	sll		$t1, $t1, 2
 	add		$t0, $t0, $t1
@@ -677,7 +686,3 @@ L78:
 	.align		4
 _nl:	.asciiz		"\n"
 _sp:	.asciiz		" "
-testEmpty:	.space		4
-empty:	.space		4
-num1:	.space		4
-num2:	.space		4

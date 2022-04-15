@@ -37,6 +37,7 @@ struct instr_t
     char *rt;
     struct instr_t *next;
     struct variable_t *vars;
+    struct instr_t *to_free;
 };
 typedef struct instr_t   instr_t;
 

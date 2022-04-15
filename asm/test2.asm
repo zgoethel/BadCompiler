@@ -1,14 +1,16 @@
 	.text	
 	.globl		main
 main:
+	addi		$sp, $sp, -4
 	li		$t0, 0
-	la		$t1, readA
+	addi		$t1, $sp, 4
 	li		$t2, 0
 	sll		$t2, $t2, 2
 	add		$t1, $t1, $t2
 	sw		$t0, 0($t1)
+	addi		$sp, $sp, -4
 	li		$t0, 0
-	la		$t1, readB
+	addi		$t1, $sp, 4
 	li		$t2, 0
 	sll		$t2, $t2, 2
 	add		$t1, $t1, $t2
@@ -16,276 +18,282 @@ main:
 	li		$v0, 4
 	la		$a0, _str_0
 	syscall	
+	addi		$t0, $sp, 8
 	li		$v0, 5
 	syscall	
-	sw		$v0, readA
+	sw		$v0, 0($t0)
+	addi		$t1, $sp, 4
 	li		$v0, 5
 	syscall	
-	sw		$v0, readB
-	la		$t0, readA
-	li		$t1, 0
-	sll		$t1, $t1, 2
-	add		$t0, $t0, $t1
-	lw		$t0, 0($t0)
+	sw		$v0, 0($t1)
+	addi		$t2, $sp, 8
+	li		$t3, 0
+	sll		$t3, $t3, 2
+	add		$t2, $t2, $t3
+	lw		$t2, 0($t2)
 	li		$v0, 1
-	move		$a0, $t0
+	move		$a0, $t2
 	syscall	
 	li		$v0, 4
 	la		$a0, _str_1
 	syscall	
-	la		$t0, readB
-	li		$t1, 0
-	sll		$t1, $t1, 2
-	add		$t0, $t0, $t1
-	lw		$t0, 0($t0)
+	addi		$t2, $sp, 4
+	li		$t3, 0
+	sll		$t3, $t3, 2
+	add		$t2, $t2, $t3
+	lw		$t2, 0($t2)
 	li		$v0, 1
-	move		$a0, $t0
+	move		$a0, $t2
 	syscall	
 	li		$v0, 4
 	la		$a0, _str_2
 	syscall	
-	li		$t0, 3
+	li		$t2, 3
 	li		$v0, 1
-	move		$a0, $t0
+	move		$a0, $t2
 	syscall	
-	li		$t0, 1
-	li		$t1, 0
+	li		$t2, 1
+	li		$t3, 0
 L2:
-	beq		$t1, $t0, L1
+	beq		$t3, $t2, L1
 	li		$v0, 4
 	la		$a0, _nl
 	syscall	
-	addi		$t1, $t1, 1
+	addi		$t3, $t3, 1
 	jal		L2
 L1:
 	li		$v0, 4
 	la		$a0, _str_3
 	syscall	
+	addi		$t2, $sp, 8
 	li		$v0, 5
 	syscall	
-	sw		$v0, readA
+	sw		$v0, 0($t2)
+	addi		$t3, $sp, 4
 	li		$v0, 5
 	syscall	
-	sw		$v0, readB
-	la		$t0, readA
-	li		$t1, 0
-	sll		$t1, $t1, 2
-	add		$t0, $t0, $t1
-	lw		$t0, 0($t0)
-	la		$t1, readB
-	li		$t2, 0
-	sll		$t2, $t2, 2
-	add		$t1, $t1, $t2
-	lw		$t1, 0($t1)
-	add		$t0, $t0, $t1
+	sw		$v0, 0($t3)
+	addi		$t4, $sp, 8
+	li		$t5, 0
+	sll		$t5, $t5, 2
+	add		$t4, $t4, $t5
+	lw		$t4, 0($t4)
+	addi		$t5, $sp, 4
+	li		$t6, 0
+	sll		$t6, $t6, 2
+	add		$t5, $t5, $t6
+	lw		$t5, 0($t5)
+	add		$t4, $t4, $t5
 	li		$v0, 1
-	move		$a0, $t0
+	move		$a0, $t4
 	syscall	
 	li		$v0, 4
 	la		$a0, _str_4
 	syscall	
-	la		$t0, readA
-	li		$t1, 0
-	sll		$t1, $t1, 2
-	add		$t0, $t0, $t1
-	lw		$t0, 0($t0)
-	la		$t1, readB
-	li		$t2, 0
-	sll		$t2, $t2, 2
-	add		$t1, $t1, $t2
-	lw		$t1, 0($t1)
-	sub		$t0, $t0, $t1
+	addi		$t4, $sp, 8
+	li		$t5, 0
+	sll		$t5, $t5, 2
+	add		$t4, $t4, $t5
+	lw		$t4, 0($t4)
+	addi		$t5, $sp, 4
+	li		$t6, 0
+	sll		$t6, $t6, 2
+	add		$t5, $t5, $t6
+	lw		$t5, 0($t5)
+	sub		$t4, $t4, $t5
 	li		$v0, 1
-	move		$a0, $t0
+	move		$a0, $t4
 	syscall	
-	li		$t0, 1
-	li		$t1, 0
+	li		$t4, 1
+	li		$t5, 0
 L4:
-	beq		$t1, $t0, L3
+	beq		$t5, $t4, L3
 	li		$v0, 4
 	la		$a0, _nl
 	syscall	
-	addi		$t1, $t1, 1
+	addi		$t5, $t5, 1
 	jal		L4
 L3:
-	la		$t0, readA
-	li		$t1, 0
-	sll		$t1, $t1, 2
-	add		$t0, $t0, $t1
-	lw		$t0, 0($t0)
-	la		$t1, readB
-	li		$t2, 0
-	sll		$t2, $t2, 2
-	add		$t1, $t1, $t2
-	lw		$t1, 0($t1)
-	mul		$t0, $t0, $t1
+	addi		$t4, $sp, 8
+	li		$t5, 0
+	sll		$t5, $t5, 2
+	add		$t4, $t4, $t5
+	lw		$t4, 0($t4)
+	addi		$t5, $sp, 4
+	li		$t6, 0
+	sll		$t6, $t6, 2
+	add		$t5, $t5, $t6
+	lw		$t5, 0($t5)
+	mul		$t4, $t4, $t5
 	li		$v0, 1
-	move		$a0, $t0
+	move		$a0, $t4
 	syscall	
 	li		$v0, 4
 	la		$a0, _str_5
 	syscall	
-	la		$t0, readA
-	li		$t1, 0
-	sll		$t1, $t1, 2
-	add		$t0, $t0, $t1
-	lw		$t0, 0($t0)
-	la		$t1, readB
-	li		$t2, 0
-	sll		$t2, $t2, 2
-	add		$t1, $t1, $t2
-	lw		$t1, 0($t1)
-	div		$t0, $t1
-	mflo		$t0
+	addi		$t4, $sp, 8
+	li		$t5, 0
+	sll		$t5, $t5, 2
+	add		$t4, $t4, $t5
+	lw		$t4, 0($t4)
+	addi		$t5, $sp, 4
+	li		$t6, 0
+	sll		$t6, $t6, 2
+	add		$t5, $t5, $t6
+	lw		$t5, 0($t5)
+	div		$t4, $t5
+	mflo		$t4
 	li		$v0, 1
-	move		$a0, $t0
+	move		$a0, $t4
 	syscall	
-	li		$t0, 1
-	li		$t1, 0
+	li		$t4, 1
+	li		$t5, 0
 L6:
-	beq		$t1, $t0, L5
+	beq		$t5, $t4, L5
 	li		$v0, 4
 	la		$a0, _nl
 	syscall	
-	addi		$t1, $t1, 1
+	addi		$t5, $t5, 1
 	jal		L6
 L5:
-	la		$t0, readA
-	li		$t1, 0
-	sll		$t1, $t1, 2
-	add		$t0, $t0, $t1
-	lw		$t0, 0($t0)
-	la		$t1, readB
-	li		$t2, 0
-	sll		$t2, $t2, 2
-	add		$t1, $t1, $t2
-	lw		$t1, 0($t1)
-	div		$t0, $t1
-	mfhi		$t0
+	addi		$t4, $sp, 8
+	li		$t5, 0
+	sll		$t5, $t5, 2
+	add		$t4, $t4, $t5
+	lw		$t4, 0($t4)
+	addi		$t5, $sp, 4
+	li		$t6, 0
+	sll		$t6, $t6, 2
+	add		$t5, $t5, $t6
+	lw		$t5, 0($t5)
+	div		$t4, $t5
+	mfhi		$t4
 	li		$v0, 1
-	move		$a0, $t0
+	move		$a0, $t4
 	syscall	
 	li		$v0, 4
 	la		$a0, _str_6
 	syscall	
-	la		$t0, readA
-	li		$t1, 0
-	sll		$t1, $t1, 2
-	add		$t0, $t0, $t1
-	lw		$t0, 0($t0)
-	la		$t1, readB
-	li		$t2, 0
-	sll		$t2, $t2, 2
-	add		$t1, $t1, $t2
-	lw		$t1, 0($t1)
-	li		$t3, 0
-	li		$t2, 1
+	addi		$t4, $sp, 8
+	li		$t5, 0
+	sll		$t5, $t5, 2
+	add		$t4, $t4, $t5
+	lw		$t4, 0($t4)
+	addi		$t5, $sp, 4
+	li		$t6, 0
+	sll		$t6, $t6, 2
+	add		$t5, $t5, $t6
+	lw		$t5, 0($t5)
+	li		$t7, 0
+	li		$t6, 1
 L8:
-	beq		$t3, $t1, L7
-	mul		$t2, $t2, $t0
-	addi		$t3, $t3, 1
+	beq		$t7, $t5, L7
+	mul		$t6, $t6, $t4
+	addi		$t7, $t7, 1
 	jal		L8
 L7:
 	li		$v0, 1
-	move		$a0, $t2
+	move		$a0, $t6
 	syscall	
-	li		$t0, 1
-	li		$t1, 0
+	li		$t4, 1
+	li		$t5, 0
 L10:
-	beq		$t1, $t0, L9
+	beq		$t5, $t4, L9
 	li		$v0, 4
 	la		$a0, _nl
 	syscall	
-	addi		$t1, $t1, 1
+	addi		$t5, $t5, 1
 	jal		L10
 L9:
 	li		$v0, 4
 	la		$a0, _str_7
 	syscall	
+	addi		$t4, $sp, 8
 	li		$v0, 5
 	syscall	
-	sw		$v0, readA
+	sw		$v0, 0($t4)
+	addi		$t5, $sp, 4
 	li		$v0, 5
 	syscall	
-	sw		$v0, readB
-	la		$t0, readA
-	li		$t1, 0
-	sll		$t1, $t1, 2
-	add		$t0, $t0, $t1
-	lw		$t0, 0($t0)
-	li		$t1, 0
+	sw		$v0, 0($t5)
+	addi		$t6, $sp, 8
+	li		$t7, 0
+	sll		$t7, $t7, 2
+	add		$t6, $t6, $t7
+	lw		$t6, 0($t6)
+	li		$t7, 0
 L12:
-	beq		$t1, $t0, L11
+	beq		$t7, $t6, L11
 	li		$v0, 4
 	la		$a0, _nl
 	syscall	
-	addi		$t1, $t1, 1
+	addi		$t7, $t7, 1
 	jal		L12
 L11:
-	la		$t0, readB
-	li		$t1, 0
-	sll		$t1, $t1, 2
-	add		$t0, $t0, $t1
-	lw		$t0, 0($t0)
-	li		$t1, 0
+	addi		$t6, $sp, 4
+	li		$t7, 0
+	sll		$t7, $t7, 2
+	add		$t6, $t6, $t7
+	lw		$t6, 0($t6)
+	li		$t7, 0
 L14:
-	beq		$t1, $t0, L13
+	beq		$t7, $t6, L13
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
-	addi		$t1, $t1, 1
+	addi		$t7, $t7, 1
 	jal		L14
 L13:
-	la		$t0, readA
-	li		$t1, 0
-	sll		$t1, $t1, 2
-	add		$t0, $t0, $t1
-	lw		$t0, 0($t0)
+	addi		$t6, $sp, 8
+	li		$t7, 0
+	sll		$t7, $t7, 2
+	add		$t6, $t6, $t7
+	lw		$t6, 0($t6)
 	li		$v0, 1
-	move		$a0, $t0
+	move		$a0, $t6
 	syscall	
 	li		$v0, 4
 	la		$a0, _str_8
 	syscall	
-	la		$t0, readB
-	li		$t1, 0
-	sll		$t1, $t1, 2
-	add		$t0, $t0, $t1
-	lw		$t0, 0($t0)
+	addi		$t6, $sp, 4
+	li		$t7, 0
+	sll		$t7, $t7, 2
+	add		$t6, $t6, $t7
+	lw		$t6, 0($t6)
 	li		$v0, 1
-	move		$a0, $t0
+	move		$a0, $t6
 	syscall	
-	li		$t0, 1
-	li		$t1, 0
+	li		$t6, 1
+	li		$t7, 0
 L16:
-	beq		$t1, $t0, L15
+	beq		$t7, $t6, L15
 	li		$v0, 4
 	la		$a0, _nl
 	syscall	
-	addi		$t1, $t1, 1
+	addi		$t7, $t7, 1
 	jal		L16
 L15:
 	li		$v0, 4
 	la		$a0, _str_9
 	syscall	
-	la		$t0, readA
-	li		$t1, 0
-	sll		$t1, $t1, 2
-	add		$t0, $t0, $t1
-	lw		$t0, 0($t0)
+	addi		$t6, $sp, 8
+	li		$t7, 0
+	sll		$t7, $t7, 2
+	add		$t6, $t6, $t7
+	lw		$t6, 0($t6)
 	li		$v0, 1
-	move		$a0, $t0
+	move		$a0, $t6
 	syscall	
 	li		$v0, 4
 	la		$a0, _str_10
 	syscall	
-	la		$t0, readB
-	li		$t1, 0
-	sll		$t1, $t1, 2
-	add		$t0, $t0, $t1
-	lw		$t0, 0($t0)
+	addi		$t6, $sp, 4
+	li		$t7, 0
+	sll		$t7, $t7, 2
+	add		$t6, $t6, $t7
+	lw		$t6, 0($t6)
 	li		$v0, 1
-	move		$a0, $t0
+	move		$a0, $t6
 	syscall	
 	li		$v0, 4
 	la		$a0, _str_11
@@ -293,15 +301,17 @@ L15:
 	li		$v0, 4
 	la		$a0, _str_12
 	syscall	
+	addi		$t6, $sp, 8
 	li		$v0, 5
 	syscall	
-	sw		$v0, readA
+	sw		$v0, 0($t6)
 	li		$v0, 4
 	la		$a0, _str_13
 	syscall	
+	addi		$t7, $sp, 4
 	li		$v0, 5
 	syscall	
-	sw		$v0, readB
+	sw		$v0, 0($t7)
 	li		$v0, 4
 	la		$a0, _str_14
 	syscall	
@@ -341,5 +351,3 @@ _str_8:	.asciiz		" "
 	.align		4
 _str_9:	.asciiz		"Hello, world!\n"
 	.align		4
-readA:	.space		4
-readB:	.space		4

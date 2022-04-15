@@ -1,0 +1,17 @@
+var i: Int = 1;
+
+if (i == 0)
+{
+    var j: Int = 10;
+}
+
+for (var k: Int = 0; k < 10; k = k + 1)
+{
+    for (var m: Int = 0; m < 10; m = m + 1)
+    {
+        var l: Int = 99;
+        if (l - m - k * 10 < 10) { print(0); }
+        print(l - m - k * 10, " ");
+    }
+    print("\n");
+}
