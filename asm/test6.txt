@@ -22,6 +22,8 @@ fun recurse(): Nothing
         loopGuard = loopGuard - 1;
         recurse();
     }
+
+    print("Recursive call returning to ", _ret, "\n");
 }
 
 print("After declaration ", i, "\n");

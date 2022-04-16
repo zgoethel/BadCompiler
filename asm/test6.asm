@@ -1,7 +1,6 @@
 	.text	
 	.globl		main
 main:
-	nop	
 	li		$t0, 50
 	la		$t1, i
 	sw		$t0, 0($t1)
@@ -91,7 +90,6 @@ withArgs:
 	addi		$sp, $sp, 12
 	jr		$t0
 L2:
-	nop	
 	li		$t0, 10
 	la		$t1, loopGuard
 	sw		$t0, 0($t1)
@@ -130,16 +128,10 @@ recurse:
 	addu		$sp, $sp, 4
 	addi		$sp, $sp, 0
 L3:
-	addi		$sp, $sp, 0
-	addi		$t0, $sp, 4
-	lw		$t0, 0($t0)
-	addi		$sp, $sp, 4
-	jr		$t0
-L4:
 	li		$v0, 4
 	la		$a0, _str_10
 	syscall	
-	la		$t0, i
+	addi		$t0, $sp, 4
 	lw		$t0, 0($t0)
 	li		$v0, 1
 	move		$a0, $t0
@@ -147,7 +139,12 @@ L4:
 	li		$v0, 4
 	la		$a0, _str_11
 	syscall	
-	jal		helloWorld
+	addi		$sp, $sp, 0
+	addi		$t0, $sp, 4
+	lw		$t0, 0($t0)
+	addi		$sp, $sp, 4
+	jr		$t0
+L4:
 	li		$v0, 4
 	la		$a0, _str_12
 	syscall	
@@ -183,13 +180,25 @@ L4:
 	li		$v0, 4
 	la		$a0, _str_17
 	syscall	
+	jal		helloWorld
 	li		$v0, 4
 	la		$a0, _str_18
+	syscall	
+	la		$t0, i
+	lw		$t0, 0($t0)
+	li		$v0, 1
+	move		$a0, $t0
+	syscall	
+	li		$v0, 4
+	la		$a0, _str_19
+	syscall	
+	li		$v0, 4
+	la		$a0, _str_20
 	syscall	
 	jal		withArgs
 	jal		recurse
 	li		$v0, 4
-	la		$a0, _str_19
+	la		$a0, _str_21
 	syscall	
 	li		$v0, 10
 	syscall	
@@ -197,15 +206,19 @@ L4:
 	.align		4
 _nl:	.asciiz		"\n"
 _sp:	.asciiz		" "
-_str_19:	.asciiz		"Post-recurse\n"
+_str_19:	.asciiz		"\n"
 	.align		4
 _str_0:	.asciiz		"Before "
 	.align		4
 _str_1:	.asciiz		"\n"
 	.align		4
+_str_20:	.asciiz		"(Not yet working) "
+	.align		4
 _str_2:	.asciiz		"Inside "
 	.align		4
-_str_10:	.asciiz		"After declaration "
+_str_21:	.asciiz		"Post-recurse\n"
+	.align		4
+_str_10:	.asciiz		"Recursive call returning to "
 	.align		4
 _str_3:	.asciiz		", "
 	.align		4
@@ -213,7 +226,7 @@ _str_11:	.asciiz		"\n"
 	.align		4
 _str_4:	.asciiz		"\n"
 	.align		4
-_str_12:	.asciiz		"After invoke "
+_str_12:	.asciiz		"After declaration "
 	.align		4
 _str_5:	.asciiz		"Passed arguments are "
 	.align		4
@@ -235,7 +248,7 @@ _str_9:	.asciiz		"\n"
 	.align		4
 _str_17:	.asciiz		"\n"
 	.align		4
-_str_18:	.asciiz		"(Not yet working) "
+_str_18:	.asciiz		"After invoke "
 	.align		4
 i:	.space		4
 loopGuard:	.space		4

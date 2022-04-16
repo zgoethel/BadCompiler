@@ -1,11 +1,10 @@
 	.text	
 	.globl		main
 main:
-	addi		$sp, $sp, -4
 	li		$t0, 1
-	addi		$t1, $sp, 4
+	la		$t1, i
 	sw		$t0, 0($t1)
-	addi		$t0, $sp, 4
+	la		$t0, i
 	lw		$t0, 0($t0)
 	li		$t1, 0
 	seq		$t0, $t0, $t1
@@ -82,7 +81,7 @@ L2:
 	add		$t2, $t2, $t3
 	addi		$t3, $sp, 4
 	sw		$t2, 0($t3)
-	jal		L3
+	j		L3
 L4:
 	addi		$sp, $sp, 4
 	li		$v0, 4
@@ -95,7 +94,7 @@ L4:
 	add		$t1, $t1, $t2
 	addi		$t2, $sp, 4
 	sw		$t1, 0($t2)
-	jal		L5
+	j		L5
 L6:
 	addi		$sp, $sp, 4
 	li		$v0, 10
@@ -108,3 +107,4 @@ _str_0:	.asciiz		" "
 	.align		4
 _str_1:	.asciiz		"\n"
 	.align		4
+i:	.space		4

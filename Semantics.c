@@ -676,7 +676,7 @@ instr_t *declare(char *name, type_desc_t *type)
         enter_name(table, name);
         set_attr(table, (void *)type);
 
-        return gen_instr(NULL, "nop", NULL, NULL, NULL);
+        return NULL;
     }
 
     variable_t *copy = (variable_t *)malloc(sizeof(variable_t));
@@ -795,8 +795,6 @@ instr_t *do_func(char *name, instr_t *decl, type_desc_t *type, instr_t *body)
     expr_res_t *_ra_expr = alloc_expr();
     _ra_expr->body = gen_instr(NULL, "move", reg_name(_ra_expr->reg), "$ra", NULL);
     append(code, do_store("_ret", NULL, _ra_expr));
-
-    free_reg(_ra_expr->reg);
 
     append(code, body);
 

@@ -1,10 +1,9 @@
 	.text	
 	.globl		main
 main:
-	addi		$sp, $sp, -32
 	li		$t0, 0
 	li		$t1, 9
-	addi		$t2, $sp, 32
+	la		$t2, unordered
 	li		$t3, 1
 	mul		$t3, $t3, $t0
 	sll		$t3, $t3, 2
@@ -12,7 +11,7 @@ main:
 	sw		$t1, 0($t2)
 	li		$t0, 1
 	li		$t1, 8
-	addi		$t2, $sp, 32
+	la		$t2, unordered
 	li		$t3, 1
 	mul		$t3, $t3, $t0
 	sll		$t3, $t3, 2
@@ -20,7 +19,7 @@ main:
 	sw		$t1, 0($t2)
 	li		$t0, 2
 	li		$t1, 7
-	addi		$t2, $sp, 32
+	la		$t2, unordered
 	li		$t3, 1
 	mul		$t3, $t3, $t0
 	sll		$t3, $t3, 2
@@ -28,7 +27,7 @@ main:
 	sw		$t1, 0($t2)
 	li		$t0, 3
 	li		$t1, 6
-	addi		$t2, $sp, 32
+	la		$t2, unordered
 	li		$t3, 1
 	mul		$t3, $t3, $t0
 	sll		$t3, $t3, 2
@@ -36,7 +35,7 @@ main:
 	sw		$t1, 0($t2)
 	li		$t0, 4
 	li		$t1, 5
-	addi		$t2, $sp, 32
+	la		$t2, unordered
 	li		$t3, 1
 	mul		$t3, $t3, $t0
 	sll		$t3, $t3, 2
@@ -44,7 +43,7 @@ main:
 	sw		$t1, 0($t2)
 	li		$t0, 5
 	li		$t1, 4
-	addi		$t2, $sp, 32
+	la		$t2, unordered
 	li		$t3, 1
 	mul		$t3, $t3, $t0
 	sll		$t3, $t3, 2
@@ -52,7 +51,7 @@ main:
 	sw		$t1, 0($t2)
 	li		$t0, 6
 	li		$t1, 3
-	addi		$t2, $sp, 32
+	la		$t2, unordered
 	li		$t3, 1
 	mul		$t3, $t3, $t0
 	sll		$t3, $t3, 2
@@ -60,7 +59,7 @@ main:
 	sw		$t1, 0($t2)
 	li		$t0, 7
 	li		$t1, 2
-	addi		$t2, $sp, 32
+	la		$t2, unordered
 	li		$t3, 1
 	mul		$t3, $t3, $t0
 	sll		$t3, $t3, 2
@@ -68,7 +67,7 @@ main:
 	sw		$t1, 0($t2)
 	li		$t0, 8
 	li		$t1, 1
-	addi		$t2, $sp, 32
+	la		$t2, unordered
 	li		$t3, 1
 	mul		$t3, $t3, $t0
 	sll		$t3, $t3, 2
@@ -76,7 +75,7 @@ main:
 	sw		$t1, 0($t2)
 	li		$t0, 9
 	li		$t1, 0
-	addi		$t2, $sp, 32
+	la		$t2, unordered
 	li		$t3, 1
 	mul		$t3, $t3, $t0
 	sll		$t3, $t3, 2
@@ -109,7 +108,7 @@ L2:
 	beq		$t1, $zero, L3
 	addi		$t2, $sp, 4
 	lw		$t2, 0($t2)
-	addi		$t3, $sp, 40
+	la		$t3, unordered
 	li		$t4, 1
 	mul		$t4, $t4, $t2
 	sll		$t4, $t4, 2
@@ -119,7 +118,7 @@ L2:
 	lw		$t2, 0($t2)
 	li		$t4, 1
 	add		$t2, $t2, $t4
-	addi		$t4, $sp, 40
+	la		$t4, unordered
 	li		$t5, 1
 	mul		$t5, $t5, $t2
 	sll		$t5, $t5, 2
@@ -130,7 +129,7 @@ L2:
 	addi		$sp, $sp, -4
 	addi		$t2, $sp, 8
 	lw		$t2, 0($t2)
-	addi		$t4, $sp, 44
+	la		$t4, unordered
 	li		$t5, 1
 	mul		$t5, $t5, $t2
 	sll		$t5, $t5, 2
@@ -144,13 +143,13 @@ L2:
 	lw		$t4, 0($t4)
 	li		$t5, 1
 	add		$t4, $t4, $t5
-	addi		$t5, $sp, 44
+	la		$t5, unordered
 	li		$t6, 1
 	mul		$t6, $t6, $t4
 	sll		$t6, $t6, 2
 	add		$t5, $t5, $t6
 	lw		$t5, 0($t5)
-	addi		$t4, $sp, 44
+	la		$t4, unordered
 	li		$t6, 1
 	mul		$t6, $t6, $t2
 	sll		$t6, $t6, 2
@@ -162,7 +161,7 @@ L2:
 	add		$t2, $t2, $t4
 	addi		$t4, $sp, 4
 	lw		$t4, 0($t4)
-	addi		$t5, $sp, 44
+	la		$t5, unordered
 	li		$t6, 1
 	mul		$t6, $t6, $t2
 	sll		$t6, $t6, 2
@@ -213,7 +212,7 @@ L6:
 	syscall	
 	addi		$t1, $sp, 4
 	lw		$t1, 0($t1)
-	addi		$t2, $sp, 36
+	la		$t2, unordered
 	li		$t3, 1
 	mul		$t3, $t3, $t1
 	sll		$t3, $t3, 2
@@ -257,7 +256,7 @@ L9:
 	beq		$t1, $zero, L10
 	addi		$t2, $sp, 4
 	lw		$t2, 0($t2)
-	addi		$t3, $sp, 40
+	la		$t3, unordered
 	li		$t4, 1
 	mul		$t4, $t4, $t2
 	sll		$t4, $t4, 2
@@ -267,7 +266,7 @@ L9:
 	lw		$t2, 0($t2)
 	li		$t4, 1
 	sub		$t2, $t2, $t4
-	addi		$t4, $sp, 40
+	la		$t4, unordered
 	li		$t5, 1
 	mul		$t5, $t5, $t2
 	sll		$t5, $t5, 2
@@ -278,7 +277,7 @@ L9:
 	addi		$sp, $sp, -4
 	addi		$t2, $sp, 8
 	lw		$t2, 0($t2)
-	addi		$t4, $sp, 44
+	la		$t4, unordered
 	li		$t5, 1
 	mul		$t5, $t5, $t2
 	sll		$t5, $t5, 2
@@ -292,13 +291,13 @@ L9:
 	lw		$t4, 0($t4)
 	li		$t5, 1
 	sub		$t4, $t4, $t5
-	addi		$t5, $sp, 44
+	la		$t5, unordered
 	li		$t6, 1
 	mul		$t6, $t6, $t4
 	sll		$t6, $t6, 2
 	add		$t5, $t5, $t6
 	lw		$t5, 0($t5)
-	addi		$t4, $sp, 44
+	la		$t4, unordered
 	li		$t6, 1
 	mul		$t6, $t6, $t2
 	sll		$t6, $t6, 2
@@ -310,7 +309,7 @@ L9:
 	sub		$t2, $t2, $t4
 	addi		$t4, $sp, 4
 	lw		$t4, 0($t4)
-	addi		$t5, $sp, 44
+	la		$t5, unordered
 	li		$t6, 1
 	mul		$t6, $t6, $t2
 	sll		$t6, $t6, 2
@@ -361,7 +360,7 @@ L13:
 	syscall	
 	addi		$t1, $sp, 4
 	lw		$t1, 0($t1)
-	addi		$t2, $sp, 36
+	la		$t2, unordered
 	li		$t3, 1
 	mul		$t3, $t3, $t1
 	sll		$t3, $t3, 2
@@ -401,3 +400,4 @@ _str_4:	.asciiz		" is "
 	.align		4
 _str_5:	.asciiz		" (reversed)\n"
 	.align		4
+unordered:	.space		32

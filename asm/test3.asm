@@ -1,17 +1,15 @@
 	.text	
 	.globl		main
 main:
-	addi		$sp, $sp, -4
 	li		$t0, 0
-	addi		$t1, $sp, 4
+	la		$t1, i
 	sw		$t0, 0($t1)
-	addi		$sp, $sp, -4
 	li		$t0, 1
-	addi		$t1, $sp, 4
+	la		$t1, j
 	sw		$t0, 0($t1)
-	addi		$t0, $sp, 8
+	la		$t0, i
 	lw		$t0, 0($t0)
-	addi		$t1, $sp, 4
+	la		$t1, j
 	lw		$t1, 0($t1)
 	seq		$t0, $t0, $t1
 	beq		$t0, $zero, L2
@@ -19,16 +17,16 @@ main:
 	la		$a0, _str_0
 	syscall	
 	addi		$sp, $sp, 0
-	jal		L1
+	j		L1
 L2:
 	li		$v0, 4
 	la		$a0, _str_1
 	syscall	
 	addi		$sp, $sp, 0
 L1:
-	addi		$t0, $sp, 8
+	la		$t0, i
 	lw		$t0, 0($t0)
-	addi		$t1, $sp, 4
+	la		$t1, j
 	lw		$t1, 0($t1)
 	sne		$t0, $t0, $t1
 	beq		$t0, $zero, L4
@@ -36,28 +34,27 @@ L1:
 	la		$a0, _str_2
 	syscall	
 	addi		$sp, $sp, 0
-	jal		L3
+	j		L3
 L4:
 	li		$v0, 4
 	la		$a0, _str_3
 	syscall	
 	addi		$sp, $sp, 0
 L3:
-	addi		$sp, $sp, -4
 	li		$t0, 10
-	addi		$t1, $sp, 4
+	la		$t1, k
 	sw		$t0, 0($t1)
 L5:
-	addi		$t0, $sp, 12
+	la		$t0, i
 	lw		$t0, 0($t0)
-	addi		$t1, $sp, 4
+	la		$t1, k
 	lw		$t1, 0($t1)
 	slt		$t0, $t0, $t1
 	beq		$t0, $zero, L6
 	li		$v0, 4
 	la		$a0, _str_4
 	syscall	
-	addi		$t1, $sp, 12
+	la		$t1, i
 	lw		$t1, 0($t1)
 	li		$v0, 1
 	move		$a0, $t1
@@ -65,14 +62,14 @@ L5:
 	li		$v0, 4
 	la		$a0, _str_5
 	syscall	
-	addi		$t1, $sp, 12
+	la		$t1, i
 	lw		$t1, 0($t1)
 	li		$t2, 1
 	add		$t1, $t1, $t2
-	addi		$t2, $sp, 12
+	la		$t2, i
 	sw		$t1, 0($t2)
 	addi		$sp, $sp, 0
-	jal		L5
+	j		L5
 L6:
 	addi		$sp, $sp, -4
 	li		$t0, 0
@@ -102,15 +99,14 @@ L7:
 	add		$t1, $t1, $t2
 	addi		$t2, $sp, 4
 	sw		$t1, 0($t2)
-	jal		L7
+	j		L7
 L8:
 	addi		$sp, $sp, 4
-	addi		$sp, $sp, -4000
 	li		$t0, 5
 	li		$t1, 6
 	li		$t2, 7
 	li		$t3, 10
-	addi		$t4, $sp, 4000
+	la		$t4, arr
 	li		$t5, 1
 	mul		$t5, $t5, $t0
 	sll		$t5, $t5, 2
@@ -128,7 +124,7 @@ L8:
 	li		$t1, 6
 	li		$t2, 7
 	li		$t3, 20
-	addi		$t4, $sp, 4000
+	la		$t4, arr
 	li		$t5, 1
 	mul		$t5, $t5, $t0
 	sll		$t5, $t5, 2
@@ -148,7 +144,7 @@ L8:
 	li		$t0, 5
 	li		$t1, 6
 	li		$t2, 7
-	addi		$t3, $sp, 4000
+	la		$t3, arr
 	li		$t4, 1
 	mul		$t4, $t4, $t0
 	sll		$t4, $t4, 2
@@ -174,7 +170,7 @@ L8:
 	li		$t0, 6
 	li		$t1, 6
 	li		$t2, 7
-	addi		$t3, $sp, 4000
+	la		$t3, arr
 	li		$t4, 1
 	mul		$t4, $t4, $t0
 	sll		$t4, $t4, 2
@@ -200,7 +196,7 @@ L8:
 	li		$t0, 7
 	li		$t1, 6
 	li		$t2, 7
-	addi		$t3, $sp, 4000
+	la		$t3, arr
 	li		$t4, 1
 	mul		$t4, $t4, $t0
 	sll		$t4, $t4, 2
@@ -220,13 +216,12 @@ L8:
 	li		$v0, 4
 	la		$a0, _str_13
 	syscall	
-	addi		$sp, $sp, -800
 	li		$t0, 2
 	li		$t1, 2
 	add		$t0, $t0, $t1
 	li		$t1, 5
 	li		$t2, 1
-	addi		$t3, $sp, 800
+	la		$t3, printMap
 	li		$t4, 1
 	mul		$t4, $t4, $t0
 	sll		$t4, $t4, 2
@@ -243,7 +238,7 @@ L8:
 	li		$t1, 2
 	add		$t0, $t0, $t1
 	li		$t1, 5
-	addi		$t2, $sp, 800
+	la		$t2, printMap
 	li		$t3, 1
 	mul		$t3, $t3, $t0
 	sll		$t3, $t3, 2
@@ -261,7 +256,7 @@ L8:
 	syscall	
 	li		$t0, 4
 	li		$t1, 5
-	addi		$t2, $sp, 800
+	la		$t2, printMap
 	li		$t3, 1
 	mul		$t3, $t3, $t0
 	sll		$t3, $t3, 2
@@ -284,7 +279,7 @@ L8:
 	li		$t1, 3
 	add		$t0, $t0, $t1
 	li		$t1, 5
-	addi		$t2, $sp, 800
+	la		$t2, printMap
 	li		$t3, 1
 	mul		$t3, $t3, $t0
 	sll		$t3, $t3, 2
@@ -302,7 +297,7 @@ L8:
 	syscall	
 	li		$t0, 5
 	li		$t1, 5
-	addi		$t2, $sp, 800
+	la		$t2, printMap
 	li		$t3, 1
 	mul		$t3, $t3, $t0
 	sll		$t3, $t3, 2
@@ -321,7 +316,7 @@ L8:
 	li		$t0, 5
 	li		$t1, 5
 	li		$t2, 2
-	addi		$t3, $sp, 800
+	la		$t3, printMap
 	li		$t4, 1
 	mul		$t4, $t4, $t0
 	sll		$t4, $t4, 2
@@ -358,7 +353,7 @@ L9:
 	lw		$t2, 0($t2)
 	addi		$t3, $sp, 8
 	lw		$t3, 0($t3)
-	addi		$t4, $sp, 808
+	la		$t4, printMap
 	li		$t5, 1
 	mul		$t5, $t5, $t2
 	sll		$t5, $t5, 2
@@ -381,7 +376,7 @@ L9:
 	add		$t2, $t2, $t3
 	addi		$t3, $sp, 4
 	sw		$t2, 0($t3)
-	jal		L9
+	j		L9
 L10:
 	addi		$sp, $sp, 4
 	li		$v0, 4
@@ -394,7 +389,7 @@ L10:
 	add		$t1, $t1, $t2
 	addi		$t2, $sp, 4
 	sw		$t1, 0($t2)
-	jal		L11
+	j		L11
 L12:
 	addi		$sp, $sp, 4
 	li		$v0, 10
@@ -449,3 +444,8 @@ _str_17:	.asciiz		"Should be unset: "
 	.align		4
 _str_18:	.asciiz		", "
 	.align		4
+printMap:	.space		800
+i:	.space		4
+j:	.space		4
+k:	.space		4
+arr:	.space		4000
