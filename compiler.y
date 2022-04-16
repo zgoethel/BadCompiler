@@ -21,6 +21,7 @@
     struct instr_t *InstrSeq;
     struct type_desc_t *TypeDesc;
     struct arr_expr_t *ArrExpr;
+    int Bool;
 }
 
 %type <string> Id
@@ -71,6 +72,7 @@
 %token FOR
 %token RETURN
 %token FUN
+%token REF
 
 %%
 Prog            : { push(); } StmtSeq                       { accept_body($2); print_reg_claims(); }
@@ -89,7 +91,7 @@ Stmt            : PRINT '(' PrintSeq ')' ';'                { $$ = $3; }
                 | Func                                      { $$ = $1; }
                 | Id '(' ')' ';'                            { $$ = do_invoke($1); }
 Body            : '{' { push(); } StmtSeq '}'               { $$ = append($3, pop()); }
-Func            : FUN                                       { push(); $<InstrSeq>$ = declare("_ret", do_type_desc("Int", 0, NULL)); }
+Func            : FUN                                       { push(); $<InstrSeq>$ = declare("_ret", do_type_desc("Int", 0, NULL, false)); }
                   Id '(' ArgSeq ')' ':' Type Body           { $$ = do_func($3, append($<InstrSeq>2, $5), $8, $9); }
 Arg             : Id ':' Type                               { $$ = declare($1, $3); }
 ArgSeq          : ArgSeq ',' Arg                            { $$ = append($1, $3); }
@@ -132,11 +134,14 @@ ExprE           : '-' ExprF                                 { $$ = do_negate($2)
                 | '!' ExprF                                 { $$ = do_not($2); }
                 | ExprF                                     { $$ = $1; }
 ExprF           : IntLit                                    { $$ = do_int_lit($1); }
-                | Ident ArrSeqExpr                          { $$ = do_load($1, $2); }
-                | '(' ExprA ')'                             { $$ = $2; }                
+                | Ident ArrSeqExpr                          { $$ = do_load(resolve($1), $2); }
+                | '(' ExprA ')'                             { $$ = $2; }
+                | '&' Id                                    { $$ = resolve($2); }
+                | '*' Id ArrSeqExpr                         { $$ = do_load(do_load(resolve($2), NULL), $3); }
 // Bottom of expression tree (highest precedence)
 Id              : IDENT                                     { $$ = strdup(yytext); }
-Type            : Id ArrSeq                                 { if ($2 != NULL) { $2->name = $1; $$ = $2; } else $$ = do_type_desc($1, 0, NULL); }
+Type            : REF LT Id ArrSeq GT                       { if ($4 != NULL) { $4->name = $3; $4->is_reference = true; $$ = $4; } else $$ = do_type_desc($3, 0, NULL, true); }
+                |         Id ArrSeq                         { if ($2 != NULL) { $2->name = $1; $$ = $2; } else $$ = do_type_desc($1, 0, NULL, false); }
 ArrSeq          : ArrSeq Arr                                { $$ = do_arr_seq($1, $2, 0); }
                 |                                           { $$ = NULL; }
 Arr             : '[' IntLit ']'                            { int i; sscanf($2, "%d", &i); $$ = do_arr_seq(NULL, NULL, i); }

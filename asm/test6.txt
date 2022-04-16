@@ -27,15 +27,19 @@ fun recurse(): Nothing
 }
 
 print("After declaration ", i, "\n");
-helloWorld();
-print("After invoke ", i, "\n");
-helloWorld();
-print("After invoke ", i, "\n");
-helloWorld();
-print("After invoke ", i, "\n");
+for (var j: Int = 0; j < 3; j = j + 1)
+{
+    helloWorld();
+    print("After invoke ", i, "\n");
+}
 
-print("(Not yet working) ");
 withArgs();
-
 recurse();
 print("Post-recurse\n");
+
+var arr: Int[10];
+arr[4] = 20;
+var ptr: Ref<Int[10]> = &arr;
+
+print("Address of array is ", &arr, ", ", ptr, "\n");
+print("Dereference of index 4 is ", *ptr[4], "\n");

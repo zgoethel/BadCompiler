@@ -156,35 +156,69 @@ L4:
 	li		$v0, 4
 	la		$a0, _str_13
 	syscall	
+	addi		$sp, $sp, -4
+	li		$t0, 0
+	addi		$t1, $sp, 4
+	sw		$t0, 0($t1)
+L5:
+	addi		$t0, $sp, 4
+	lw		$t0, 0($t0)
+	li		$t1, 3
+	slt		$t0, $t0, $t1
+	beq		$t0, $zero, L6
+	subu		$sp, $sp, 4
+	sw		$t0, 4($sp)
 	jal		helloWorld
+	lw		$t0, 4($sp)
+	addu		$sp, $sp, 4
 	li		$v0, 4
 	la		$a0, _str_14
 	syscall	
-	la		$t0, i
-	lw		$t0, 0($t0)
+	la		$t1, i
+	lw		$t1, 0($t1)
 	li		$v0, 1
-	move		$a0, $t0
+	move		$a0, $t1
 	syscall	
 	li		$v0, 4
 	la		$a0, _str_15
 	syscall	
-	jal		helloWorld
+	addi		$sp, $sp, 0
+	addi		$t1, $sp, 4
+	lw		$t1, 0($t1)
+	li		$t2, 1
+	add		$t1, $t1, $t2
+	addi		$t2, $sp, 4
+	sw		$t1, 0($t2)
+	j		L5
+L6:
+	addi		$sp, $sp, 4
+	jal		withArgs
+	jal		recurse
 	li		$v0, 4
 	la		$a0, _str_16
 	syscall	
-	la		$t0, i
-	lw		$t0, 0($t0)
+	li		$t0, 4
+	li		$t1, 20
+	la		$t2, arr
+	li		$t3, 1
+	mul		$t3, $t3, $t0
+	sll		$t3, $t3, 2
+	add		$t2, $t2, $t3
+	sw		$t1, 0($t2)
+	la		$t0, arr
+	la		$t1, ptr
+	sw		$t0, 0($t1)
+	li		$v0, 4
+	la		$a0, _str_17
+	syscall	
+	la		$t0, arr
 	li		$v0, 1
 	move		$a0, $t0
 	syscall	
 	li		$v0, 4
-	la		$a0, _str_17
-	syscall	
-	jal		helloWorld
-	li		$v0, 4
 	la		$a0, _str_18
 	syscall	
-	la		$t0, i
+	la		$t0, ptr
 	lw		$t0, 0($t0)
 	li		$v0, 1
 	move		$a0, $t0
@@ -195,8 +229,17 @@ L4:
 	li		$v0, 4
 	la		$a0, _str_20
 	syscall	
-	jal		withArgs
-	jal		recurse
+	li		$t0, 4
+	la		$t1, ptr
+	lw		$t1, 0($t1)
+	li		$t2, 1
+	mul		$t2, $t2, $t0
+	sll		$t2, $t2, 2
+	add		$t1, $t1, $t2
+	lw		$t1, 0($t1)
+	li		$v0, 1
+	move		$a0, $t1
+	syscall	
 	li		$v0, 4
 	la		$a0, _str_21
 	syscall	
@@ -212,11 +255,11 @@ _str_0:	.asciiz		"Before "
 	.align		4
 _str_1:	.asciiz		"\n"
 	.align		4
-_str_20:	.asciiz		"(Not yet working) "
+_str_20:	.asciiz		"Dereference of index 4 is "
 	.align		4
 _str_2:	.asciiz		"Inside "
 	.align		4
-_str_21:	.asciiz		"Post-recurse\n"
+_str_21:	.asciiz		"\n"
 	.align		4
 _str_10:	.asciiz		"Recursive call returning to "
 	.align		4
@@ -242,13 +285,15 @@ _str_15:	.asciiz		"\n"
 	.align		4
 _str_8:	.asciiz		"Recursive call, guard is "
 	.align		4
-_str_16:	.asciiz		"After invoke "
+_str_16:	.asciiz		"Post-recurse\n"
 	.align		4
 _str_9:	.asciiz		"\n"
 	.align		4
-_str_17:	.asciiz		"\n"
+_str_17:	.asciiz		"Address of array is "
 	.align		4
-_str_18:	.asciiz		"After invoke "
+_str_18:	.asciiz		", "
 	.align		4
 i:	.space		4
+ptr:	.space		40
+arr:	.space		40
 loopGuard:	.space		4

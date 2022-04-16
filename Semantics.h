@@ -21,6 +21,10 @@ struct type_desc_t
      * @brief Array of integers containing the array size in every dimension.
      */
     int *arr_dim;
+    /**
+     * @brief Whether this type is a pointer or an actual value.
+     */
+    int is_reference;
 };
 typedef struct type_desc_t type_desc_t;
 
@@ -89,7 +93,7 @@ expr_res_t *do_not_eq(expr_res_t *l,  expr_res_t *r);
 expr_res_t *do_not(expr_res_t *expr);
 
 // Mappings for generating memory load/store operations
-expr_res_t *do_load(char *name, arr_expr_t *arr);
+expr_res_t *do_load(expr_res_t *var, arr_expr_t *arr);
 instr_t *do_store(char *name, arr_expr_t *arr, expr_res_t *expr);
 
 // Mappings for generating I/O operations and syscalls
@@ -107,7 +111,7 @@ instr_t *do_while(expr_res_t *expr, instr_t *body);
 instr_t *do_for(instr_t *pre, expr_res_t *expr, instr_t *post, instr_t *body);
 
 // Mappings for types and multi-dimensional array index operators
-type_desc_t *do_type_desc(char *name, int dims, int *sizes);
+type_desc_t *do_type_desc(char *name, int dims, int *sizes, int is_reference);
 type_desc_t *do_arr_seq(type_desc_t *l, type_desc_t *r, int size);
 arr_expr_t *do_arr_expr(arr_expr_t *l, arr_expr_t *r, expr_res_t *size);
 

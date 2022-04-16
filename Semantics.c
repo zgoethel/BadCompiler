@@ -29,9 +29,8 @@ expr_res_t *alloc_expr()
     return result;
 }
 
-expr_res_t *do_load(char *name, arr_expr_t *arr) 
+expr_res_t *do_load(expr_res_t *var, arr_expr_t *arr) 
 { 
-    expr_res_t *var = resolve(name);
     expr_res_t *res = (expr_res_t *)malloc(sizeof(expr_res_t));
     memset(res, 0, sizeof(expr_res_t));
 
@@ -50,6 +49,9 @@ expr_res_t *do_load(char *name, arr_expr_t *arr)
     }
     res->body = append(res->body, var->body);
     res->reg = var->reg;
+    res->type = (type_desc_t *)malloc(sizeof(type_desc_t));
+    memcpy(res->type, var->type, sizeof(type_desc_t));
+    res->type->is_reference = false;
         
     int mult = 1;
     int extra = avail_reg();
@@ -560,12 +562,13 @@ instr_t *do_print_s(expr_res_t *expr)
 }
 
 
-extern type_desc_t *do_type_desc(char *name, int dims, int *sizes)
+extern type_desc_t *do_type_desc(char *name, int dims, int *sizes, int is_reference)
 {
     type_desc_t *result = (type_desc_t *)malloc(sizeof(type_desc_t));
     result->name = name;
     result->arr_dim_c = dims;
     result->arr_dim = sizes;
+    result->is_reference = is_reference;
 
     return result;
 }
@@ -747,7 +750,10 @@ expr_res_t *resolve(char *name)
                 break;
             }
 
-            result->type = (type_desc_t *)get_attr(table);
+            result->type = (type_desc_t *)malloc(sizeof(type_desc_t));
+            memcpy(result->type, get_attr(table), sizeof(type_desc_t));
+            result->type->is_reference = true;
+
             result->body = gen_instr(NULL, "la", reg_name(result->reg), name, NULL);
             return result;
         }
@@ -798,7 +804,7 @@ instr_t *do_func(char *name, instr_t *decl, type_desc_t *type, instr_t *body)
 
     append(code, body);
 
-    expr_res_t *_ret = do_load("_ret", NULL);
+    expr_res_t *_ret = do_load(resolve("_ret"), NULL);
     append(code, _ret->body);
     // Matching push is embedded in midrule
     append(code, pop());
