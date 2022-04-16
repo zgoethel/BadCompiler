@@ -115,7 +115,7 @@ arr_expr_t *do_arr_expr(arr_expr_t *l, arr_expr_t *r, expr_res_t *size);
 void accept_body(instr_t *Code);
 
 // Mappings for generating method bodies
-instr_t *do_func(char *name, type_desc_t *type, instr_t *body);
+instr_t *do_func(char *name, instr_t *decl, type_desc_t *type, instr_t *body);
 
 /**
  * @brief Stores global variables and their type descriptors for reference.

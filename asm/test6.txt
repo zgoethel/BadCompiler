@@ -8,6 +8,22 @@ fun helloWorld(): Nothing
     print("Inside ", i, ", ", j, "\n");
 }
 
+fun withArgs(a: Int, b: Int): Nothing
+{
+    print("Passed arguments are ", a, ", ", b, "\n");
+}
+
+var loopGuard: Int = 10;
+fun recurse(): Nothing
+{
+    if (loopGuard > 0)
+    {
+        print("Recursive call, guard is ", loopGuard, "\n");
+        loopGuard = loopGuard - 1;
+        recurse();
+    }
+}
+
 print("After declaration ", i, "\n");
 helloWorld();
 print("After invoke ", i, "\n");
@@ -15,3 +31,9 @@ helloWorld();
 print("After invoke ", i, "\n");
 helloWorld();
 print("After invoke ", i, "\n");
+
+print("(Not yet working) ");
+withArgs();
+
+recurse();
+print("Post-recurse\n");

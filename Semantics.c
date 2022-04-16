@@ -784,20 +784,41 @@ expr_res_t *resolve(char *name)
     return result;
 }
 
-instr_t *do_func(char *name, type_desc_t *type, instr_t *body)
+instr_t *do_func(char *name, instr_t *decl, type_desc_t *type, instr_t *body)
 {
     char *_skip = gen_label();
 
     instr_t *code = gen_instr(NULL, "j", _skip, NULL, NULL);
     append(code, gen_instr(name, NULL, NULL, NULL, NULL));
+    append(code, decl);
+
+    expr_res_t *_ra_expr = alloc_expr();
+    _ra_expr->body = gen_instr(NULL, "move", reg_name(_ra_expr->reg), "$ra", NULL);
+    append(code, do_store("_ret", NULL, _ra_expr));
+
+    free_reg(_ra_expr->reg);
+
     append(code, body);
-    append(code, gen_instr(NULL, "jr", "$ra", NULL, NULL));
+
+    expr_res_t *_ret = do_load("_ret", NULL);
+    append(code, _ret->body);
+    // Matching push is embedded in midrule
+    append(code, pop());
+    append(code, gen_instr(NULL, "jr", reg_name(_ret->reg), NULL, NULL));
     append(code, gen_instr(_skip, NULL, NULL, NULL, NULL));
+    
+    free_reg(_ret->reg);
+    free(_ret);
 
     return code;
 }
 
 instr_t *do_invoke(char *name)
 {
-    return gen_instr(NULL, "jal", name, NULL, NULL);
+    instr_t *code = save_seq(); // <-- May be `NULL`
+    bool do_restore = code != NULL;
+    code = append(code, gen_instr(NULL, "jal", name, NULL, NULL));
+    if (do_restore)
+        append(code, restore_seq());
+    return code;
 }

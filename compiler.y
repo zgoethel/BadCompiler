@@ -46,6 +46,8 @@
 %type <ArrExpr> ArrExpr
 %type <ArrExpr> ArrSeqExpr
 %type <InstrSeq> Body
+%type <InstrSeq> Arg
+%type <InstrSeq> ArgSeq
 
 %token IDENT
 %token INT_LIT
@@ -87,8 +89,12 @@ Stmt            : PRINT '(' PrintSeq ')' ';'                { $$ = $3; }
                 | Func                                      { $$ = $1; }
                 | Id '(' ')' ';'                            { $$ = do_invoke($1); }
 Body            : '{' { push(); } StmtSeq '}'               { $$ = append($3, pop()); }
-Func            : FUN                                       { $<InstrSeq>$ = save_seq(); push(); }
-                  Id '(' ')' ':' Type Body                  { $$ = append(append(append($<InstrSeq>2, do_func($3, $7, $8)), pop()), restore_seq()); }
+Func            : FUN                                       { push(); $<InstrSeq>$ = declare("_ret", do_type_desc("Int", 0, NULL)); }
+                  Id '(' ArgSeq ')' ':' Type Body           { $$ = do_func($3, append($<InstrSeq>2, $5), $8, $9); }
+Arg             : Id ':' Type                               { $$ = declare($1, $3); }
+ArgSeq          : ArgSeq ',' Arg                            { $$ = append($1, $3); }
+                | Arg                                       { $$ = $1; }
+                |                                           { $$ = NULL; }
 Assign          : VAR Id ':' Type                           { $<InstrSeq>$ = declare($2, $4); }
                   '=' Expr                                  { $$ = append($<InstrSeq>5, do_store($2, NULL, $7)); }
                 | VAR Id ':' Type                           { $$ = declare($2, $4); }
