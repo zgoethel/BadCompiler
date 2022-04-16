@@ -15,6 +15,7 @@ expr_res_t *do_int_lit(char *digits)
     res = (expr_res_t *)malloc(sizeof(expr_res_t));
     res->reg = avail_reg();
     res->body = gen_instr(NULL, "li", reg_name(res->reg), digits, NULL);
+    res->is_array_by_val = false;
 
     return res;
 }
@@ -25,12 +26,20 @@ expr_res_t *alloc_expr()
     result = (expr_res_t *)malloc(sizeof(expr_res_t));
     result->reg = avail_reg();
     result->body = NULL;
+    result->is_array_by_val = false;
 
     return result;
 }
 
 expr_res_t *do_load(expr_res_t *var, arr_expr_t *arr) 
 { 
+    if (var->type->arr_dim_c > 0 && !var->type->is_reference && arr == NULL)
+    {
+        // Array pass-by-value handling
+        var->is_array_by_val = true;
+        return var;
+    }
+
     expr_res_t *res = (expr_res_t *)malloc(sizeof(expr_res_t));
     memset(res, 0, sizeof(expr_res_t));
 
@@ -81,9 +90,9 @@ expr_res_t *do_load(expr_res_t *var, arr_expr_t *arr)
     return res;
 }
 
-instr_t *do_store(char *name, arr_expr_t *arr, expr_res_t *expr)
+instr_t *do_store(expr_res_t *var, arr_expr_t *arr, expr_res_t *expr)
 { 
-    expr_res_t *var = resolve(name);
+    //expr_res_t *var = resolve(name);
     instr_t *code = NULL;// = var->body;
 
     if (arr != NULL && var->type->arr_dim_c != arr->arr_dim_c)
@@ -690,8 +699,11 @@ instr_t *declare(char *name, type_desc_t *type)
     variable.name = name;
     variable.next = copy;
     variable.size = 1;
-    for (int i = 0; i < type->arr_dim_c; i++)
-        variable.size *= type->arr_dim[i];
+    if (!type->is_reference)
+    {
+        for (int i = 0; i < type->arr_dim_c; i++)
+            variable.size *= type->arr_dim[i];
+    }
     variable.type = type;
     scope_stack[scope_index] = variable;
 
@@ -750,10 +762,7 @@ expr_res_t *resolve(char *name)
                 break;
             }
 
-            result->type = (type_desc_t *)malloc(sizeof(type_desc_t));
-            memcpy(result->type, get_attr(table), sizeof(type_desc_t));
-            result->type->is_reference = true;
-
+            result->type = (type_desc_t *)get_attr(table);
             result->body = gen_instr(NULL, "la", reg_name(result->reg), name, NULL);
             return result;
         }
@@ -800,7 +809,7 @@ instr_t *do_func(char *name, instr_t *decl, type_desc_t *type, instr_t *body)
 
     expr_res_t *_ra_expr = alloc_expr();
     _ra_expr->body = gen_instr(NULL, "move", reg_name(_ra_expr->reg), "$ra", NULL);
-    append(code, do_store("_ret", NULL, _ra_expr));
+    append(code, do_store(resolve("_ret"), NULL, _ra_expr));
 
     append(code, body);
 
@@ -817,12 +826,47 @@ instr_t *do_func(char *name, instr_t *decl, type_desc_t *type, instr_t *body)
     return code;
 }
 
-instr_t *do_invoke(char *name)
+instr_t *do_invoke(char *name, instr_t *args)
 {
     instr_t *code = save_seq(); // <-- May be `NULL`
     bool do_restore = code != NULL;
+
+    if (args != NULL) code = append(code, args);
     code = append(code, gen_instr(NULL, "jal", name, NULL, NULL));
+
     if (do_restore)
         append(code, restore_seq());
+    return code;
+}
+
+instr_t *do_call_expr(expr_res_t *expr)
+{
+    instr_t *code = expr->body;
+    printf("TYPE CALL EXPR %s, [x%d]\n", expr->type->name, expr->type->arr_dim_c);
+    if (expr->is_array_by_val)
+    {
+        size_t size = 1;
+        for (int i = 0; i < expr->type->arr_dim_c; i++)
+            size *= expr->type->arr_dim[i];
+
+        expr_res_t *dest_ref = alloc_expr();
+        dest_ref->body = gen_instr(NULL, "move", reg_name(dest_ref->reg), "$sp", NULL);
+        expr_res_t *size_ref = alloc_expr();
+        size_ref->body = gen_instr(NULL, "li", reg_name(size_ref->reg), "$sp", imm(size));
+
+        code = append(code, do_store(resolve("_source"), NULL, expr));
+        append(code, do_store(resolve("_dest"), NULL, dest_ref));
+        append(code, do_store(resolve("_length"), NULL, size_ref));
+        append(code, do_invoke("_memcpy", NULL));
+        append(code, gen_instr(NULL, "addi", "$sp", "$sp", imm(-size * 4)));
+    } else
+    {
+        code = append(code, gen_instr(NULL, "sw", reg_name(expr->reg), reg_off(0, "$sp"), NULL));
+        append(code, gen_instr(NULL, "addi", "$sp", "$sp", "-4"));
+    }
+
+    free_reg(expr->reg);
+    free(expr);
+
     return code;
 }

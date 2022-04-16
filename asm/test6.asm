@@ -219,7 +219,6 @@ L6:
 	la		$a0, _str_18
 	syscall	
 	la		$t0, ptr
-	lw		$t0, 0($t0)
 	li		$v0, 1
 	move		$a0, $t0
 	syscall	
@@ -231,7 +230,6 @@ L6:
 	syscall	
 	li		$t0, 4
 	la		$t1, ptr
-	lw		$t1, 0($t1)
 	li		$t2, 1
 	mul		$t2, $t2, $t0
 	sll		$t2, $t2, 2

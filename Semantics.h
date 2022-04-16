@@ -51,6 +51,10 @@ struct expr_res_t
      * @brief Field for storing resolved variable type definitions.
      */
     type_desc_t *type;
+    /**
+     * @brief Marks something as an array pass-by-value expression.
+     */
+    int is_array_by_val;
 };
 typedef struct expr_res_t expr_res_t;
 
@@ -94,7 +98,7 @@ expr_res_t *do_not(expr_res_t *expr);
 
 // Mappings for generating memory load/store operations
 expr_res_t *do_load(expr_res_t *var, arr_expr_t *arr);
-instr_t *do_store(char *name, arr_expr_t *arr, expr_res_t *expr);
+instr_t *do_store(expr_res_t *var, arr_expr_t *arr, expr_res_t *expr);
 
 // Mappings for generating I/O operations and syscalls
 instr_t *do_print(expr_res_t *expr);
@@ -145,4 +149,5 @@ void push();
 instr_t *peek();
 instr_t *pop();
 expr_res_t *resolve(char *name);
-instr_t *do_invoke(char *name);
+instr_t *do_invoke(char *name, instr_t *args);
+instr_t *do_call_expr(expr_res_t *expr);

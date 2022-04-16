@@ -16,6 +16,20 @@ unsigned int _column = 0;
 FILE *handleSource = 0;
 FILE *handleListing = 0;
 
+#define _STDLIB "\
+    var _source: Ref<Int[1]>;\
+    var _dest: Ref<Int[1]>;\
+    var _length: Int;\
+    \
+    fun _memcpy(): Nothing\
+    {\
+        for (var i: Int = 0; i < _length; i = i + 1)\
+        {\
+            *_dest[i] = *_source[i];\
+        }\
+    }"
+char *lib_in = _STDLIB;
+
 /**
  * Finds and opens the provided file by name. If a listing file is specified, it
  * will be used for listing entries.
@@ -63,6 +77,10 @@ void free_io()
  */
 char next_char()
 {
+    if (*lib_in != '\0')
+    {
+        return *(lib_in++);
+    }
     // Load a new line when necessary
     if (remainingBuffer == 0)
     {

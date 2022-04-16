@@ -1,0 +1,14 @@
+fun test(a: Int, b: Int[10]): Nothing
+{
+    print("First call has arguments ", a, ", ", b[5], "\n");
+}
+
+fun testRef(a: Int, b: Ref<Int[10]>): Nothing
+{
+    print("First call has arguments ", a, ", ", *b[5], "\n");
+}
+
+var array: Int[10];
+array[5] = 456;
+
+testRef(123, &array);

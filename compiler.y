@@ -49,6 +49,7 @@
 %type <InstrSeq> Body
 %type <InstrSeq> Arg
 %type <InstrSeq> ArgSeq
+%type <InstrSeq> CallExprSeq
 
 %token IDENT
 %token INT_LIT
@@ -89,18 +90,22 @@ Stmt            : PRINT '(' PrintSeq ')' ';'                { $$ = $3; }
                 | FOR { push(); } '(' Assign ';' Expr ';' Assign ')'
                   Body                                      { $$ = append(do_for($4, $6, $8, $10), pop()); }
                 | Func                                      { $$ = $1; }
-                | Id '(' ')' ';'                            { $$ = do_invoke($1); }
+                | Id '(' CallExprSeq ')' ';'                { $$ = do_invoke($1, $3); }
+CallExprSeq     : CallExprSeq ',' Expr                      { $$ = append($1, do_call_expr($3)); }
+                | Expr                                      { $$ = do_call_expr($1); }
+                |                                           { $$ = NULL; }
 Body            : '{' { push(); } StmtSeq '}'               { $$ = append($3, pop()); }
-Func            : FUN                                       { push(); $<InstrSeq>$ = declare("_ret", do_type_desc("Int", 0, NULL, false)); }
-                  Id '(' ArgSeq ')' ':' Type Body           { $$ = do_func($3, append($<InstrSeq>2, $5), $8, $9); }
+Func            : FUN { push(); } Id '(' ArgSeq ')' ':' Type { $<InstrSeq>$ = declare("_ret", do_type_desc("Int", 0, NULL, false)); }
+                  Body                                      { $$ = do_func($3, /*append(*/$<InstrSeq>9/*, $5)*/, $8, $10); }
 Arg             : Id ':' Type                               { $$ = declare($1, $3); }
 ArgSeq          : ArgSeq ',' Arg                            { $$ = append($1, $3); }
                 | Arg                                       { $$ = $1; }
                 |                                           { $$ = NULL; }
 Assign          : VAR Id ':' Type                           { $<InstrSeq>$ = declare($2, $4); }
-                  '=' Expr                                  { $$ = append($<InstrSeq>5, do_store($2, NULL, $7)); }
+                  '=' Expr                                  { $$ = append($<InstrSeq>5, do_store(resolve($2), NULL, $7)); }
                 | VAR Id ':' Type                           { $$ = declare($2, $4); }
-                | Id ArrSeqExpr '=' Expr                    { $$ = do_store($1, $2, $4); }
+                | Id ArrSeqExpr '=' Expr                    { $$ = do_store(resolve($1), $2, $4); }
+                | '*' Id ArrSeqExpr '=' Expr                { $$ = do_store(do_load(resolve($2), NULL), $3, $5); }
 ReadSeq         : ReadSeq ',' Id                            { $$ = append($1, do_read($3)); }
                 | Id                                        { $$ = do_read($1); }
 PrintSeq        : PrintSeq ',' Expr                         { $$ = append($1, do_print($3)); }
@@ -141,7 +146,7 @@ ExprF           : IntLit                                    { $$ = do_int_lit($1
 // Bottom of expression tree (highest precedence)
 Id              : IDENT                                     { $$ = strdup(yytext); }
 Type            : REF LT Id ArrSeq GT                       { if ($4 != NULL) { $4->name = $3; $4->is_reference = true; $$ = $4; } else $$ = do_type_desc($3, 0, NULL, true); }
-                |         Id ArrSeq                         { if ($2 != NULL) { $2->name = $1; $$ = $2; } else $$ = do_type_desc($1, 0, NULL, false); }
+                |        Id ArrSeq                          { if ($2 != NULL) { $2->name = $1; $$ = $2; } else $$ = do_type_desc($1, 0, NULL, false); }
 ArrSeq          : ArrSeq Arr                                { $$ = do_arr_seq($1, $2, 0); }
                 |                                           { $$ = NULL; }
 Arr             : '[' IntLit ']'                            { int i; sscanf($2, "%d", &i); $$ = do_arr_seq(NULL, NULL, i); }
