@@ -33,6 +33,7 @@
 %type <ExprRes> ExprF
 %type <InstrSeq> StmtSeq
 %type <InstrSeq> Stmt
+%type <InstrSeq> Func
 %type <TypeDesc> Type
 %type <TypeDesc> Arr
 %type <TypeDesc> ArrSeq
@@ -67,7 +68,7 @@
 %token WHILE
 %token FOR
 %token RETURN
-%token VOID
+%token FUN
 
 %%
 Prog            : { push(); } StmtSeq                       { accept_body($2); print_reg_claims(); }
@@ -83,9 +84,13 @@ Stmt            : PRINT '(' PrintSeq ')' ';'                { $$ = $3; }
                 | WHILE '(' Expr ')' Body                   { $$ = do_while($3, $5); }
                 | FOR { push(); } '(' Assign ';' Expr ';' Assign ')'
                   Body                                      { $$ = append(do_for($4, $6, $8, $10), pop()); }
+                | Func                                      { $$ = $1; }
+                | Id '(' ')' ';'                            { $$ = do_invoke($1); }
 Body            : '{' { push(); } StmtSeq '}'               { $$ = append($3, pop()); }
-Assign          : VAR Id ':' Type { $<InstrSeq>$ = declare($2, $4); } '=' Expr                  
-                                                            { $$ = append($<InstrSeq>5, do_store($2, NULL, $7)); }
+Func            : FUN                                       { $<InstrSeq>$ = save_seq(); push(); }
+                  Id '(' ')' ':' Type Body                  { $$ = append(append(append($<InstrSeq>2, do_func($3, $7, $8)), pop()), restore_seq()); }
+Assign          : VAR Id ':' Type                           { $<InstrSeq>$ = declare($2, $4); }
+                  '=' Expr                                  { $$ = append($<InstrSeq>5, do_store($2, NULL, $7)); }
                 | VAR Id ':' Type                           { $$ = declare($2, $4); }
                 | Id ArrSeqExpr '=' Expr                    { $$ = do_store($1, $2, $4); }
 ReadSeq         : ReadSeq ',' Id                            { $$ = append($1, do_read($3)); }

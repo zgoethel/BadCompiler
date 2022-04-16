@@ -177,7 +177,7 @@ L1:
 	add		$t2, $t2, $t3
 	addi		$t3, $sp, 4
 	sw		$t2, 0($t3)
-	jal		L2
+	j		L2
 L3:
 	addi		$sp, $sp, 4
 	addi		$sp, $sp, 0
@@ -187,7 +187,7 @@ L3:
 	add		$t1, $t1, $t2
 	addi		$t2, $sp, 4
 	sw		$t1, 0($t2)
-	jal		L4
+	j		L4
 L5:
 	addi		$sp, $sp, 4
 	addi		$sp, $sp, -4
@@ -232,7 +232,7 @@ L6:
 	add		$t1, $t1, $t2
 	addi		$t2, $sp, 4
 	sw		$t1, 0($t2)
-	jal		L6
+	j		L6
 L7:
 	addi		$sp, $sp, 4
 	addi		$sp, $sp, -4
@@ -325,7 +325,7 @@ L8:
 	sub		$t2, $t2, $t3
 	addi		$t3, $sp, 4
 	sw		$t2, 0($t3)
-	jal		L9
+	j		L9
 L10:
 	addi		$sp, $sp, 4
 	addi		$sp, $sp, 0
@@ -335,7 +335,7 @@ L10:
 	sub		$t1, $t1, $t2
 	addi		$t2, $sp, 4
 	sw		$t1, 0($t2)
-	jal		L11
+	j		L11
 L12:
 	addi		$sp, $sp, 4
 	addi		$sp, $sp, -4
@@ -380,7 +380,7 @@ L13:
 	add		$t1, $t1, $t2
 	addi		$t2, $sp, 4
 	sw		$t1, 0($t2)
-	jal		L13
+	j		L13
 L14:
 	addi		$sp, $sp, 4
 	li		$v0, 10

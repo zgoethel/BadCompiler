@@ -25,7 +25,7 @@ else                        { return ELSE; }
 while                       { return WHILE; }
 for                         { return FOR; }
 return                      { return RETURN; }
-void                        { return VOID; }
+fun                         { return FUN; }
 {letter}({letter}|{digit})* { return IDENT; }
 {digit}{digit}*             { return INT_LIT; }
 \"(\\.|[^"\\])*\"           { return STR_LIT; }

@@ -114,6 +114,9 @@ arr_expr_t *do_arr_expr(arr_expr_t *l, arr_expr_t *r, expr_res_t *size);
 // Final accept state action to print out the final sequence
 void accept_body(instr_t *Code);
 
+// Mappings for generating method bodies
+instr_t *do_func(char *name, type_desc_t *type, instr_t *body);
+
 /**
  * @brief Stores global variables and their type descriptors for reference.
  */
@@ -121,7 +124,7 @@ extern SymTab *table;
 /**
  * @brief Contains string literals for the data section during acceptance.
  */
- SymTab *str_lits;
+SymTab *str_lits;
 
 /**
  * @brief Stack for tracking variable scopes
@@ -138,3 +141,4 @@ void push();
 instr_t *peek();
 instr_t *pop();
 expr_res_t *resolve(char *name);
+instr_t *do_invoke(char *name);

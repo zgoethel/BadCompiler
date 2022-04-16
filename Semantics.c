@@ -197,7 +197,7 @@ expr_res_t *do_pow(expr_res_t *l, expr_res_t *r)
         reg_name(l->reg)));
 
     append(l->body, gen_instr(NULL, "addi", reg_name(counter), reg_name(counter), "1"));
-    append(l->body, gen_instr(NULL, "jal", _s, NULL, NULL));
+    append(l->body, gen_instr(NULL, "j", _s, NULL, NULL));
     append(l->body, gen_instr(_l, NULL, NULL, NULL, NULL));
 
     free_reg(l->reg);
@@ -336,7 +336,7 @@ extern instr_t *do_if_else(expr_res_t *expr, instr_t *body, instr_t *b_else)
 
     append(code, gen_instr(NULL, "beq", reg_name(expr->reg), "$zero", _else));
 	append(code, body);
-    append(code, gen_instr(NULL, "jal", _exit, NULL, NULL));
+    append(code, gen_instr(NULL, "j", _exit, NULL, NULL));
 	append(code, gen_instr(_else, NULL, NULL, NULL, NULL));
     append(code, b_else);
 	append(code, gen_instr(_exit, NULL, NULL, NULL, NULL));
@@ -358,7 +358,7 @@ extern instr_t *do_while(expr_res_t *expr, instr_t *body)
 	result = append(gen_instr(_start, NULL, NULL, NULL, NULL), result);
     append(result, gen_instr(NULL, "beq", reg_name(expr->reg), "$zero", _exit));
 	append(result, body);
-	append(result, gen_instr(NULL, "jal", _start, NULL, NULL));
+	append(result, gen_instr(NULL, "j", _start, NULL, NULL));
 	append(result, gen_instr(_exit, NULL, NULL, NULL, NULL));
 
     free_reg(expr->reg);
@@ -380,7 +380,7 @@ extern instr_t *do_for(instr_t *pre, expr_res_t *expr, instr_t *post, instr_t *b
     append(result, gen_instr(NULL, "beq", reg_name(expr->reg), "$zero", _exit));
 	append(result, body);
     append(result, post);
-	append(result, gen_instr(NULL, "jal", _start, NULL, NULL));
+	append(result, gen_instr(NULL, "j", _start, NULL, NULL));
 	append(result, gen_instr(_exit, NULL, NULL, NULL, NULL));
     append(result, body->to_free);
 
@@ -521,7 +521,7 @@ instr_t *do_print_l(expr_res_t *expr)
     append(code, gen_instr(NULL, "syscall", NULL, NULL, NULL));
 
     append(code, gen_instr(NULL, "addi", reg_name(counter), reg_name(counter), "1"));
-    append(code, gen_instr(NULL, "jal", _s, NULL, NULL));
+    append(code, gen_instr(NULL, "j", _s, NULL, NULL));
     append(code, gen_instr(_l, NULL, NULL, NULL, NULL));
 
     free_reg(expr->reg);
@@ -549,7 +549,7 @@ instr_t *do_print_s(expr_res_t *expr)
     append(code, gen_instr(NULL, "syscall", NULL, NULL, NULL));
 
     append(code, gen_instr(NULL, "addi", reg_name(counter), reg_name(counter), "1"));
-    append(code, gen_instr(NULL, "jal", _s, NULL, NULL));
+    append(code, gen_instr(NULL, "j", _s, NULL, NULL));
     append(code, gen_instr(_l, NULL, NULL, NULL, NULL));
 
     free_reg(expr->reg);
@@ -646,7 +646,6 @@ void accept_body(instr_t *body)
             NULL));
     } while (it_next(str_lits));
 
-    /*
     if (start_it(table)) do
     {
         type_desc_t *t = get_attr(table);
@@ -660,7 +659,6 @@ void accept_body(instr_t *body)
 
         append(code, gen_instr((char *)get_name(table), ".space", space_str, NULL, NULL));
     } while (it_next(table));
-    */
     
     write_seq(code);
     
@@ -673,6 +671,14 @@ int scope_index = -1;
 
 instr_t *declare(char *name, type_desc_t *type)
 {
+    if (scope_index == 0)
+    {
+        enter_name(table, name);
+        set_attr(table, (void *)type);
+
+        return gen_instr(NULL, "nop", NULL, NULL, NULL);
+    }
+
     variable_t *copy = (variable_t *)malloc(sizeof(variable_t));
     memcpy(copy, &scope_stack[scope_index], sizeof(variable_t));
 
@@ -730,9 +736,24 @@ expr_res_t *resolve(char *name)
     // Start at "most recent" stack level and iterate downwards
     for (int level = scope_index; level >= 0; level--)
     {
+        bool br = false;
+        // Handle global variables separately
+        if (level == 0)
+        {
+            if (!find_name(table, name))
+            {
+                br = true;
+                found = false;
+                break;
+            }
+
+            result->type = (type_desc_t *)get_attr(table);
+            result->body = gen_instr(NULL, "la", reg_name(result->reg), name, NULL);
+            return result;
+        }
+
         // Start at "most recent" variable and step backwards
         variable_t *temp = &scope_stack[level];
-        bool br = false;
         for (; temp != NULL && temp->name != NULL; temp = temp->next)
         {
             // Take partial sum of previous variable sizes
@@ -750,8 +771,10 @@ expr_res_t *resolve(char *name)
 
     if (!found)
     {
+        put_warning(NULL);
         put_marker(col_num());
         put_warning("Identifier not recognized or out of scope");
+        put_warning(name);
     }
 
     char offset[32];
@@ -759,4 +782,22 @@ expr_res_t *resolve(char *name)
     result->body = gen_instr(NULL, "addi", reg_name(result->reg), "$sp", strdup(offset));
 
     return result;
+}
+
+instr_t *do_func(char *name, type_desc_t *type, instr_t *body)
+{
+    char *_skip = gen_label();
+
+    instr_t *code = gen_instr(NULL, "j", _skip, NULL, NULL);
+    append(code, gen_instr(name, NULL, NULL, NULL, NULL));
+    append(code, body);
+    append(code, gen_instr(NULL, "jr", "$ra", NULL, NULL));
+    append(code, gen_instr(_skip, NULL, NULL, NULL, NULL));
+
+    return code;
+}
+
+instr_t *do_invoke(char *name)
+{
+    return gen_instr(NULL, "jal", name, NULL, NULL);
 }
