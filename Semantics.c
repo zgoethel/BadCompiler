@@ -747,6 +747,7 @@ expr_res_t *resolve(char *name)
     ssize_t partial_sum = 0;
     bool found = false;
     expr_res_t *result = alloc_expr();
+    int most_rec = 0;
 
     // Start at "most recent" stack level and iterate downwards
     for (int level = scope_index; level >= 0; level--)
@@ -773,6 +774,7 @@ expr_res_t *resolve(char *name)
         {
             // Take partial sum of previous variable sizes
             partial_sum += temp->size;
+            most_rec = temp->size;
             if (strcmp(temp->name, name) == 0)
             {
                 result->type = temp->type;
@@ -793,6 +795,7 @@ expr_res_t *resolve(char *name)
     }
 
     char offset[32];
+    partial_sum -= most_rec;
     sprintf(offset, "%ld", partial_sum * 4);
     result->body = gen_instr(NULL, "addi", reg_name(result->reg), "$sp", strdup(offset));
 
@@ -841,8 +844,7 @@ instr_t *do_invoke(char *name, instr_t *args)
 
 instr_t *do_call_expr(expr_res_t *expr)
 {
-    instr_t *code = expr->body;
-    printf("TYPE CALL EXPR %s, [x%d]\n", expr->type->name, expr->type->arr_dim_c);
+    instr_t *code = NULL;// = expr->body;
     if (expr->is_array_by_val)
     {
         size_t size = 1;
@@ -850,23 +852,23 @@ instr_t *do_call_expr(expr_res_t *expr)
             size *= expr->type->arr_dim[i];
 
         expr_res_t *dest_ref = alloc_expr();
-        dest_ref->body = gen_instr(NULL, "move", reg_name(dest_ref->reg), "$sp", NULL);
+        dest_ref->body = gen_instr(NULL, "addi", "$sp", "$sp", imm(-size * 4));
+        append(dest_ref->body, gen_instr(NULL, "move", reg_name(dest_ref->reg), "$sp", NULL));
+        
         expr_res_t *size_ref = alloc_expr();
-        size_ref->body = gen_instr(NULL, "li", reg_name(size_ref->reg), "$sp", imm(size));
+        size_ref->body = gen_instr(NULL, "li", reg_name(size_ref->reg), imm(size), NULL);
 
         code = append(code, do_store(resolve("_source"), NULL, expr));
         append(code, do_store(resolve("_dest"), NULL, dest_ref));
         append(code, do_store(resolve("_length"), NULL, size_ref));
         append(code, do_invoke("_memcpy", NULL));
-        append(code, gen_instr(NULL, "addi", "$sp", "$sp", imm(-size * 4)));
     } else
     {
-        code = append(code, gen_instr(NULL, "sw", reg_name(expr->reg), reg_off(0, "$sp"), NULL));
-        append(code, gen_instr(NULL, "addi", "$sp", "$sp", "-4"));
+        code = append(expr->body, gen_instr(NULL, "addi", "$sp", "$sp", "-4"));
+        append(code, gen_instr(NULL, "sw", reg_name(expr->reg), reg_off(0, "$sp"), NULL));
+        free_reg(expr->reg);
+        free(expr);
     }
-
-    free_reg(expr->reg);
-    free(expr);
 
     return code;
 }

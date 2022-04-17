@@ -25,8 +25,10 @@ FILE *handleListing = 0;
     {\
         for (var i: Int = 0; i < _length; i = i + 1)\
         {\
+            print(\"i = \", i, \" length = \", _length, \"\\n\");\
             *_dest[i] = *_source[i];\
         }\
+        print(\"Exit to \", _ret, \"\\n\");\
     }"
 char *lib_in = _STDLIB;
 

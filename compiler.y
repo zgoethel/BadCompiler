@@ -146,7 +146,7 @@ ExprF           : IntLit                                    { $$ = do_int_lit($1
 // Bottom of expression tree (highest precedence)
 Id              : IDENT                                     { $$ = strdup(yytext); }
 Type            : REF LT Id ArrSeq GT                       { if ($4 != NULL) { $4->name = $3; $4->is_reference = true; $$ = $4; } else $$ = do_type_desc($3, 0, NULL, true); }
-                |        Id ArrSeq                          { if ($2 != NULL) { $2->name = $1; $$ = $2; } else $$ = do_type_desc($1, 0, NULL, false); }
+                |        Id ArrSeq                          { if ($2 != NULL) { $2->name = $1; $2->is_reference = false; $$ = $2; } else $$ = do_type_desc($1, 0, NULL, false); }
 ArrSeq          : ArrSeq Arr                                { $$ = do_arr_seq($1, $2, 0); }
                 |                                           { $$ = NULL; }
 Arr             : '[' IntLit ']'                            { int i; sscanf($2, "%d", &i); $$ = do_arr_seq(NULL, NULL, i); }
