@@ -18,25 +18,6 @@ L1:
 	lw		$t1, 0($t1)
 	slt		$t0, $t0, $t1
 	beq		$t0, $zero, L2
-	li		$v0, 4
-	la		$a0, _str_0
-	syscall	
-	addi		$t1, $sp, 0
-	lw		$t1, 0($t1)
-	li		$v0, 1
-	move		$a0, $t1
-	syscall	
-	li		$v0, 4
-	la		$a0, _str_1
-	syscall	
-	la		$t1, _length
-	lw		$t1, 0($t1)
-	li		$v0, 1
-	move		$a0, $t1
-	syscall	
-	li		$v0, 4
-	la		$a0, _str_2
-	syscall	
 	addi		$t1, $sp, 0
 	lw		$t1, 0($t1)
 	addi		$t2, $sp, 0
@@ -65,17 +46,6 @@ L1:
 	j		L1
 L2:
 	addi		$sp, $sp, 4
-	li		$v0, 4
-	la		$a0, _str_3
-	syscall	
-	addi		$t0, $sp, 0
-	lw		$t0, 0($t0)
-	li		$v0, 1
-	move		$a0, $t0
-	syscall	
-	li		$v0, 4
-	la		$a0, _str_4
-	syscall	
 	addi		$sp, $sp, 0
 	addi		$t0, $sp, 0
 	lw		$t0, 0($t0)
@@ -97,7 +67,7 @@ recurse:
 	sgt		$t0, $t0, $t1
 	beq		$t0, $zero, L4
 	li		$v0, 4
-	la		$a0, _str_5
+	la		$a0, _str_0
 	syscall	
 	la		$t1, loopGuard
 	lw		$t1, 0($t1)
@@ -105,7 +75,7 @@ recurse:
 	move		$a0, $t1
 	syscall	
 	li		$v0, 4
-	la		$a0, _str_6
+	la		$a0, _str_1
 	syscall	
 	la		$t1, loopGuard
 	lw		$t1, 0($t1)
@@ -121,7 +91,7 @@ recurse:
 	addi		$sp, $sp, 0
 L4:
 	li		$v0, 4
-	la		$a0, _str_7
+	la		$a0, _str_2
 	syscall	
 	addi		$t0, $sp, 0
 	lw		$t0, 0($t0)
@@ -129,7 +99,7 @@ L4:
 	move		$a0, $t0
 	syscall	
 	li		$v0, 4
-	la		$a0, _str_8
+	la		$a0, _str_3
 	syscall	
 	addi		$sp, $sp, 0
 	addi		$t0, $sp, 0
@@ -144,23 +114,13 @@ L5:
 	.align		4
 _nl:	.asciiz		"\n"
 _sp:	.asciiz		" "
-_str_0:	.asciiz		"i = "
+_str_0:	.asciiz		"Recursive call, guard is "
 	.align		4
-_str_1:	.asciiz		" length = "
+_str_1:	.asciiz		"\n"
 	.align		4
-_str_2:	.asciiz		"\n"
+_str_2:	.asciiz		"Recursive call returning to "
 	.align		4
-_str_3:	.asciiz		"Exit to "
-	.align		4
-_str_4:	.asciiz		"\n"
-	.align		4
-_str_5:	.asciiz		"Recursive call, guard is "
-	.align		4
-_str_6:	.asciiz		"\n"
-	.align		4
-_str_7:	.asciiz		"Recursive call returning to "
-	.align		4
-_str_8:	.asciiz		"\n"
+_str_3:	.asciiz		"\n"
 	.align		4
 _length:	.space		4
 _source:	.space		4

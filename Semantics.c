@@ -683,7 +683,6 @@ int scope_index = -1;
 
 instr_t *declare(char *name, type_desc_t *type)
 {
-    printf("DECLARE %s\n", name);
     if (scope_index == 0)
     {
         enter_name(table, name);
@@ -694,7 +693,6 @@ instr_t *declare(char *name, type_desc_t *type)
 
     variable_t *copy = (variable_t *)malloc(sizeof(variable_t));
     memcpy(copy, &scope_stack[scope_index], sizeof(variable_t));
-    printf("EXISTING WAS %s\n", copy->name);
 
     memset(&scope_stack[scope_index], 0, sizeof(variable_t));
     variable_t variable;
@@ -798,7 +796,6 @@ expr_res_t *resolve(char *name)
 
     char offset[32];
     partial_sum -= most_rec;
-    printf("RESOLVE OFFSET %s = %d\n", name, partial_sum);
     sprintf(offset, "%ld", partial_sum * 4);
     result->body = gen_instr(NULL, "addi", reg_name(result->reg), "$sp", strdup(offset));
 

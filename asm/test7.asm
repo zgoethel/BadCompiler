@@ -18,25 +18,6 @@ L1:
 	lw		$t1, 0($t1)
 	slt		$t0, $t0, $t1
 	beq		$t0, $zero, L2
-	li		$v0, 4
-	la		$a0, _str_0
-	syscall	
-	addi		$t1, $sp, 0
-	lw		$t1, 0($t1)
-	li		$v0, 1
-	move		$a0, $t1
-	syscall	
-	li		$v0, 4
-	la		$a0, _str_1
-	syscall	
-	la		$t1, _length
-	lw		$t1, 0($t1)
-	li		$v0, 1
-	move		$a0, $t1
-	syscall	
-	li		$v0, 4
-	la		$a0, _str_2
-	syscall	
 	addi		$t1, $sp, 0
 	lw		$t1, 0($t1)
 	addi		$t2, $sp, 0
@@ -65,17 +46,6 @@ L1:
 	j		L1
 L2:
 	addi		$sp, $sp, 4
-	li		$v0, 4
-	la		$a0, _str_3
-	syscall	
-	addi		$t0, $sp, 0
-	lw		$t0, 0($t0)
-	li		$v0, 1
-	move		$a0, $t0
-	syscall	
-	li		$v0, 4
-	la		$a0, _str_4
-	syscall	
 	addi		$sp, $sp, 0
 	addi		$t0, $sp, 0
 	lw		$t0, 0($t0)
@@ -89,7 +59,7 @@ test:
 	addi		$t1, $sp, 0
 	sw		$t0, 0($t1)
 	li		$v0, 4
-	la		$a0, _str_5
+	la		$a0, _str_0
 	syscall	
 	addi		$t0, $sp, 44
 	lw		$t0, 0($t0)
@@ -97,7 +67,7 @@ test:
 	move		$a0, $t0
 	syscall	
 	li		$v0, 4
-	la		$a0, _str_6
+	la		$a0, _str_1
 	syscall	
 	li		$t0, 5
 	addi		$t1, $sp, 4
@@ -110,7 +80,7 @@ test:
 	move		$a0, $t1
 	syscall	
 	li		$v0, 4
-	la		$a0, _str_7
+	la		$a0, _str_2
 	syscall	
 	addi		$sp, $sp, 0
 	addi		$t0, $sp, 0
@@ -125,7 +95,7 @@ testRef:
 	addi		$t1, $sp, 0
 	sw		$t0, 0($t1)
 	li		$v0, 4
-	la		$a0, _str_8
+	la		$a0, _str_3
 	syscall	
 	addi		$t0, $sp, 8
 	lw		$t0, 0($t0)
@@ -134,7 +104,7 @@ testRef:
 	move		$a0, $t0
 	syscall	
 	li		$v0, 4
-	la		$a0, _str_9
+	la		$a0, _str_4
 	syscall	
 	li		$t0, 5
 	addi		$t1, $sp, 4
@@ -148,7 +118,7 @@ testRef:
 	move		$a0, $t1
 	syscall	
 	li		$v0, 4
-	la		$a0, _str_10
+	la		$a0, _str_5
 	syscall	
 	addi		$sp, $sp, 0
 	addi		$t0, $sp, 0
@@ -196,27 +166,17 @@ L5:
 	.align		4
 _nl:	.asciiz		"\n"
 _sp:	.asciiz		" "
-_str_0:	.asciiz		"i = "
+_str_0:	.asciiz		"First call has arguments "
 	.align		4
-_str_1:	.asciiz		" length = "
+_str_1:	.asciiz		", "
 	.align		4
 _str_2:	.asciiz		"\n"
 	.align		4
-_str_10:	.asciiz		"\n"
+_str_3:	.asciiz		"Second call has arguments "
 	.align		4
-_str_3:	.asciiz		"Exit to "
+_str_4:	.asciiz		", "
 	.align		4
-_str_4:	.asciiz		"\n"
-	.align		4
-_str_5:	.asciiz		"First call has arguments "
-	.align		4
-_str_6:	.asciiz		", "
-	.align		4
-_str_7:	.asciiz		"\n"
-	.align		4
-_str_8:	.asciiz		"Second call has arguments "
-	.align		4
-_str_9:	.asciiz		", "
+_str_5:	.asciiz		"\n"
 	.align		4
 num:	.space		4
 _length:	.space		4

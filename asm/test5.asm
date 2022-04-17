@@ -18,25 +18,6 @@ L1:
 	lw		$t1, 0($t1)
 	slt		$t0, $t0, $t1
 	beq		$t0, $zero, L2
-	li		$v0, 4
-	la		$a0, _str_0
-	syscall	
-	addi		$t1, $sp, 0
-	lw		$t1, 0($t1)
-	li		$v0, 1
-	move		$a0, $t1
-	syscall	
-	li		$v0, 4
-	la		$a0, _str_1
-	syscall	
-	la		$t1, _length
-	lw		$t1, 0($t1)
-	li		$v0, 1
-	move		$a0, $t1
-	syscall	
-	li		$v0, 4
-	la		$a0, _str_2
-	syscall	
 	addi		$t1, $sp, 0
 	lw		$t1, 0($t1)
 	addi		$t2, $sp, 0
@@ -65,17 +46,6 @@ L1:
 	j		L1
 L2:
 	addi		$sp, $sp, 4
-	li		$v0, 4
-	la		$a0, _str_3
-	syscall	
-	addi		$t0, $sp, 0
-	lw		$t0, 0($t0)
-	li		$v0, 1
-	move		$a0, $t0
-	syscall	
-	li		$v0, 4
-	la		$a0, _str_4
-	syscall	
 	addi		$sp, $sp, 0
 	addi		$t0, $sp, 0
 	lw		$t0, 0($t0)
@@ -153,7 +123,7 @@ L5:
 	move		$a0, $t2
 	syscall	
 	li		$v0, 4
-	la		$a0, _str_5
+	la		$a0, _str_0
 	syscall	
 	addi		$sp, $sp, 4
 	addi		$t2, $sp, 0
@@ -166,7 +136,7 @@ L5:
 L7:
 	addi		$sp, $sp, 4
 	li		$v0, 4
-	la		$a0, _str_6
+	la		$a0, _str_1
 	syscall	
 	addi		$sp, $sp, 0
 	addi		$t1, $sp, 0
@@ -184,19 +154,9 @@ L9:
 	.align		4
 _nl:	.asciiz		"\n"
 _sp:	.asciiz		" "
-_str_0:	.asciiz		"i = "
+_str_0:	.asciiz		" "
 	.align		4
-_str_1:	.asciiz		" length = "
-	.align		4
-_str_2:	.asciiz		"\n"
-	.align		4
-_str_3:	.asciiz		"Exit to "
-	.align		4
-_str_4:	.asciiz		"\n"
-	.align		4
-_str_5:	.asciiz		" "
-	.align		4
-_str_6:	.asciiz		"\n"
+_str_1:	.asciiz		"\n"
 	.align		4
 _length:	.space		4
 i:	.space		4

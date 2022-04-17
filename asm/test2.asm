@@ -18,25 +18,6 @@ L1:
 	lw		$t1, 0($t1)
 	slt		$t0, $t0, $t1
 	beq		$t0, $zero, L2
-	li		$v0, 4
-	la		$a0, _str_0
-	syscall	
-	addi		$t1, $sp, 0
-	lw		$t1, 0($t1)
-	li		$v0, 1
-	move		$a0, $t1
-	syscall	
-	li		$v0, 4
-	la		$a0, _str_1
-	syscall	
-	la		$t1, _length
-	lw		$t1, 0($t1)
-	li		$v0, 1
-	move		$a0, $t1
-	syscall	
-	li		$v0, 4
-	la		$a0, _str_2
-	syscall	
 	addi		$t1, $sp, 0
 	lw		$t1, 0($t1)
 	addi		$t2, $sp, 0
@@ -65,17 +46,6 @@ L1:
 	j		L1
 L2:
 	addi		$sp, $sp, 4
-	li		$v0, 4
-	la		$a0, _str_3
-	syscall	
-	addi		$t0, $sp, 0
-	lw		$t0, 0($t0)
-	li		$v0, 1
-	move		$a0, $t0
-	syscall	
-	li		$v0, 4
-	la		$a0, _str_4
-	syscall	
 	addi		$sp, $sp, 0
 	addi		$t0, $sp, 0
 	lw		$t0, 0($t0)
@@ -89,7 +59,7 @@ L3:
 	la		$t1, readB
 	sw		$t0, 0($t1)
 	li		$v0, 4
-	la		$a0, _str_5
+	la		$a0, _str_0
 	syscall	
 	la		$t0, readA
 	li		$v0, 5
@@ -105,7 +75,7 @@ L3:
 	move		$a0, $t0
 	syscall	
 	li		$v0, 4
-	la		$a0, _str_6
+	la		$a0, _str_1
 	syscall	
 	la		$t0, readB
 	lw		$t0, 0($t0)
@@ -113,7 +83,7 @@ L3:
 	move		$a0, $t0
 	syscall	
 	li		$v0, 4
-	la		$a0, _str_7
+	la		$a0, _str_2
 	syscall	
 	li		$t0, 3
 	li		$v0, 1
@@ -130,7 +100,7 @@ L5:
 	j		L5
 L4:
 	li		$v0, 4
-	la		$a0, _str_8
+	la		$a0, _str_3
 	syscall	
 	la		$t0, readA
 	li		$v0, 5
@@ -149,7 +119,7 @@ L4:
 	move		$a0, $t0
 	syscall	
 	li		$v0, 4
-	la		$a0, _str_9
+	la		$a0, _str_4
 	syscall	
 	la		$t0, readA
 	lw		$t0, 0($t0)
@@ -178,7 +148,7 @@ L6:
 	move		$a0, $t0
 	syscall	
 	li		$v0, 4
-	la		$a0, _str_10
+	la		$a0, _str_5
 	syscall	
 	la		$t0, readA
 	lw		$t0, 0($t0)
@@ -209,7 +179,7 @@ L8:
 	move		$a0, $t0
 	syscall	
 	li		$v0, 4
-	la		$a0, _str_11
+	la		$a0, _str_6
 	syscall	
 	la		$t0, readA
 	lw		$t0, 0($t0)
@@ -237,7 +207,7 @@ L13:
 	j		L13
 L12:
 	li		$v0, 4
-	la		$a0, _str_12
+	la		$a0, _str_7
 	syscall	
 	la		$t0, readA
 	li		$v0, 5
@@ -275,7 +245,7 @@ L16:
 	move		$a0, $t0
 	syscall	
 	li		$v0, 4
-	la		$a0, _str_13
+	la		$a0, _str_8
 	syscall	
 	la		$t0, readB
 	lw		$t0, 0($t0)
@@ -293,40 +263,40 @@ L19:
 	j		L19
 L18:
 	li		$v0, 4
+	la		$a0, _str_9
+	syscall	
+	la		$t0, readA
+	lw		$t0, 0($t0)
+	li		$v0, 1
+	move		$a0, $t0
+	syscall	
+	li		$v0, 4
+	la		$a0, _str_10
+	syscall	
+	la		$t0, readB
+	lw		$t0, 0($t0)
+	li		$v0, 1
+	move		$a0, $t0
+	syscall	
+	li		$v0, 4
+	la		$a0, _str_11
+	syscall	
+	li		$v0, 4
+	la		$a0, _str_12
+	syscall	
+	la		$t0, readA
+	li		$v0, 5
+	syscall	
+	sw		$v0, 0($t0)
+	li		$v0, 4
+	la		$a0, _str_13
+	syscall	
+	la		$t0, readB
+	li		$v0, 5
+	syscall	
+	sw		$v0, 0($t0)
+	li		$v0, 4
 	la		$a0, _str_14
-	syscall	
-	la		$t0, readA
-	lw		$t0, 0($t0)
-	li		$v0, 1
-	move		$a0, $t0
-	syscall	
-	li		$v0, 4
-	la		$a0, _str_15
-	syscall	
-	la		$t0, readB
-	lw		$t0, 0($t0)
-	li		$v0, 1
-	move		$a0, $t0
-	syscall	
-	li		$v0, 4
-	la		$a0, _str_16
-	syscall	
-	li		$v0, 4
-	la		$a0, _str_17
-	syscall	
-	la		$t0, readA
-	li		$v0, 5
-	syscall	
-	sw		$v0, 0($t0)
-	li		$v0, 4
-	la		$a0, _str_18
-	syscall	
-	la		$t0, readB
-	li		$v0, 5
-	syscall	
-	sw		$v0, 0($t0)
-	li		$v0, 4
-	la		$a0, _str_19
 	syscall	
 	li		$v0, 10
 	syscall	
@@ -334,45 +304,35 @@ L18:
 	.align		4
 _nl:	.asciiz		"\n"
 _sp:	.asciiz		" "
-_str_19:	.asciiz		"Thank you!\n"
+_str_0:	.asciiz		"Enter two numbers:\n"
 	.align		4
-_str_0:	.asciiz		"i = "
+_str_1:	.asciiz		" "
 	.align		4
-_str_1:	.asciiz		" length = "
+_str_2:	.asciiz		" "
 	.align		4
-_str_2:	.asciiz		"\n"
+_str_10:	.asciiz		"\n"
 	.align		4
-_str_10:	.asciiz		" "
+_str_3:	.asciiz		"Enter two numbers:\n"
 	.align		4
-_str_3:	.asciiz		"Exit to "
+_str_11:	.asciiz		"\n"
 	.align		4
-_str_11:	.asciiz		" "
+_str_4:	.asciiz		" "
 	.align		4
-_str_4:	.asciiz		"\n"
+_str_12:	.asciiz		"Enter first number: "
 	.align		4
-_str_12:	.asciiz		"Enter two numbers:\n"
+_str_5:	.asciiz		" "
 	.align		4
-_str_5:	.asciiz		"Enter two numbers:\n"
-	.align		4
-_str_13:	.asciiz		" "
+_str_13:	.asciiz		"Enter second number: "
 	.align		4
 _str_6:	.asciiz		" "
 	.align		4
-_str_14:	.asciiz		"Hello, world!\n"
+_str_14:	.asciiz		"Thank you!\n"
 	.align		4
-_str_7:	.asciiz		" "
+_str_7:	.asciiz		"Enter two numbers:\n"
 	.align		4
-_str_15:	.asciiz		"\n"
+_str_8:	.asciiz		" "
 	.align		4
-_str_8:	.asciiz		"Enter two numbers:\n"
-	.align		4
-_str_16:	.asciiz		"\n"
-	.align		4
-_str_9:	.asciiz		" "
-	.align		4
-_str_17:	.asciiz		"Enter first number: "
-	.align		4
-_str_18:	.asciiz		"Enter second number: "
+_str_9:	.asciiz		"Hello, world!\n"
 	.align		4
 _length:	.space		4
 _source:	.space		4
