@@ -796,6 +796,8 @@ expr_res_t *resolve(char *name)
 
     char offset[32];
     partial_sum -= most_rec;
+    partial_sum += incidental_offset;
+    printf("Resolve incidental offset %u\n", incidental_offset);
     sprintf(offset, "%ld", partial_sum * 4);
     result->body = gen_instr(NULL, "addi", reg_name(result->reg), "$sp", strdup(offset));
 
@@ -829,9 +831,9 @@ instr_t *do_func(char *name, instr_t *decl, type_desc_t *type, instr_t *body)
     return code;
 }
 
-instr_t *do_invoke(char *name, instr_t *args)
+instr_t *do_invoke(instr_t *s_s, char *name, instr_t *args)
 {
-    instr_t *code = save_seq(); // <-- May be `NULL`
+    instr_t *code = s_s;//save_seq(); // <-- May be `NULL`
     bool do_restore = code != NULL;
 
     if (args != NULL) code = append(code, args);
@@ -841,6 +843,8 @@ instr_t *do_invoke(char *name, instr_t *args)
         append(code, restore_seq());
     return code;
 }
+
+unsigned int incidental_offset = 0;
 
 instr_t *do_call_expr(expr_res_t *expr)
 {
@@ -861,13 +865,19 @@ instr_t *do_call_expr(expr_res_t *expr)
         code = append(code, do_store(resolve("_source"), NULL, expr));
         append(code, do_store(resolve("_dest"), NULL, dest_ref));
         append(code, do_store(resolve("_length"), NULL, size_ref));
-        append(code, do_invoke("_memcpy", NULL));
+        append(code, do_invoke(NULL, "_memcpy", NULL));
+
+        printf ("Incidental offset %u -> %lu\n", incidental_offset, incidental_offset + size);
+        incidental_offset += size;
     } else
     {
         code = append(expr->body, gen_instr(NULL, "addi", "$sp", "$sp", "-4"));
         append(code, gen_instr(NULL, "sw", reg_name(expr->reg), reg_off(0, "$sp"), NULL));
         free_reg(expr->reg);
         free(expr);
+
+        printf ("Incidental offset %u -> %u\n", incidental_offset, incidental_offset + 1);
+        incidental_offset += 1;
     }
 
     return code;

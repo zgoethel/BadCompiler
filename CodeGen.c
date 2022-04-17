@@ -5,6 +5,7 @@
 
 #include "CodeGen.h"
 #include "IOMngr.h"
+#include "Semantics.h"
 
 extern FILE *codegen_file;
 
@@ -163,6 +164,7 @@ save_seq()
   if (scnt > 0) {
     sprintf(offset,"%d",scnt*4);
     code = gen_instr(NULL,"subu","$sp","$sp",offset);
+    incidental_offset += scnt;
     append(code,save);
   }
   

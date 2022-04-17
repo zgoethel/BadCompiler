@@ -90,7 +90,8 @@ Stmt            : PRINT '(' PrintSeq ')' ';'                { $$ = $3; }
                 | FOR { push(); } '(' Assign ';' Expr ';' Assign ')'
                   Body                                      { $$ = append(do_for($4, $6, $8, $10), pop()); }
                 | Func                                      { $$ = $1; }
-                | Id '(' CallExprSeq ')' ';'                { $$ = do_invoke($1, $3); }
+                | Id '('                                    { incidental_offset = 0; $<InstrSeq>$ = save_seq(); }
+                  CallExprSeq ')' ';'                       { $$ = do_invoke($<InstrSeq>3, $1, $4); incidental_offset = 0; }
 CallExprSeq     : CallExprSeq ',' Expr                      { $$ = append($1, do_call_expr($3)); }
                 | Expr                                      { $$ = do_call_expr($1); }
                 |                                           { $$ = NULL; }

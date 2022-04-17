@@ -1,14 +1,53 @@
-var loopGuard: Int = 10;
-fun recurse(): Nothing
-{
-    if (loopGuard > 0)
-    {
-        print("Recursive call, guard is ", loopGuard, "\n");
-        loopGuard = loopGuard - 1;
-        recurse();
-    }
+var array: Int[16];
+var aux: Int[16];
 
-    print("Recursive call returning to ", _ret, "\n");
+for (var i: Int = 0; i < 16; i = i + 1)
+{
+    array[i] = 15 - i;
 }
 
-recurse();
+fun merge(array: Ref<Int[1]>, aux: Ref<Int[1]>, start: Int, mid: Int, end: Int): Nothing
+{
+    print("Merge s = ", start, ", m = ", mid, ", e = ", end, "\n");
+
+    if (end - start > 2)
+    {
+        print(start, " ", (start + mid) / 2, " ", mid, "\n");
+        merge(array, aux, start, (start + mid) / 2, mid);
+        print(mid, " ", (mid + end) / 2, " ", end, "\n");
+        merge(array, aux, mid, (mid + end) / 2, end);
+    }
+
+    var i: Int = start;
+    var j: Int = mid;
+    var k: Int = start;
+
+    for (k = k; i < mid && j < end; k = k + 1)
+    {
+        if (*array[i] < *array[j])
+        {
+            *aux[k] = *array[i];
+            i = i + 1;
+        } else
+        {
+            *aux[k] = *array[j];
+            j = j + 1;
+        }
+    }
+
+    for (i = i; i < mid; i = i + 1) { *aux[k] = *array[i]; k = k + 1; }
+    for (j = j; j < end; j = j + 1) { *aux[k] = *array[j]; k = k + 1; }
+
+    for (k = start; k < end; k = k + 1)
+    {
+        *array[k] = *aux[k];
+    }
+
+    print("Return to ", _ret, "\n");
+}
+
+merge(&array, &aux, 0, 8, 16);
+for (var i: Int = 0; i < 16; i = i + 1)
+{
+    print("array[", i, "] -> ", array[i], "\n");
+}
