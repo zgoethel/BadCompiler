@@ -1,0 +1,33 @@
+fun pass_val_2d(depth: Int, array: Int[10][10]): Nothing
+{
+    if (depth == 2)
+    {
+        print("array[2][7] -> ", array[2][7], "\n");
+    } else
+    {
+        array[2][7] = array[2][7] + 1;
+        print("Iteration ", depth, ", array[2][7] -> ", array[2][7], "\n");
+        pass_val_2d(depth + 1, array);
+    }
+}
+
+fun pass_ref_2d(depth: Int, array: Ref<Int[10][10]>): Nothing
+{
+    if (depth == 2)
+    {
+        print("*array[2][7] -> ", *array[2][7], "\n");
+    } else
+    {
+        *array[2][7] = *array[2][7] + 1;
+        print("Iteration ", depth, ", *array[2][7] -> ", *array[2][7], "\n");
+        pass_ref_2d(depth + 1, array);
+    }
+}
+
+var array: Int[10][10];
+array[2][7] = 123;
+pass_val_2d(0, array);
+print("After pass-by-value (should be 123): ", array[2][7], "\n");
+
+pass_ref_2d(0, &array);
+print("After pass-by-ref (should not be 123): ", array[2][7], "\n");

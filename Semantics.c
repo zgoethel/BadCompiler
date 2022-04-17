@@ -797,7 +797,6 @@ expr_res_t *resolve(char *name)
     char offset[32];
     partial_sum -= most_rec;
     partial_sum += incidental_offset;
-    printf("Resolve incidental offset %u\n", incidental_offset);
     sprintf(offset, "%ld", partial_sum * 4);
     result->body = gen_instr(NULL, "addi", reg_name(result->reg), "$sp", strdup(offset));
 
@@ -867,7 +866,6 @@ instr_t *do_call_expr(expr_res_t *expr)
         append(code, do_store(resolve("_length"), NULL, size_ref));
         append(code, do_invoke(NULL, "_memcpy", NULL));
 
-        printf ("Incidental offset %u -> %lu\n", incidental_offset, incidental_offset + size);
         incidental_offset += size;
     } else
     {
@@ -876,7 +874,6 @@ instr_t *do_call_expr(expr_res_t *expr)
         free_reg(expr->reg);
         free(expr);
 
-        printf ("Incidental offset %u -> %u\n", incidental_offset, incidental_offset + 1);
         incidental_offset += 1;
     }
 
