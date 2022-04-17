@@ -26,8 +26,9 @@ fun recurse(): Nothing
     print("Recursive call returning to ", _ret, "\n");
 }
 
+var j: Int;
 print("After declaration ", i, "\n");
-for (var j: Int = 0; j < 3; j = j + 1)
+for (j = 0; j < 3; j = j + 1)
 {
     helloWorld();
     print("After invoke ", i, "\n");

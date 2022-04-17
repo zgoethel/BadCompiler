@@ -1,0 +1,14 @@
+var loopGuard: Int = 10;
+fun recurse(): Nothing
+{
+    if (loopGuard > 0)
+    {
+        print("Recursive call, guard is ", loopGuard, "\n");
+        loopGuard = loopGuard - 1;
+        recurse();
+    }
+
+    print("Recursive call returning to ", _ret, "\n");
+}
+
+recurse();

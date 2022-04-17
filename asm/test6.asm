@@ -201,7 +201,7 @@ recurse:
 	la		$t2, loopGuard
 	sw		$t1, 0($t2)
 	subu		$sp, $sp, 4
-	sw		$t0, 4($sp)
+	sw		$t0, 0($sp)
 	jal		recurse
 	lw		$t0, 4($sp)
 	addu		$sp, $sp, 4
@@ -235,18 +235,17 @@ L7:
 	li		$v0, 4
 	la		$a0, _str_18
 	syscall	
-	addi		$sp, $sp, -4
 	li		$t0, 0
-	addi		$t1, $sp, 0
+	la		$t1, j
 	sw		$t0, 0($t1)
 L8:
-	addi		$t0, $sp, 0
+	la		$t0, j
 	lw		$t0, 0($t0)
 	li		$t1, 3
 	slt		$t0, $t0, $t1
 	beq		$t0, $zero, L9
 	subu		$sp, $sp, 4
-	sw		$t0, 4($sp)
+	sw		$t0, 0($sp)
 	jal		helloWorld
 	lw		$t0, 4($sp)
 	addu		$sp, $sp, 4
@@ -262,15 +261,15 @@ L8:
 	la		$a0, _str_20
 	syscall	
 	addi		$sp, $sp, 0
-	addi		$t1, $sp, 0
+	la		$t1, j
 	lw		$t1, 0($t1)
 	li		$t2, 1
 	add		$t1, $t1, $t2
-	addi		$t2, $sp, 0
+	la		$t2, j
 	sw		$t1, 0($t2)
 	j		L8
 L9:
-	addi		$sp, $sp, 4
+	addi		$sp, $sp, 0
 	jal		withArgs
 	jal		recurse
 	li		$v0, 4
@@ -384,6 +383,7 @@ _str_18:	.asciiz		"\n"
 	.align		4
 _length:	.space		4
 i:	.space		4
+j:	.space		4
 _source:	.space		4
 ptr:	.space		40
 arr:	.space		40
