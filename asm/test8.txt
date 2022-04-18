@@ -1,6 +1,5 @@
 var array: Int[16];
 var aux: Int[16];
-
 for (var i: Int = 0; i < 16; i = i + 1)
 {
     array[i] = 15 - i;
