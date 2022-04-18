@@ -1,0 +1,6 @@
+fun test_return(): Int
+{
+    return 1;
+}
+
+test_return();

@@ -817,6 +817,7 @@ instr_t *do_func(char *name, instr_t *decl, type_desc_t *type, instr_t *body)
 
     append(code, body);
 
+    append(code, gen_instr(return_label, NULL, NULL, NULL, NULL));
     expr_res_t *_ret = do_load(resolve("_ret"), NULL);
     append(code, _ret->body);
     // Matching push is embedded in midrule
@@ -844,6 +845,7 @@ instr_t *do_invoke(instr_t *s_s, char *name, instr_t *args)
 }
 
 unsigned int incidental_offset = 0;
+char *return_label = NULL;
 
 instr_t *do_call_expr(expr_res_t *expr)
 {
@@ -876,6 +878,20 @@ instr_t *do_call_expr(expr_res_t *expr)
 
         incidental_offset += 1;
     }
+
+    return code;
+}
+
+instr_t *do_return(expr_res_t *expr)
+{
+    instr_t *code = NULL;
+    if (expr != NULL)
+    {
+        code = gen_instr(NULL, "move", "$v0", reg_name(expr->reg), NULL);
+        free_reg(expr->reg);
+        free(expr);
+    }
+    code = append(code, gen_instr(NULL, "j", return_label, NULL, NULL));
 
     return code;
 }

@@ -151,5 +151,7 @@ instr_t *pop();
 expr_res_t *resolve(char *name);
 instr_t *do_invoke(instr_t *s_s, char *name, instr_t *args);
 instr_t *do_call_expr(expr_res_t *expr);
+instr_t *do_return(expr_res_t *expr);
 
 extern unsigned int incidental_offset;
+extern char *return_label;

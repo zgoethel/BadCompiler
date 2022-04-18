@@ -1,7 +1,7 @@
 	.text	
 	.globl		main
 main:
-	j		L3
+	j		L4
 _memcpy:
 	addi		$sp, $sp, -4
 	move		$t0, $ra
@@ -11,13 +11,13 @@ _memcpy:
 	li		$t0, 0
 	addi		$t1, $sp, 0
 	sw		$t0, 0($t1)
-L1:
+L2:
 	addi		$t0, $sp, 0
 	lw		$t0, 0($t0)
 	la		$t1, _length
 	lw		$t1, 0($t1)
 	slt		$t0, $t0, $t1
-	beq		$t0, $zero, L2
+	beq		$t0, $zero, L3
 	addi		$t1, $sp, 0
 	lw		$t1, 0($t1)
 	addi		$t2, $sp, 0
@@ -43,25 +43,26 @@ L1:
 	add		$t1, $t1, $t2
 	addi		$t2, $sp, 0
 	sw		$t1, 0($t2)
-	j		L1
-L2:
+	j		L2
+L3:
 	addi		$sp, $sp, 4
 	addi		$sp, $sp, 0
+.ret:
 	addi		$t0, $sp, 0
 	lw		$t0, 0($t0)
 	addi		$sp, $sp, 4
 	jr		$t0
-L3:
+L4:
 	addi		$sp, $sp, -4
 	li		$t0, 0
 	addi		$t1, $sp, 0
 	sw		$t0, 0($t1)
-L4:
+L5:
 	addi		$t0, $sp, 0
 	lw		$t0, 0($t0)
 	li		$t1, 16
 	slt		$t0, $t0, $t1
-	beq		$t0, $zero, L5
+	beq		$t0, $zero, L6
 	addi		$t1, $sp, 0
 	lw		$t1, 0($t1)
 	li		$t2, 15
@@ -81,10 +82,10 @@ L4:
 	add		$t1, $t1, $t2
 	addi		$t2, $sp, 0
 	sw		$t1, 0($t2)
-	j		L4
-L5:
+	j		L5
+L6:
 	addi		$sp, $sp, 4
-	j		L17
+	j		L19
 merge:
 	addi		$sp, $sp, -4
 	move		$t0, $ra
@@ -124,7 +125,7 @@ merge:
 	sub		$t0, $t0, $t1
 	li		$t1, 2
 	sgt		$t0, $t0, $t1
-	beq		$t0, $zero, L6
+	beq		$t0, $zero, L8
 	addi		$t1, $sp, 12
 	lw		$t1, 0($t1)
 	li		$v0, 1
@@ -248,7 +249,7 @@ merge:
 	lw		$t0, 4($sp)
 	addu		$sp, $sp, 4
 	addi		$sp, $sp, 0
-L6:
+L8:
 	addi		$sp, $sp, -4
 	addi		$t0, $sp, 16
 	lw		$t0, 0($t0)
@@ -268,7 +269,7 @@ L6:
 	lw		$t0, 0($t0)
 	addi		$t1, $sp, 0
 	sw		$t0, 0($t1)
-L9:
+L11:
 	addi		$t0, $sp, 8
 	lw		$t0, 0($t0)
 	addi		$t1, $sp, 20
@@ -280,7 +281,7 @@ L9:
 	lw		$t2, 0($t2)
 	slt		$t1, $t1, $t2
 	and		$t0, $t0, $t1
-	beq		$t0, $zero, L10
+	beq		$t0, $zero, L12
 	addi		$t1, $sp, 8
 	lw		$t1, 0($t1)
 	addi		$t2, $sp, 32
@@ -300,7 +301,7 @@ L9:
 	add		$t3, $t3, $t4
 	lw		$t3, 0($t3)
 	slt		$t2, $t2, $t3
-	beq		$t2, $zero, L8
+	beq		$t2, $zero, L10
 	addi		$t1, $sp, 0
 	lw		$t1, 0($t1)
 	addi		$t3, $sp, 8
@@ -326,8 +327,8 @@ L9:
 	addi		$t3, $sp, 8
 	sw		$t1, 0($t3)
 	addi		$sp, $sp, 0
-	j		L7
-L8:
+	j		L9
+L10:
 	addi		$t1, $sp, 0
 	lw		$t1, 0($t1)
 	addi		$t3, $sp, 4
@@ -353,7 +354,7 @@ L8:
 	addi		$t3, $sp, 4
 	sw		$t1, 0($t3)
 	addi		$sp, $sp, 0
-L7:
+L9:
 	addi		$sp, $sp, 0
 	addi		$t1, $sp, 0
 	lw		$t1, 0($t1)
@@ -361,20 +362,20 @@ L7:
 	add		$t1, $t1, $t2
 	addi		$t2, $sp, 0
 	sw		$t1, 0($t2)
-	j		L9
-L10:
+	j		L11
+L12:
 	addi		$sp, $sp, 0
 	addi		$t0, $sp, 8
 	lw		$t0, 0($t0)
 	addi		$t1, $sp, 8
 	sw		$t0, 0($t1)
-L11:
+L13:
 	addi		$t0, $sp, 8
 	lw		$t0, 0($t0)
 	addi		$t1, $sp, 20
 	lw		$t1, 0($t1)
 	slt		$t0, $t0, $t1
-	beq		$t0, $zero, L12
+	beq		$t0, $zero, L14
 	addi		$t1, $sp, 0
 	lw		$t1, 0($t1)
 	addi		$t2, $sp, 8
@@ -406,20 +407,20 @@ L11:
 	add		$t1, $t1, $t2
 	addi		$t2, $sp, 8
 	sw		$t1, 0($t2)
-	j		L11
-L12:
+	j		L13
+L14:
 	addi		$sp, $sp, 0
 	addi		$t0, $sp, 4
 	lw		$t0, 0($t0)
 	addi		$t1, $sp, 4
 	sw		$t0, 0($t1)
-L13:
+L15:
 	addi		$t0, $sp, 4
 	lw		$t0, 0($t0)
 	addi		$t1, $sp, 16
 	lw		$t1, 0($t1)
 	slt		$t0, $t0, $t1
-	beq		$t0, $zero, L14
+	beq		$t0, $zero, L16
 	addi		$t1, $sp, 0
 	lw		$t1, 0($t1)
 	addi		$t2, $sp, 4
@@ -451,20 +452,20 @@ L13:
 	add		$t1, $t1, $t2
 	addi		$t2, $sp, 4
 	sw		$t1, 0($t2)
-	j		L13
-L14:
+	j		L15
+L16:
 	addi		$sp, $sp, 0
 	addi		$t0, $sp, 24
 	lw		$t0, 0($t0)
 	addi		$t1, $sp, 0
 	sw		$t0, 0($t1)
-L15:
+L17:
 	addi		$t0, $sp, 0
 	lw		$t0, 0($t0)
 	addi		$t1, $sp, 16
 	lw		$t1, 0($t1)
 	slt		$t0, $t0, $t1
-	beq		$t0, $zero, L16
+	beq		$t0, $zero, L18
 	addi		$t1, $sp, 0
 	lw		$t1, 0($t1)
 	addi		$t2, $sp, 0
@@ -490,8 +491,8 @@ L15:
 	add		$t1, $t1, $t2
 	addi		$t2, $sp, 0
 	sw		$t1, 0($t2)
-	j		L15
-L16:
+	j		L17
+L18:
 	addi		$sp, $sp, 0
 	li		$v0, 4
 	la		$a0, _str_10
@@ -505,11 +506,12 @@ L16:
 	la		$a0, _str_11
 	syscall	
 	addi		$sp, $sp, 12
+.ret:
 	addi		$t0, $sp, 0
 	lw		$t0, 0($t0)
 	addi		$sp, $sp, 24
 	jr		$t0
-L17:
+L19:
 	la		$t0, array
 	addi		$sp, $sp, -4
 	sw		$t0, 0($sp)
@@ -530,12 +532,12 @@ L17:
 	li		$t0, 0
 	addi		$t1, $sp, 0
 	sw		$t0, 0($t1)
-L18:
+L20:
 	addi		$t0, $sp, 0
 	lw		$t0, 0($t0)
 	li		$t1, 16
 	slt		$t0, $t0, $t1
-	beq		$t0, $zero, L19
+	beq		$t0, $zero, L21
 	li		$v0, 4
 	la		$a0, _str_12
 	syscall	
@@ -568,8 +570,8 @@ L18:
 	add		$t1, $t1, $t2
 	addi		$t2, $sp, 0
 	sw		$t1, 0($t2)
-	j		L18
-L19:
+	j		L20
+L21:
 	addi		$sp, $sp, 4
 	li		$v0, 10
 	syscall	

@@ -50,6 +50,7 @@
 %type <InstrSeq> Arg
 %type <InstrSeq> ArgSeq
 %type <InstrSeq> CallExprSeq
+%type <InstrSeq> Return
 
 %token IDENT
 %token INT_LIT
@@ -90,18 +91,22 @@ Stmt            : PRINT '(' PrintSeq ')' ';'                { $$ = $3; }
                 | FOR { push(); } '(' Assign ';' Expr ';' Assign ')'
                   Body                                      { $$ = append(do_for($4, $6, $8, $10), pop()); }
                 | Func                                      { $$ = $1; }
+                | Return                                    { $$ = $1; }
                 | Id '('                                    { incidental_offset = 0; $<InstrSeq>$ = save_seq(); }
                   CallExprSeq ')' ';'                       { $$ = do_invoke($<InstrSeq>3, $1, $4); incidental_offset = 0; }
 CallExprSeq     : CallExprSeq ',' Expr                      { $$ = append($1, do_call_expr($3)); }
                 | Expr                                      { $$ = do_call_expr($1); }
                 |                                           { $$ = NULL; }
 Body            : '{' { push(); } StmtSeq '}'               { $$ = append($3, pop()); }
-Func            : FUN { push(); } Id '(' ArgSeq ')' ':' Type { $<InstrSeq>$ = declare("_ret", do_type_desc("Int", 0, NULL, false)); }
+Func            : FUN                                       { push(); return_label = gen_label(); }
+                  Id '(' ArgSeq ')' ':' Type                { $<InstrSeq>$ = declare("_ret", do_type_desc("Int", 0, NULL, false)); }
                   Body                                      { $$ = do_func($3, /*append(*/$<InstrSeq>9/*, $5)*/, $8, $10); }
 Arg             : Id ':' Type                               { $$ = declare($1, $3); }
 ArgSeq          : ArgSeq ',' Arg                            { $$ = append($1, $3); }
                 | Arg                                       { $$ = $1; }
                 |                                           { $$ = NULL; }
+Return          : RETURN ';'                                { $$ = do_return(NULL); }
+                | RETURN Expr ';'                           { $$ = do_return($2); }
 Assign          : VAR Id ':' Type                           { $<InstrSeq>$ = declare($2, $4); }
                   '=' Expr                                  { $$ = append($<InstrSeq>5, do_store(resolve($2), NULL, $7)); }
                 | VAR Id ':' Type                           { $$ = declare($2, $4); }
