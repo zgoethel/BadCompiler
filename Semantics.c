@@ -831,7 +831,7 @@ instr_t *do_func(char *name, instr_t *decl, type_desc_t *type, instr_t *body)
     return code;
 }
 
-instr_t *do_invoke(instr_t *s_s, char *name, instr_t *args)
+expr_res_t *do_invoke(instr_t *s_s, char *name, instr_t *args)
 {
     instr_t *code = s_s;//save_seq(); // <-- May be `NULL`
     bool do_restore = code != NULL;
@@ -841,7 +841,12 @@ instr_t *do_invoke(instr_t *s_s, char *name, instr_t *args)
 
     if (do_restore)
         append(code, restore_seq());
-    return code;
+
+    expr_res_t *result = alloc_expr();
+    result->body = code;
+    append(result->body, gen_instr(NULL, "move", reg_name(result->reg), "$v0", NULL));
+
+    return result;
 }
 
 unsigned int incidental_offset = 0;
@@ -866,7 +871,10 @@ instr_t *do_call_expr(expr_res_t *expr)
         code = append(code, do_store(resolve("_source"), NULL, expr));
         append(code, do_store(resolve("_dest"), NULL, dest_ref));
         append(code, do_store(resolve("_length"), NULL, size_ref));
-        append(code, do_invoke(NULL, "_memcpy", NULL));
+        expr_res_t *inv = do_invoke(NULL, "_memcpy", NULL);
+        append(code, inv->body);
+        free_reg(inv->reg);
+        free(inv);
 
         incidental_offset += size;
     } else
@@ -887,11 +895,12 @@ instr_t *do_return(expr_res_t *expr)
     instr_t *code = NULL;
     if (expr != NULL)
     {
-        code = gen_instr(NULL, "move", "$v0", reg_name(expr->reg), NULL);
+        code = expr->body;
+        code = append(code, gen_instr(NULL, "move", "$v0", reg_name(expr->reg), NULL));
         free_reg(expr->reg);
         free(expr);
     }
-    code = append(code, gen_instr(NULL, "j", return_label, NULL, NULL));
+    /*code = append(code, gen_instr(NULL, "j", return_label, NULL, NULL));*/
 
     return code;
 }

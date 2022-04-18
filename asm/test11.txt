@@ -1,6 +1,26 @@
 fun test_return(): Int
 {
-    return 1;
+    return = 123;
 }
 
-test_return();
+fun factorial(i: Int): Int
+{
+    if (i <= 1)
+    {
+        return = 1;
+    } else
+    {
+        var j: Int = factorial(i - 1);
+        return = i * j;
+    }
+}
+
+var i: Int = test_return();
+print("Return from function is ", i, "\n");
+
+print("Factorials are as follows:\n",
+    "1 -> ", factorial(1), "\n",
+    "2 -> ", factorial(2), "\n",
+    "3 -> ", factorial(3), "\n",
+    "4 -> ", factorial(4), "\n",
+    "5 -> ", factorial(5), "\n");
