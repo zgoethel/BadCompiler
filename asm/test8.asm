@@ -47,7 +47,7 @@ L2:
 L3:
 	addi		$sp, $sp, 4
 	addi		$sp, $sp, 0
-.ret:
+L1:
 	addi		$t0, $sp, 0
 	lw		$t0, 0($t0)
 	addi		$sp, $sp, 4
@@ -185,8 +185,9 @@ merge:
 	addi		$sp, $sp, -4
 	sw		$t1, 0($sp)
 	jal		merge
-	lw		$t0, 4($sp)
+	lw		$t0, 0($sp)
 	addu		$sp, $sp, 4
+	move		$t1, $v0
 	addi		$t1, $sp, 8
 	lw		$t1, 0($t1)
 	li		$v0, 1
@@ -246,8 +247,9 @@ merge:
 	addi		$sp, $sp, -4
 	sw		$t1, 0($sp)
 	jal		merge
-	lw		$t0, 4($sp)
+	lw		$t0, 0($sp)
 	addu		$sp, $sp, 4
+	move		$t1, $v0
 	addi		$sp, $sp, 0
 L8:
 	addi		$sp, $sp, -4
@@ -506,7 +508,7 @@ L18:
 	la		$a0, _str_11
 	syscall	
 	addi		$sp, $sp, 12
-.ret:
+L7:
 	addi		$t0, $sp, 0
 	lw		$t0, 0($t0)
 	addi		$sp, $sp, 24
@@ -528,6 +530,7 @@ L19:
 	addi		$sp, $sp, -4
 	sw		$t0, 0($sp)
 	jal		merge
+	move		$t0, $v0
 	addi		$sp, $sp, -4
 	li		$t0, 0
 	addi		$t1, $sp, 0

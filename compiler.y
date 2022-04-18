@@ -24,7 +24,6 @@
     int Bool;
 }
 
-%type <string> Id
 %type <ExprRes> Expr
 %type <ExprRes> ExprA
 %type <ExprRes> ExprB
@@ -75,6 +74,7 @@
 %token RETURN
 %token FUN
 %token REF
+%token RUN
 
 %%
 Prog            : { push(); } StmtSeq                       { accept_body($2); print_reg_claims(); }
@@ -92,35 +92,34 @@ Stmt            : PRINT '(' PrintSeq ')' ';'                { $$ = $3; }
                   Body                                      { $$ = append(do_for($4, $6, $8, $10), pop()); }
                 | Func                                      { $$ = $1; }
                 | Return                                    { $$ = $1; }
-                | Ident '('                                 /*{ $<ExprRes>$ = alloc_expr(); }*/
-                                                            { incidental_offset = 0; $<InstrSeq>$ = save_seq(); }
+                | Ident '('                                 { incidental_offset = 0; $<InstrSeq>$ = save_seq(); }
                   CallExprSeq ')' ';'                       { expr_res_t *inv = do_invoke(/*$<ExprRes>3,*/ $<InstrSeq>3, $1, $4); $$ = inv->body; free_reg(inv->reg); free(inv); incidental_offset = 0; }
 CallExprSeq     : CallExprSeq ',' Expr                      { $$ = append($1, do_call_expr($3)); }
                 | Expr                                      { $$ = do_call_expr($1); }
                 |                                           { $$ = NULL; }
 Body            : '{' { push(); } StmtSeq '}'               { $$ = append($3, pop()); }
 Func            : FUN                                       { push(); return_label = gen_label(); }
-                  Id '(' ArgSeq ')' ':' Type                { $<InstrSeq>$ = declare("_ret", do_type_desc("Int", 0, NULL, false)); }
+                  Ident '(' ArgSeq ')' ':' Type             { $<InstrSeq>$ = declare("_ret", do_type_desc("Int", 0, NULL, false)); }
                   Body                                      { $$ = do_func($3, /*append(*/$<InstrSeq>9/*, $5)*/, $8, $10); }
-Arg             : Id ':' Type                               { $$ = declare($1, $3); }
+Arg             : Ident ':' Type                            { $$ = declare($1, $3); }
 ArgSeq          : ArgSeq ',' Arg                            { $$ = append($1, $3); }
                 | Arg                                       { $$ = $1; }
                 |                                           { $$ = NULL; }
 Return          : RETURN '=' Expr ';'                       { $$ = do_return($3); }
              /* | RETURN ';'                                { $$ = do_return(NULL); } */
-Assign          : VAR Id ':' Type                           { $<InstrSeq>$ = declare($2, $4); }
+Assign          : VAR Ident ':' Type                        { $<InstrSeq>$ = declare($2, $4); }
                   '=' Expr                                  { $$ = append($<InstrSeq>5, do_store(resolve($2), NULL, $7)); }
-                | VAR Id ':' Type                           { $$ = declare($2, $4); }
-                | Id ArrSeqExpr '=' Expr                    { $$ = do_store(resolve($1), $2, $4); }
-                | '*' Id ArrSeqExpr '=' Expr                { $$ = do_store(do_load(resolve($2), NULL), $3, $5); }
-ReadSeq         : ReadSeq ',' Id                            { $$ = append($1, do_read($3)); }
-                | Id                                        { $$ = do_read($1); }
+                | VAR Ident ':' Type                        { $$ = declare($2, $4); }
+                | Ident ArrSeqExpr '=' Expr                 { $$ = do_store(resolve($1), $2, $4); }
+                | '*' Ident ArrSeqExpr '=' Expr             { $$ = do_store(do_load(resolve($2), NULL), $3, $5); }
+ReadSeq         : ReadSeq ',' Ident                         { $$ = append($1, do_read($3)); }
+                | Ident                                     { $$ = do_read($1); }
 PrintSeq        : PrintSeq ',' Expr                         { $$ = append($1, do_print($3)); }
                 | Expr                                      { $$ = do_print($1); }
                 | PrintSeq ',' StrLit                       { $$ = append($1, do_print_str($3)); }
                 | StrLit                                    { $$ = do_print_str($1); }
-                | PrintSeq ',' LT Id GT                     { $$ = append($1, do_read($4)); }
-                | LT Id GT                                  { $$ = do_read($2); }
+                | PrintSeq ',' LT Ident GT                  { $$ = append($1, do_read($4)); }
+                | LT Ident GT                               { $$ = do_read($2); }
 StrLit          : STR_LIT                                   { $$ = do_str_lit(yytext); } 
 // Top of expression tree (lowest precedence)
 Expr            : ExprA AND ExprA                           { $$ = do_and($1, $3); }
@@ -148,15 +147,13 @@ ExprE           : '-' ExprF                                 { $$ = do_negate($2)
 ExprF           : IntLit                                    { $$ = do_int_lit($1); }
                 | Ident ArrSeqExpr                          { $$ = do_load(resolve($1), $2); }
                 | '(' ExprA ')'                             { $$ = $2; }
-                | '&' Id                                    { $$ = resolve($2); }
-                | '*' Id ArrSeqExpr                         { $$ = do_load(do_load(resolve($2), NULL), $3); }
-                | Ident '('                                 /*{ $<ExprRes>$ = alloc_expr(); }*/
-                                                            { incidental_offset = 0; $<InstrSeq>$ = save_seq(); }
-                  CallExprSeq ')'                           { $$ = do_invoke(/*$<ExprRes>3,*/ $<InstrSeq>3, $1, $4); incidental_offset = 0; }
+                | '&' Ident                                 { $$ = resolve($2); }
+                | '*' Ident ArrSeqExpr                      { $$ = do_load(do_load(resolve($2), NULL), $3); }
+                | Ident '('                                 { incidental_offset = 0; $<InstrSeq>$ = save_seq(); }
+                  CallExprSeq ')'                           { $$ = do_invoke(/*$<ExprRes>4,*/ $<InstrSeq>3, $1, $4); incidental_offset = 0; }
 // Bottom of expression tree (highest precedence)
-Id              : IDENT                                     { $$ = strdup(yytext); }
-Type            : REF LT Id ArrSeq GT                       { if ($4 != NULL) { $4->name = $3; $4->is_reference = true; $$ = $4; } else $$ = do_type_desc($3, 0, NULL, true); }
-                |        Id ArrSeq                          { if ($2 != NULL) { $2->name = $1; $2->is_reference = false; $$ = $2; } else $$ = do_type_desc($1, 0, NULL, false); }
+Type            : REF LT Ident ArrSeq GT                    { if ($4 != NULL) { $4->name = $3; $4->is_reference = true; $$ = $4; } else $$ = do_type_desc($3, 0, NULL, true); }
+                |        Ident ArrSeq                       { if ($2 != NULL) { $2->name = $1; $2->is_reference = false; $$ = $2; } else $$ = do_type_desc($1, 0, NULL, false); }
 ArrSeq          : ArrSeq Arr                                { $$ = do_arr_seq($1, $2, 0); }
                 |                                           { $$ = NULL; }
 Arr             : '[' IntLit ']'                            { int i; sscanf($2, "%d", &i); $$ = do_arr_seq(NULL, NULL, i); }

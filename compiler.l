@@ -27,6 +27,7 @@ for                         { return FOR; }
 return                      { return RETURN; }
 fun                         { return FUN; }
 Ref                         { return REF; }
+run                         { return RUN; }
 _*{letter}({letter}|{digit}|_)* { return IDENT; }
 {digit}{digit}*             { return INT_LIT; }
 \"(\\.|[^"\\])*\"           { return STR_LIT; }
