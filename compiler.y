@@ -92,8 +92,9 @@ Stmt            : PRINT '(' PrintSeq ')' ';'                { $$ = $3; }
                   Body                                      { $$ = append(do_for($4, $6, $8, $10), pop()); }
                 | Func                                      { $$ = $1; }
                 | Return                                    { $$ = $1; }
-                | Id '('                                    { incidental_offset = 0; $<InstrSeq>$ = save_seq(); }
-                  CallExprSeq ')' ';'                       { expr_res_t *inv = do_invoke($<InstrSeq>3, $1, $4); $$ = inv->body; free_reg(inv->reg); free(inv); incidental_offset = 0; }
+                | Ident '('                                 /*{ $<ExprRes>$ = alloc_expr(); }*/
+                                                            { incidental_offset = 0; $<InstrSeq>$ = save_seq(); }
+                  CallExprSeq ')' ';'                       { expr_res_t *inv = do_invoke(/*$<ExprRes>3,*/ $<InstrSeq>3, $1, $4); $$ = inv->body; free_reg(inv->reg); free(inv); incidental_offset = 0; }
 CallExprSeq     : CallExprSeq ',' Expr                      { $$ = append($1, do_call_expr($3)); }
                 | Expr                                      { $$ = do_call_expr($1); }
                 |                                           { $$ = NULL; }
@@ -149,8 +150,9 @@ ExprF           : IntLit                                    { $$ = do_int_lit($1
                 | '(' ExprA ')'                             { $$ = $2; }
                 | '&' Id                                    { $$ = resolve($2); }
                 | '*' Id ArrSeqExpr                         { $$ = do_load(do_load(resolve($2), NULL), $3); }
-                | Ident '('                                 { incidental_offset = 0; $<InstrSeq>$ = save_seq(); }
-                  CallExprSeq ')'                           { $$ = do_invoke($<InstrSeq>3, $1, $4); incidental_offset = 0; }
+                | Ident '('                                 /*{ $<ExprRes>$ = alloc_expr(); }*/
+                                                            { incidental_offset = 0; $<InstrSeq>$ = save_seq(); }
+                  CallExprSeq ')'                           { $$ = do_invoke(/*$<ExprRes>3,*/ $<InstrSeq>3, $1, $4); incidental_offset = 0; }
 // Bottom of expression tree (highest precedence)
 Id              : IDENT                                     { $$ = strdup(yytext); }
 Type            : REF LT Id ArrSeq GT                       { if ($4 != NULL) { $4->name = $3; $4->is_reference = true; $$ = $4; } else $$ = do_type_desc($3, 0, NULL, true); }

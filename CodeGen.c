@@ -184,7 +184,7 @@ restore_seq()
   for (i = 0; i < MAXREG; i++) {
     if (!Registers[i].Free) {
       scnt++;
-      sprintf(addr,"%d($sp)",scnt*4);
+      sprintf(addr,"%d($sp)",scnt*4 - 4);
       save = append(save,gen_instr(NULL,"lw",reg_name(i),addr,NULL));
     }
   }

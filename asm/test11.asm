@@ -84,28 +84,25 @@ factorial:
 	addi		$sp, $sp, 0
 	j		L8
 L9:
-	addi		$sp, $sp, -4
-	subu		$sp, $sp, 4
+	addi		$t1, $sp, 4
+	lw		$t1, 0($t1)
+	subu		$sp, $sp, 8
 	sw		$t0, 0($sp)
-	addi		$t1, $sp, 12
-	lw		$t1, 0($t1)
-	li		$t2, 1
-	sub		$t1, $t1, $t2
-	addi		$sp, $sp, -4
-	sw		$t1, 0($sp)
-	jal		factorial
-	lw		$t0, 4($sp)
-	addu		$sp, $sp, 4
-	move		$t1, $v0
-	addi		$t2, $sp, 0
-	sw		$t1, 0($t2)
-	addi		$t1, $sp, 8
-	lw		$t1, 0($t1)
-	addi		$t2, $sp, 0
+	sw		$t1, 4($sp)
+	addi		$t2, $sp, 12
 	lw		$t2, 0($t2)
+	li		$t3, 1
+	sub		$t2, $t2, $t3
+	addi		$sp, $sp, -4
+	sw		$t2, 0($sp)
+	jal		factorial
+	lw		$t0, 0($sp)
+	lw		$t1, 4($sp)
+	addu		$sp, $sp, 8
+	move		$t2, $v0
 	mul		$t1, $t1, $t2
 	move		$v0, $t1
-	addi		$sp, $sp, 4
+	addi		$sp, $sp, 0
 L8:
 	addi		$sp, $sp, 0
 L7:

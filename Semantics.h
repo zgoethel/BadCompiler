@@ -146,6 +146,7 @@ extern int scope_index;
 // Mappings for operating the scope stack for scoped bodies of code
 instr_t *declare(char *name, type_desc_t *type);
 void push();
+expr_res_t *alloc_expr();
 instr_t *peek();
 instr_t *pop();
 expr_res_t *resolve(char *name);
