@@ -1,7 +1,7 @@
 	.text	
 	.globl		main
 main:
-	j		L3
+	j		L4
 _memcpy:
 	addi		$sp, $sp, -4
 	move		$t0, $ra
@@ -11,13 +11,13 @@ _memcpy:
 	li		$t0, 0
 	addi		$t1, $sp, 0
 	sw		$t0, 0($t1)
-L1:
+L2:
 	addi		$t0, $sp, 0
 	lw		$t0, 0($t0)
 	la		$t1, _length
 	lw		$t1, 0($t1)
 	slt		$t0, $t0, $t1
-	beq		$t0, $zero, L2
+	beq		$t0, $zero, L3
 	addi		$t1, $sp, 0
 	lw		$t1, 0($t1)
 	addi		$t2, $sp, 0
@@ -43,16 +43,17 @@ L1:
 	add		$t1, $t1, $t2
 	addi		$t2, $sp, 0
 	sw		$t1, 0($t2)
-	j		L1
-L2:
+	j		L2
+L3:
 	addi		$sp, $sp, 4
 	addi		$sp, $sp, 0
+L1:
 	addi		$t0, $sp, 0
 	lw		$t0, 0($t0)
 	addi		$sp, $sp, 4
 	jr		$t0
-L3:
-	j		L6
+L4:
+	j		L8
 pass_val_2d:
 	addi		$sp, $sp, -4
 	move		$t0, $ra
@@ -62,7 +63,7 @@ pass_val_2d:
 	lw		$t0, 0($t0)
 	li		$t1, 2
 	seq		$t0, $t0, $t1
-	beq		$t0, $zero, L5
+	beq		$t0, $zero, L7
 	li		$v0, 4
 	la		$a0, _str_0
 	syscall	
@@ -85,8 +86,8 @@ pass_val_2d:
 	la		$a0, _str_1
 	syscall	
 	addi		$sp, $sp, 0
-	j		L4
-L5:
+	j		L6
+L7:
 	li		$t1, 2
 	li		$t2, 7
 	li		$t3, 2
@@ -161,18 +162,21 @@ L5:
 	la		$t1, _length
 	sw		$t3, 0($t1)
 	jal		_memcpy
+	move		$t1, $v0
 	jal		pass_val_2d
-	lw		$t0, 4($sp)
+	lw		$t0, 0($sp)
 	addu		$sp, $sp, 4
+	move		$t1, $v0
 	addi		$sp, $sp, 0
-L4:
+L6:
 	addi		$sp, $sp, 0
+L5:
 	addi		$t0, $sp, 0
 	lw		$t0, 0($t0)
 	addi		$sp, $sp, 408
 	jr		$t0
-L6:
-	j		L9
+L8:
+	j		L12
 pass_ref_2d:
 	addi		$sp, $sp, -4
 	move		$t0, $ra
@@ -182,7 +186,7 @@ pass_ref_2d:
 	lw		$t0, 0($t0)
 	li		$t1, 2
 	seq		$t0, $t0, $t1
-	beq		$t0, $zero, L8
+	beq		$t0, $zero, L11
 	li		$v0, 4
 	la		$a0, _str_5
 	syscall	
@@ -206,8 +210,8 @@ pass_ref_2d:
 	la		$a0, _str_6
 	syscall	
 	addi		$sp, $sp, 0
-	j		L7
-L8:
+	j		L10
+L11:
 	li		$t1, 2
 	li		$t2, 7
 	li		$t3, 2
@@ -279,16 +283,18 @@ L8:
 	addi		$sp, $sp, -4
 	sw		$t1, 0($sp)
 	jal		pass_ref_2d
-	lw		$t0, 4($sp)
+	lw		$t0, 0($sp)
 	addu		$sp, $sp, 4
+	move		$t1, $v0
 	addi		$sp, $sp, 0
-L7:
+L10:
 	addi		$sp, $sp, 0
+L9:
 	addi		$t0, $sp, 0
 	lw		$t0, 0($t0)
 	addi		$sp, $sp, 12
 	jr		$t0
-L9:
+L12:
 	li		$t0, 2
 	li		$t1, 7
 	li		$t2, 123
@@ -316,7 +322,9 @@ L9:
 	la		$t0, _length
 	sw		$t2, 0($t0)
 	jal		_memcpy
+	move		$t0, $v0
 	jal		pass_val_2d
+	move		$t0, $v0
 	li		$v0, 4
 	la		$a0, _str_10
 	syscall	
@@ -345,6 +353,7 @@ L9:
 	addi		$sp, $sp, -4
 	sw		$t0, 0($sp)
 	jal		pass_ref_2d
+	move		$t0, $v0
 	li		$v0, 4
 	la		$a0, _str_12
 	syscall	

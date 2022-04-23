@@ -1,7 +1,7 @@
 	.text	
 	.globl		main
 main:
-	j		L3
+	j		L4
 _memcpy:
 	addi		$sp, $sp, -4
 	move		$t0, $ra
@@ -11,13 +11,13 @@ _memcpy:
 	li		$t0, 0
 	addi		$t1, $sp, 0
 	sw		$t0, 0($t1)
-L1:
+L2:
 	addi		$t0, $sp, 0
 	lw		$t0, 0($t0)
 	la		$t1, _length
 	lw		$t1, 0($t1)
 	slt		$t0, $t0, $t1
-	beq		$t0, $zero, L2
+	beq		$t0, $zero, L3
 	addi		$t1, $sp, 0
 	lw		$t1, 0($t1)
 	addi		$t2, $sp, 0
@@ -43,15 +43,16 @@ L1:
 	add		$t1, $t1, $t2
 	addi		$t2, $sp, 0
 	sw		$t1, 0($t2)
-	j		L1
-L2:
+	j		L2
+L3:
 	addi		$sp, $sp, 4
 	addi		$sp, $sp, 0
+L1:
 	addi		$t0, $sp, 0
 	lw		$t0, 0($t0)
 	addi		$sp, $sp, 4
 	jr		$t0
-L3:
+L4:
 	li		$t0, 50
 	la		$t1, i
 	sw		$t0, 0($t1)
@@ -66,7 +67,7 @@ L3:
 	li		$v0, 4
 	la		$a0, _str_1
 	syscall	
-	j		L4
+	j		L6
 helloWorld:
 	addi		$sp, $sp, -4
 	move		$t0, $ra
@@ -103,12 +104,13 @@ helloWorld:
 	la		$a0, _str_4
 	syscall	
 	addi		$sp, $sp, 4
+L5:
 	addi		$t0, $sp, 0
 	lw		$t0, 0($t0)
 	addi		$sp, $sp, 4
 	jr		$t0
-L4:
-	j		L5
+L6:
+	j		L8
 withArgs:
 	addi		$sp, $sp, -4
 	move		$t0, $ra
@@ -134,15 +136,16 @@ withArgs:
 	la		$a0, _str_7
 	syscall	
 	addi		$sp, $sp, 0
+L7:
 	addi		$t0, $sp, 0
 	lw		$t0, 0($t0)
 	addi		$sp, $sp, 12
 	jr		$t0
-L5:
+L8:
 	li		$t0, 10
 	la		$t1, loopGuard
 	sw		$t0, 0($t1)
-	j		L7
+	j		L11
 recurse:
 	addi		$sp, $sp, -4
 	move		$t0, $ra
@@ -152,7 +155,7 @@ recurse:
 	lw		$t0, 0($t0)
 	li		$t1, 0
 	sgt		$t0, $t0, $t1
-	beq		$t0, $zero, L6
+	beq		$t0, $zero, L10
 	li		$v0, 4
 	la		$a0, _str_8
 	syscall	
@@ -173,10 +176,11 @@ recurse:
 	subu		$sp, $sp, 4
 	sw		$t0, 0($sp)
 	jal		recurse
-	lw		$t0, 4($sp)
+	lw		$t0, 0($sp)
 	addu		$sp, $sp, 4
+	move		$t1, $v0
 	addi		$sp, $sp, 0
-L6:
+L10:
 	li		$v0, 4
 	la		$a0, _str_10
 	syscall	
@@ -189,11 +193,12 @@ L6:
 	la		$a0, _str_11
 	syscall	
 	addi		$sp, $sp, 0
+L9:
 	addi		$t0, $sp, 0
 	lw		$t0, 0($t0)
 	addi		$sp, $sp, 4
 	jr		$t0
-L7:
+L11:
 	li		$v0, 4
 	la		$a0, _str_12
 	syscall	
@@ -208,17 +213,18 @@ L7:
 	li		$t0, 0
 	la		$t1, j
 	sw		$t0, 0($t1)
-L8:
+L12:
 	la		$t0, j
 	lw		$t0, 0($t0)
 	li		$t1, 3
 	slt		$t0, $t0, $t1
-	beq		$t0, $zero, L9
+	beq		$t0, $zero, L13
 	subu		$sp, $sp, 4
 	sw		$t0, 0($sp)
 	jal		helloWorld
-	lw		$t0, 4($sp)
+	lw		$t0, 0($sp)
 	addu		$sp, $sp, 4
+	move		$t1, $v0
 	li		$v0, 4
 	la		$a0, _str_14
 	syscall	
@@ -237,8 +243,8 @@ L8:
 	add		$t1, $t1, $t2
 	la		$t2, j
 	sw		$t1, 0($t2)
-	j		L8
-L9:
+	j		L12
+L13:
 	addi		$sp, $sp, 0
 	li		$t0, 1
 	addi		$sp, $sp, -4
@@ -247,7 +253,9 @@ L9:
 	addi		$sp, $sp, -4
 	sw		$t0, 0($sp)
 	jal		withArgs
+	move		$t0, $v0
 	jal		recurse
+	move		$t0, $v0
 	li		$v0, 4
 	la		$a0, _str_16
 	syscall	

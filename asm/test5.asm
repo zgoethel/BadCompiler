@@ -1,7 +1,7 @@
 	.text	
 	.globl		main
 main:
-	j		L3
+	j		L4
 _memcpy:
 	addi		$sp, $sp, -4
 	move		$t0, $ra
@@ -11,13 +11,13 @@ _memcpy:
 	li		$t0, 0
 	addi		$t1, $sp, 0
 	sw		$t0, 0($t1)
-L1:
+L2:
 	addi		$t0, $sp, 0
 	lw		$t0, 0($t0)
 	la		$t1, _length
 	lw		$t1, 0($t1)
 	slt		$t0, $t0, $t1
-	beq		$t0, $zero, L2
+	beq		$t0, $zero, L3
 	addi		$t1, $sp, 0
 	lw		$t1, 0($t1)
 	addi		$t2, $sp, 0
@@ -43,15 +43,16 @@ L1:
 	add		$t1, $t1, $t2
 	addi		$t2, $sp, 0
 	sw		$t1, 0($t2)
-	j		L1
-L2:
+	j		L2
+L3:
 	addi		$sp, $sp, 4
 	addi		$sp, $sp, 0
+L1:
 	addi		$t0, $sp, 0
 	lw		$t0, 0($t0)
 	addi		$sp, $sp, 4
 	jr		$t0
-L3:
+L4:
 	li		$t0, 1
 	la		$t1, i
 	sw		$t0, 0($t1)
@@ -59,33 +60,33 @@ L3:
 	lw		$t0, 0($t0)
 	li		$t1, 0
 	seq		$t0, $t0, $t1
-	beq		$t0, $zero, L4
+	beq		$t0, $zero, L5
 	addi		$sp, $sp, -4
 	li		$t1, 10
 	addi		$t2, $sp, 0
 	sw		$t1, 0($t2)
 	addi		$sp, $sp, 4
-L4:
+L5:
 	addi		$sp, $sp, -4
 	li		$t0, 0
 	addi		$t1, $sp, 0
 	sw		$t0, 0($t1)
-L8:
+L9:
 	addi		$t0, $sp, 0
 	lw		$t0, 0($t0)
 	li		$t1, 10
 	slt		$t0, $t0, $t1
-	beq		$t0, $zero, L9
+	beq		$t0, $zero, L10
 	addi		$sp, $sp, -4
 	li		$t1, 0
 	addi		$t2, $sp, 0
 	sw		$t1, 0($t2)
-L6:
+L7:
 	addi		$t1, $sp, 0
 	lw		$t1, 0($t1)
 	li		$t2, 10
 	slt		$t1, $t1, $t2
-	beq		$t1, $zero, L7
+	beq		$t1, $zero, L8
 	addi		$sp, $sp, -4
 	li		$t2, 99
 	addi		$t3, $sp, 0
@@ -102,13 +103,13 @@ L6:
 	sub		$t2, $t2, $t3
 	li		$t3, 10
 	slt		$t2, $t2, $t3
-	beq		$t2, $zero, L5
+	beq		$t2, $zero, L6
 	li		$t3, 0
 	li		$v0, 1
 	move		$a0, $t3
 	syscall	
 	addi		$sp, $sp, 0
-L5:
+L6:
 	addi		$t2, $sp, 0
 	lw		$t2, 0($t2)
 	addi		$t3, $sp, 4
@@ -132,8 +133,8 @@ L5:
 	add		$t2, $t2, $t3
 	addi		$t3, $sp, 0
 	sw		$t2, 0($t3)
-	j		L6
-L7:
+	j		L7
+L8:
 	addi		$sp, $sp, 4
 	li		$v0, 4
 	la		$a0, _str_1
@@ -145,8 +146,8 @@ L7:
 	add		$t1, $t1, $t2
 	addi		$t2, $sp, 0
 	sw		$t1, 0($t2)
-	j		L8
-L9:
+	j		L9
+L10:
 	addi		$sp, $sp, 4
 	li		$v0, 10
 	syscall	

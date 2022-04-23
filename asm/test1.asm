@@ -1,7 +1,7 @@
 	.text	
 	.globl		main
 main:
-	j		L3
+	j		L4
 _memcpy:
 	addi		$sp, $sp, -4
 	move		$t0, $ra
@@ -11,13 +11,13 @@ _memcpy:
 	li		$t0, 0
 	addi		$t1, $sp, 0
 	sw		$t0, 0($t1)
-L1:
+L2:
 	addi		$t0, $sp, 0
 	lw		$t0, 0($t0)
 	la		$t1, _length
 	lw		$t1, 0($t1)
 	slt		$t0, $t0, $t1
-	beq		$t0, $zero, L2
+	beq		$t0, $zero, L3
 	addi		$t1, $sp, 0
 	lw		$t1, 0($t1)
 	addi		$t2, $sp, 0
@@ -43,15 +43,16 @@ L1:
 	add		$t1, $t1, $t2
 	addi		$t2, $sp, 0
 	sw		$t1, 0($t2)
-	j		L1
-L2:
+	j		L2
+L3:
 	addi		$sp, $sp, 4
 	addi		$sp, $sp, 0
+L1:
 	addi		$t0, $sp, 0
 	lw		$t0, 0($t0)
 	addi		$sp, $sp, 4
 	jr		$t0
-L3:
+L4:
 	li		$t0, 10
 	la		$t1, num1
 	sw		$t0, 0($t1)
@@ -69,7 +70,7 @@ L3:
 	lw		$t2, 0($t2)
 	mul		$t1, $t1, $t2
 	seq		$t0, $t0, $t1
-	beq		$t0, $zero, L8
+	beq		$t0, $zero, L9
 	la		$t1, num1
 	lw		$t1, 0($t1)
 	li		$v0, 1
@@ -77,14 +78,14 @@ L3:
 	syscall	
 	li		$t1, 1
 	li		$t2, 0
-L5:
-	beq		$t2, $t1, L4
+L6:
+	beq		$t2, $t1, L5
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
 	addi		$t2, $t2, 1
-	j		L5
-L4:
+	j		L6
+L5:
 	la		$t1, num2
 	lw		$t1, 0($t1)
 	li		$v0, 1
@@ -92,16 +93,16 @@ L4:
 	syscall	
 	li		$t1, 1
 	li		$t2, 0
-L7:
-	beq		$t2, $t1, L6
+L8:
+	beq		$t2, $t1, L7
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
 	addi		$t2, $t2, 1
-	j		L7
-L6:
+	j		L8
+L7:
 	addi		$sp, $sp, 0
-L8:
+L9:
 	la		$t0, num2
 	lw		$t0, 0($t0)
 	li		$t1, 10
@@ -113,37 +114,37 @@ L8:
 	lw		$t2, 0($t2)
 	mul		$t1, $t1, $t2
 	sgt		$t0, $t0, $t1
-	beq		$t0, $zero, L13
+	beq		$t0, $zero, L14
 	li		$t1, 2020
 	li		$v0, 1
 	move		$a0, $t1
 	syscall	
 	li		$t1, 1
 	li		$t2, 0
-L10:
-	beq		$t2, $t1, L9
+L11:
+	beq		$t2, $t1, L10
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
 	addi		$t2, $t2, 1
-	j		L10
-L9:
+	j		L11
+L10:
 	li		$t1, 2021
 	li		$v0, 1
 	move		$a0, $t1
 	syscall	
 	li		$t1, 1
 	li		$t2, 0
-L12:
-	beq		$t2, $t1, L11
+L13:
+	beq		$t2, $t1, L12
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
 	addi		$t2, $t2, 1
-	j		L12
-L11:
+	j		L13
+L12:
 	addi		$sp, $sp, 0
-L13:
+L14:
 	la		$t0, num2
 	lw		$t0, 0($t0)
 	li		$t1, 10
@@ -155,37 +156,37 @@ L13:
 	lw		$t2, 0($t2)
 	mul		$t1, $t1, $t2
 	slt		$t0, $t0, $t1
-	beq		$t0, $zero, L18
+	beq		$t0, $zero, L19
 	li		$t1, 2022
 	li		$v0, 1
 	move		$a0, $t1
 	syscall	
 	li		$t1, 1
 	li		$t2, 0
-L15:
-	beq		$t2, $t1, L14
+L16:
+	beq		$t2, $t1, L15
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
 	addi		$t2, $t2, 1
-	j		L15
-L14:
+	j		L16
+L15:
 	li		$t1, 2023
 	li		$v0, 1
 	move		$a0, $t1
 	syscall	
 	li		$t1, 1
 	li		$t2, 0
-L17:
-	beq		$t2, $t1, L16
+L18:
+	beq		$t2, $t1, L17
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
 	addi		$t2, $t2, 1
-	j		L17
-L16:
+	j		L18
+L17:
 	addi		$sp, $sp, 0
-L18:
+L19:
 	la		$t0, num2
 	lw		$t0, 0($t0)
 	li		$t1, 10
@@ -197,37 +198,37 @@ L18:
 	lw		$t2, 0($t2)
 	mul		$t1, $t1, $t2
 	sne		$t0, $t0, $t1
-	beq		$t0, $zero, L23
+	beq		$t0, $zero, L24
 	li		$t1, 2024
 	li		$v0, 1
 	move		$a0, $t1
 	syscall	
 	li		$t1, 1
 	li		$t2, 0
-L20:
-	beq		$t2, $t1, L19
+L21:
+	beq		$t2, $t1, L20
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
 	addi		$t2, $t2, 1
-	j		L20
-L19:
+	j		L21
+L20:
 	li		$t1, 2025
 	li		$v0, 1
 	move		$a0, $t1
 	syscall	
 	li		$t1, 1
 	li		$t2, 0
-L22:
-	beq		$t2, $t1, L21
+L23:
+	beq		$t2, $t1, L22
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
 	addi		$t2, $t2, 1
-	j		L22
-L21:
+	j		L23
+L22:
 	addi		$sp, $sp, 0
-L23:
+L24:
 	li		$t0, 0
 	la		$t1, num2
 	lw		$t1, 0($t1)
@@ -241,7 +242,7 @@ L23:
 	mul		$t2, $t2, $t3
 	sne		$t1, $t1, $t2
 	or		$t0, $t0, $t1
-	beq		$t0, $zero, L28
+	beq		$t0, $zero, L29
 	li		$t1, 20
 	sub		$t1, $zero, $t1
 	li		$t2, 20
@@ -252,14 +253,14 @@ L23:
 	syscall	
 	li		$t1, 1
 	li		$t2, 0
-L25:
-	beq		$t2, $t1, L24
+L26:
+	beq		$t2, $t1, L25
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
 	addi		$t2, $t2, 1
-	j		L25
-L24:
+	j		L26
+L25:
 	li		$t1, 0
 	la		$t2, num2
 	lw		$t2, 0($t2)
@@ -278,31 +279,31 @@ L24:
 	syscall	
 	li		$t1, 1
 	li		$t2, 0
-L27:
-	beq		$t2, $t1, L26
+L28:
+	beq		$t2, $t1, L27
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
 	addi		$t2, $t2, 1
-	j		L27
-L26:
+	j		L28
+L27:
 	addi		$sp, $sp, 0
-L28:
-	la		$t0, num1
-	lw		$t0, 0($t0)
-	li		$v0, 1
-	move		$a0, $t0
-	syscall	
-	li		$t0, 1
-	li		$t1, 0
-L30:
-	beq		$t1, $t0, L29
-	li		$v0, 4
-	la		$a0, _sp
-	syscall	
-	addi		$t1, $t1, 1
-	j		L30
 L29:
+	la		$t0, num1
+	lw		$t0, 0($t0)
+	li		$v0, 1
+	move		$a0, $t0
+	syscall	
+	li		$t0, 1
+	li		$t1, 0
+L31:
+	beq		$t1, $t0, L30
+	li		$v0, 4
+	la		$a0, _sp
+	syscall	
+	addi		$t1, $t1, 1
+	j		L31
+L30:
 	la		$t0, num2
 	lw		$t0, 0($t0)
 	li		$v0, 1
@@ -310,14 +311,14 @@ L29:
 	syscall	
 	li		$t0, 1
 	li		$t1, 0
-L32:
-	beq		$t1, $t0, L31
+L33:
+	beq		$t1, $t0, L32
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
 	addi		$t1, $t1, 1
-	j		L32
-L31:
+	j		L33
+L32:
 	la		$t0, num1
 	lw		$t0, 0($t0)
 	sub		$t0, $zero, $t0
@@ -328,14 +329,14 @@ L31:
 	syscall	
 	li		$t0, 1
 	li		$t1, 0
-L34:
-	beq		$t1, $t0, L33
+L35:
+	beq		$t1, $t0, L34
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
 	addi		$t1, $t1, 1
-	j		L34
-L33:
+	j		L35
+L34:
 	la		$t0, num2
 	lw		$t0, 0($t0)
 	sub		$t0, $zero, $t0
@@ -346,14 +347,14 @@ L33:
 	syscall	
 	li		$t0, 1
 	li		$t1, 0
-L36:
-	beq		$t1, $t0, L35
+L37:
+	beq		$t1, $t0, L36
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
 	addi		$t1, $t1, 1
-	j		L36
-L35:
+	j		L37
+L36:
 	li		$t0, 24
 	li		$t1, 10
 	div		$t0, $t1
@@ -363,14 +364,14 @@ L35:
 	syscall	
 	li		$t0, 1
 	li		$t1, 0
-L38:
-	beq		$t1, $t0, L37
+L39:
+	beq		$t1, $t0, L38
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
 	addi		$t1, $t1, 1
-	j		L38
-L37:
+	j		L39
+L38:
 	li		$t0, 24
 	li		$t1, 10
 	div		$t0, $t1
@@ -380,194 +381,194 @@ L37:
 	syscall	
 	li		$t0, 1
 	li		$t1, 0
-L40:
-	beq		$t1, $t0, L39
+L41:
+	beq		$t1, $t0, L40
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
 	addi		$t1, $t1, 1
-	j		L40
-L39:
+	j		L41
+L40:
 	li		$t0, 2
 	li		$t1, 2
 	li		$t3, 0
 	li		$t2, 1
-L42:
-	beq		$t3, $t1, L41
+L43:
+	beq		$t3, $t1, L42
 	mul		$t2, $t2, $t0
 	addi		$t3, $t3, 1
-	j		L42
-L41:
+	j		L43
+L42:
 	li		$v0, 1
 	move		$a0, $t2
 	syscall	
 	li		$t0, 1
 	li		$t1, 0
-L44:
-	beq		$t1, $t0, L43
+L45:
+	beq		$t1, $t0, L44
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
 	addi		$t1, $t1, 1
-	j		L44
-L43:
+	j		L45
+L44:
 	li		$t0, 2
 	li		$t1, 3
 	li		$t2, 2
 	li		$t4, 0
 	li		$t3, 1
-L46:
-	beq		$t4, $t2, L45
+L47:
+	beq		$t4, $t2, L46
 	mul		$t3, $t3, $t1
 	addi		$t4, $t4, 1
-	j		L46
-L45:
+	j		L47
+L46:
 	li		$t2, 0
 	li		$t1, 1
-L48:
-	beq		$t2, $t3, L47
+L49:
+	beq		$t2, $t3, L48
 	mul		$t1, $t1, $t0
 	addi		$t2, $t2, 1
-	j		L48
-L47:
+	j		L49
+L48:
 	li		$v0, 1
 	move		$a0, $t1
 	syscall	
 	li		$t0, 1
 	li		$t1, 0
-L50:
-	beq		$t1, $t0, L49
+L51:
+	beq		$t1, $t0, L50
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
 	addi		$t1, $t1, 1
-	j		L50
-L49:
+	j		L51
+L50:
 	li		$t0, 2
 	li		$t1, 3
 	li		$t2, 3
 	li		$t4, 0
 	li		$t3, 1
-L52:
-	beq		$t4, $t2, L51
+L53:
+	beq		$t4, $t2, L52
 	mul		$t3, $t3, $t1
 	addi		$t4, $t4, 1
-	j		L52
-L51:
+	j		L53
+L52:
 	li		$t2, 0
 	li		$t1, 1
-L54:
-	beq		$t2, $t3, L53
+L55:
+	beq		$t2, $t3, L54
 	mul		$t1, $t1, $t0
 	addi		$t2, $t2, 1
-	j		L54
-L53:
+	j		L55
+L54:
 	li		$v0, 1
 	move		$a0, $t1
 	syscall	
 	li		$t0, 1
 	li		$t1, 0
-L56:
-	beq		$t1, $t0, L55
+L57:
+	beq		$t1, $t0, L56
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
 	addi		$t1, $t1, 1
-	j		L56
-L55:
+	j		L57
+L56:
 	li		$t0, 2
 	li		$t1, 3
 	li		$t2, 0
 	li		$t4, 0
 	li		$t3, 1
-L58:
-	beq		$t4, $t2, L57
+L59:
+	beq		$t4, $t2, L58
 	mul		$t3, $t3, $t1
 	addi		$t4, $t4, 1
-	j		L58
-L57:
+	j		L59
+L58:
 	li		$t2, 0
 	li		$t1, 1
-L60:
-	beq		$t2, $t3, L59
+L61:
+	beq		$t2, $t3, L60
 	mul		$t1, $t1, $t0
 	addi		$t2, $t2, 1
-	j		L60
-L59:
+	j		L61
+L60:
 	li		$v0, 1
 	move		$a0, $t1
 	syscall	
 	li		$t0, 1
 	li		$t1, 0
-L62:
-	beq		$t1, $t0, L61
+L63:
+	beq		$t1, $t0, L62
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
 	addi		$t1, $t1, 1
-	j		L62
-L61:
+	j		L63
+L62:
 	li		$t0, 2
 	li		$t1, 3
 	li		$t3, 0
 	li		$t2, 1
-L64:
-	beq		$t3, $t1, L63
+L65:
+	beq		$t3, $t1, L64
 	mul		$t2, $t2, $t0
 	addi		$t3, $t3, 1
-	j		L64
-L63:
+	j		L65
+L64:
 	li		$t0, 0
 	li		$t3, 0
 	li		$t1, 1
-L66:
-	beq		$t3, $t0, L65
+L67:
+	beq		$t3, $t0, L66
 	mul		$t1, $t1, $t2
 	addi		$t3, $t3, 1
-	j		L66
-L65:
+	j		L67
+L66:
 	li		$v0, 1
 	move		$a0, $t1
 	syscall	
 	li		$t0, 1
 	li		$t1, 0
-L68:
-	beq		$t1, $t0, L67
-	li		$v0, 4
-	la		$a0, _sp
-	syscall	
-	addi		$t1, $t1, 1
-	j		L68
-L67:
-	li		$t0, 0
-	li		$v0, 1
-	move		$a0, $t0
-	syscall	
-	li		$t0, 1
-	li		$t1, 0
-L70:
-	beq		$t1, $t0, L69
-	li		$v0, 4
-	la		$a0, _sp
-	syscall	
-	addi		$t1, $t1, 1
-	j		L70
 L69:
+	beq		$t1, $t0, L68
+	li		$v0, 4
+	la		$a0, _sp
+	syscall	
+	addi		$t1, $t1, 1
+	j		L69
+L68:
 	li		$t0, 0
-	seq		$t0, $zero, $t0
 	li		$v0, 1
 	move		$a0, $t0
 	syscall	
 	li		$t0, 1
 	li		$t1, 0
-L72:
-	beq		$t1, $t0, L71
-	li		$v0, 4
-	la		$a0, _sp
-	syscall	
-	addi		$t1, $t1, 1
-	j		L72
 L71:
+	beq		$t1, $t0, L70
+	li		$v0, 4
+	la		$a0, _sp
+	syscall	
+	addi		$t1, $t1, 1
+	j		L71
+L70:
+	li		$t0, 0
+	seq		$t0, $zero, $t0
+	li		$v0, 1
+	move		$a0, $t0
+	syscall	
+	li		$t0, 1
+	li		$t1, 0
+L73:
+	beq		$t1, $t0, L72
+	li		$v0, 4
+	la		$a0, _sp
+	syscall	
+	addi		$t1, $t1, 1
+	j		L73
+L72:
 	li		$t0, 0
 	li		$t1, 1
 	slt		$t0, $t0, $t1
@@ -576,14 +577,14 @@ L71:
 	syscall	
 	li		$t0, 1
 	li		$t1, 0
-L74:
-	beq		$t1, $t0, L73
+L75:
+	beq		$t1, $t0, L74
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
 	addi		$t1, $t1, 1
-	j		L74
-L73:
+	j		L75
+L74:
 	li		$t0, 1
 	seq		$t0, $zero, $t0
 	li		$t1, 1
@@ -593,14 +594,14 @@ L73:
 	syscall	
 	li		$t0, 1
 	li		$t1, 0
-L76:
-	beq		$t1, $t0, L75
+L77:
+	beq		$t1, $t0, L76
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
 	addi		$t1, $t1, 1
-	j		L76
-L75:
+	j		L77
+L76:
 	li		$t0, 1
 	li		$t1, 1
 	seq		$t1, $zero, $t1
@@ -611,14 +612,14 @@ L75:
 	syscall	
 	li		$t0, 1
 	li		$t1, 0
-L78:
-	beq		$t1, $t0, L77
+L79:
+	beq		$t1, $t0, L78
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
 	addi		$t1, $t1, 1
-	j		L78
-L77:
+	j		L79
+L78:
 	la		$t0, empty
 	lw		$t0, 0($t0)
 	li		$v0, 1
@@ -626,14 +627,14 @@ L77:
 	syscall	
 	li		$t0, 1
 	li		$t1, 0
-L80:
-	beq		$t1, $t0, L79
+L81:
+	beq		$t1, $t0, L80
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
 	addi		$t1, $t1, 1
-	j		L80
-L79:
+	j		L81
+L80:
 	la		$t0, empty
 	lw		$t0, 0($t0)
 	li		$t1, 20
@@ -647,14 +648,14 @@ L79:
 	syscall	
 	li		$t0, 1
 	li		$t1, 0
-L82:
-	beq		$t1, $t0, L81
+L83:
+	beq		$t1, $t0, L82
 	li		$v0, 4
 	la		$a0, _sp
 	syscall	
 	addi		$t1, $t1, 1
-	j		L82
-L81:
+	j		L83
+L82:
 	li		$v0, 10
 	syscall	
 	.data	
