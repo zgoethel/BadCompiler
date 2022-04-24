@@ -1,0 +1,8 @@
+Iteration 0, array[2][7] -> 124
+Iteration 1, array[2][7] -> 125
+array[2][7] -> 125
+After pass-by-value (should be 123): 123
+Iteration 0, *array[2][7] -> 124
+Iteration 1, *array[2][7] -> 125
+*array[2][7] -> 125
+After pass-by-ref (should not be 123): 125

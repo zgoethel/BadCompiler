@@ -1,0 +1,2 @@
+First call has arguments 123, 456
+Second call has arguments 123, 456

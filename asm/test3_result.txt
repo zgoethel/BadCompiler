@@ -1,0 +1,37 @@
+First condition not met
+Second condition met
+Number should increment from 0 to 9: 0
+Number should increment from 0 to 9: 1
+Number should increment from 0 to 9: 2
+Number should increment from 0 to 9: 3
+Number should increment from 0 to 9: 4
+Number should increment from 0 to 9: 5
+Number should increment from 0 to 9: 6
+Number should increment from 0 to 9: 7
+Number should increment from 0 to 9: 8
+Number should increment from 0 to 9: 9
+Number should increment from 0 to 9: 0
+Number should increment from 0 to 9: 1
+Number should increment from 0 to 9: 2
+Number should increment from 0 to 9: 3
+Number should increment from 0 to 9: 4
+Number should increment from 0 to 9: 5
+Number should increment from 0 to 9: 6
+Number should increment from 0 to 9: 7
+Number should increment from 0 to 9: 8
+Number should increment from 0 to 9: 9
+Should be 10: 10
+Should be 20: 20
+Value is not set: 0
+Should both be 1: 1, 1
+Should be unset: 0, 0
+ | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 
+ | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 
+ | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 
+ | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 
+ | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 
+ | 0 | 0 | 0 | 0 | 1 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 
+ | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 
+ | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 
+ | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 
+ | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |

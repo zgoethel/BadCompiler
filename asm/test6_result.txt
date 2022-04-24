@@ -1,0 +1,33 @@
+Before 50
+After declaration 50
+Inside 100, 50
+After invoke 100
+Inside 200, 100
+After invoke 200
+Inside 400, 200
+After invoke 400
+Passed arguments are 1, 2
+Recursive call, guard is 10
+Recursive call, guard is 9
+Recursive call, guard is 8
+Recursive call, guard is 7
+Recursive call, guard is 6
+Recursive call, guard is 5
+Recursive call, guard is 4
+Recursive call, guard is 3
+Recursive call, guard is 2
+Recursive call, guard is 1
+Recursive call returning to 4195060
+Recursive call returning to 4195060
+Recursive call returning to 4195060
+Recursive call returning to 4195060
+Recursive call returning to 4195060
+Recursive call returning to 4195060
+Recursive call returning to 4195060
+Recursive call returning to 4195060
+Recursive call returning to 4195060
+Recursive call returning to 4195060
+Recursive call returning to 4195428
+Post-recurse
+Address of array is 268501496, 268501496
+Dereference of index 4 is 20

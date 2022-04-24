@@ -1,0 +1,7 @@
+Return from function is 123
+Factorials are as follows:
+1 -> 1
+2 -> 2
+3 -> 6
+4 -> 24
+5 -> 120
