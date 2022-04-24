@@ -1,0 +1,15 @@
+var i: Int = 0;
+
+fun mutate_i(i: Ref<Int>): Nothing
+{
+	*i = *i + 1;
+}
+
+print("Should be 0: ", i, "\n");
+
+for (var j: Int = 0; j < 10; j = j + 1)
+{
+	mutate_i(&i);
+}
+
+print("Should be 10: ", i, "\n");
