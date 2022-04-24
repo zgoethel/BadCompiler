@@ -142,11 +142,11 @@ ExprC           : ExprC '*' ExprD                           { $$ = do_mult($1, $
 ExprD           : ExprE '^' ExprD                           { $$ = do_pow($1, $3); }
                 | ExprE                                     { $$ = $1; }
 ExprE           : '-' ExprF                                 { $$ = do_negate($2); }
-                | '!' ExprF                                 { $$ = do_not($2); }
+                | '!' ExprE                                 { $$ = do_not($2); }
                 | ExprF                                     { $$ = $1; }
 ExprF           : IntLit                                    { $$ = do_int_lit($1); }
                 | Ident ArrSeqExpr                          { $$ = do_load(resolve($1), $2); }
-                | '(' ExprA ')'                             { $$ = $2; }
+                | '(' Expr ')'                             { $$ = $2; }
                 | '&' Ident                                 { $$ = resolve($2); }
                 | '*' Ident ArrSeqExpr                      { $$ = do_load(do_load(resolve($2), NULL), $3); }
                 | Ident '('                                 { incidental_offset = 0; $<InstrSeq>$ = save_seq(); }

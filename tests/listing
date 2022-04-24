@@ -1,0 +1,59 @@
+1    fun readArray(n: Ref<Int[5][4]>): Nothing {
+2        print("Enter 20 ints: ");
+3        for (var i: Int = 0; i < 5; i = i + 1) {
+4            for (var j: Int = 0; j < 4; j = j + 1) {
+5                var k: Int;
+6                read(k);
+7                *n[i][j] = k;
+8            }
+9        }
+10   }
+11   
+12   fun calcRowSums(r: Ref<Int[1]>, n: Ref<Int[5][4]>): Nothing {
+13       for (var i: Int = 0; i < 5; i = i + 1) {
+14           *r[i] = 0;
+15           for (var j: Int = 0; j < 4; j = j + 1) {
+16               *r[i] = *r[i] + *n[i][j];
+17           }
+18       }
+19   }
+20   
+21   fun calcColSums(c: Ref<Int[1]>, n: Ref<Int[5][4]>): Nothing {
+22       for (var j: Int = 0; j < 4; j = j + 1) {
+23           for (var i: Int = 0; i < 5; i = i + 1) {
+24               *c[j] = *c[j] + *n[i][j];
+25           }
+26       }
+27   }
+28   
+29   fun printSums(r: Ref<Int[1]>, c: Ref<Int[1]>, n: Ref<Int[5][4]>): Nothing {
+30       for (var i: Int = 0; i < 5; i = i + 1) {
+31           print(*r[i], ":\t");
+32           for (var j: Int = 0; j < 4; j = j + 1) {
+33               print(*n[i][j], "\t");
+34           }
+35           print("\n");
+36       }
+37       
+38       print("\t");
+39       for (var j: Int = 0; j < 4; j = j + 1) {
+40           print(*c[j], "\t");
+41       }
+42       print("\n");
+43   }
+44   
+45   var rowSums: Int[5];
+46   var colSums: Int[4];
+47   var twoD: Int[5][4];
+48   var i: Int;
+49   var j: Int;
+50   var k: Int;
+51   
+52   readArray(&twoD);
+53   
+54   
+55   calcRowSums(&rowSums, &twoD);
+56   
+57   calcColSums(&colSums, &twoD);
+58   
+59   printSums(&rowSums, &colSums, &twoD);

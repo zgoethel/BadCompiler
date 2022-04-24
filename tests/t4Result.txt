@@ -1,0 +1,11 @@
+Enter three integers: Starting temp, ending temp and a positive increment: 4
+32
+4
+4 -15 257
+8 -13 260
+12 -11 262
+16 -8 264
+20 -6 266
+24 -4 268
+28 -2 271
+32 0 273

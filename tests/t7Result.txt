@@ -1,0 +1,13 @@
+Enter the number of triples to be processed: 3
+Enter three integers: 3
+26
+2
+2 3 26
+Enter three integers: 256
+762
+654
+256 654 762
+Enter three integers: 8342
+53
+4335
+53 4335 8342

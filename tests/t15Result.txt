@@ -1,0 +1,14 @@
+Enter the number of ints (30 or less) in the array: 10
+Enter an int: 234
+Enter an int: 61
+Enter an int: 324
+Enter an int: 52
+Enter an int: 34
+Enter an int: 25
+Enter an int: 1
+Enter an int: 61
+Enter an int: 3
+Enter an int: 7
+
+
+324 234 61 61 52 34 25 7 3 1

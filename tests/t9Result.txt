@@ -1,0 +1,19 @@
+Enter the number of ints (30 or less) in the array: 15
+Enter an int: 25
+Enter an int: 72
+Enter an int: 43
+Enter an int: 72
+Enter an int: 42
+Enter an int: 762
+Enter an int: 543
+Enter an int: 234
+Enter an int: 6
+Enter an int: 34
+Enter an int: 52
+Enter an int: 27
+Enter an int: 43
+Enter an int: 533
+Enter an int: 53
+
+
+762 543 533 234 72 72 53 52 43 43 42 34 27 25 6

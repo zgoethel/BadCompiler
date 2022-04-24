@@ -1,0 +1,5 @@
+Enter 4 integers. The second integer must be positive: 1
+2
+3
+4
+1 2 3 4        7 = i^j*k+m        7 = m+k*i^j

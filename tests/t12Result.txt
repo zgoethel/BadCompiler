@@ -1,0 +1,2 @@
+Enter an int: 6
+720 = 6!

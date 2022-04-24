@@ -1,0 +1,3 @@
+Enter an int: 4
+5 = 4th Fibonacci number
+34 = 8th Fibonacci number

@@ -1,0 +1,21 @@
+Enter the number of triples to be processed: 5
+Enter three integers: 4
+8
+2
+2 4 8
+Enter three integers: 2
+7
+3
+2 3 7
+Enter three integers: 4
+6
+8
+4 6 8
+Enter three integers: 2
+4
+6
+2 4 6
+Enter three integers: 3
+2
+7
+2 3 7
