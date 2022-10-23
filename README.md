@@ -1,16 +1,101 @@
-Compiler for a C-like language which generates MIPS Assembly.  Written in C; minimal validation, error handling, and very few features.
+Compiler for a C-like language which generates MIPS Assembly.  Written in C and using the tools Flex and Bison.  Offers minimal validation, essentially no error handling, and very few features.  This source stems from a course assignment with extra work put in.
 
 Includes
  - Arithmatic ops
+   ```kt
+   /* Evaluates the expression with precedence/associativity */
+   var i: Int = 3 * (2 + 8) % 20 ^ 2;
+   ```
  - For loops
+   ```kt
+   /* Creates a scoped variable named `i` */
+   for (var i: Int = 0; i < 100; i = i + 1)
+   {
+       print("Half of ", i, " is ", i / 2, "\n");
+   }
+   ```
  - While loops
+   ```kt
+   /* Loops infinitely and accepts user number input */
+   while (1)
+   {
+       var input: Int;
+       print("Enter a new value: ", <input>);
+   }
+   ```
  - Logical branches
+   ```kt
+   /* Accepts a number if it is at most 100 */
+   var input: Int;
+   print("Enter a new value: ", <input>);
+   if (input > 100)
+   {
+       print("Input ", input, " is too high!\n");
+   } else
+   {
+       print("That input is valid.\n");
+   }
+   ```
  - Integers
+   ```kt
+   var i: Int = 3;
+   ```
  - Integer arrays
+   ```kt
+   var arr: Int[4];
+   arr[0] = 1;
+   arr[1] = 2;
+   arr[2] = 3;
+   arr[3] = 4;
+   ```
  - Pass integer by value
+   ```kt
+   /* Accepts a value and returns the value plus one */
+   fun do_thing(arg: Int): Integer
+   {
+       return = arg + 1;
+   }
+   ```
  - Pass integer by reference
+   ```kt
+   /* Increments the integer pointed to by `arg` */
+   fun do_thing(arg: Ref<Int>): Nothing
+   {
+       *arg = *arg + 1;
+   }
+   ```
  - Pass array by value
+   ```kt
+   /* Accepts an array by value */
+   fun do_thing(arg: Int[4]): Nothing
+   {
+       arg[0] = 20;
+       /* Prints the value 20 */
+       print(arg[0]);
+   }
+   
+   var arr: Int[4];
+   arr[0] = 1;
+   do_thing(arr);
+   /* Prints the value 1 */
+   print(arg[0]);
+   ```
  - Pass array by references
+   ```kt
+   /* Accepts an array by reference */
+   fun do_thing(arg: Ref<Int[1]>): Nothing
+   {
+       *arg[0] = 20;
+       /* Prints the value 20 */
+       print(*arg[0]);
+   }
+   
+   var arr: Int[4];
+   arr[0] = 1;
+   do_thing(&arr);
+   /* Prints the value 20 */
+   print(arg[0]);
+   ```
  
  Here is some example syntax of input source.  This is a merge sort written in a C- and Kotlin-like syntax.
  
