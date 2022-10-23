@@ -28,6 +28,7 @@ Includes
    /* Accepts a number if it is at most 100 */
    var input: Int;
    print("Enter a new value: ", <input>);
+   
    if (input > 100)
    {
        print("Input ", input, " is too high!\n");

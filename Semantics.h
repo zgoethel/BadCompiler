@@ -132,7 +132,7 @@ extern SymTab *table;
 /**
  * @brief Contains string literals for the data section during acceptance.
  */
-SymTab *str_lits;
+extern SymTab *str_lits;
 
 /**
  * @brief Stack for tracking variable scopes
